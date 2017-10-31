@@ -50,19 +50,16 @@ class HomeController extends Controller
             if ($user) {
                 $session->set("user", $username);
 
-                return $this->json(array(
-                    'response' => "OK"
-                ));
+                return new Response(Response::HTTP_OK); #status code 200
+
             } else {
-                return $this->json(array(
-                    'response' => "ERROR : INVALID DATA"
-                ));
+
+                return new Response(Response::HTTP_NOT_FOUND); #status code 404
             }
         }
         else{
-            return $this->json(array(
-                'response' => "ERROR : MISSING POST ARGUMENTS"
-            ));
+            return new Response(Response::HTTP_PARTIAL_CONTENT); #status code 206
+
         }
 
     }
@@ -97,19 +94,15 @@ class HomeController extends Controller
                 $em->flush();
             }
             catch (\Exception $e){
-                return $this->json(array(
-                    'response' => "ERROR : THERE ALREADY IS A USER WITH THIS DATA"
-                ));
+
+                return new Response(Response::HTTP_IM_USED); #status code 226
+
             }
 
-            return $this->json(array(
-                'response' => "OK"
-            ));
+            return new Response(Response::HTTP_OK); # status code 200
         }
         else{
-            return $this->json(array(
-                'response' => "ERROR : MISSING POST ARGUMENTS"
-            ));
+            return new Response(Response::HTTP_PARTIAL_CONTENT); #status code 206
         }
     }
 
