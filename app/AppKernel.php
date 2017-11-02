@@ -2,6 +2,8 @@
 
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
+use Sensio\Bundle\GeneratorBundle;
+use Symfony\Bundle\WebServerBundle;
 
 class AppKernel extends Kernel
 {
