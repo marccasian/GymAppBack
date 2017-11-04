@@ -50,16 +50,24 @@ class HomeController extends Controller
             if ($user) {
                 $session->set("user", $username);
 
-                return new Response(Response::HTTP_OK); #status code 200
+                #return new Response(Response::HTTP_OK); #status code 200
+                $r = new Response();
+                $r->setStatusCode(200);
+                return $r;
 
             } else {
 
-                return new Response(Response::HTTP_NOT_FOUND); #status code 404
+                #return new Response(Response::HTTP_NOT_FOUND); #status code 404
+                $r = new Response();
+                $r->setStatusCode(404);
+                return $r;
             }
         }
         else{
-            return new Response(Response::HTTP_PARTIAL_CONTENT); #status code 206
-
+            #return new Response(Response::HTTP_PARTIAL_CONTENT); #status code 206
+            $r = new Response();
+            $r->setStatusCode(206);
+            return $r;
         }
 
     }
@@ -95,14 +103,23 @@ class HomeController extends Controller
             }
             catch (\Exception $e){
 
-                return new Response(Response::HTTP_IM_USED); #status code 226
+                #return new Response(Response::HTTP_IM_USED); #status code 226
+                $r = new Response();
+                $r->setStatusCode(226);
+                return $r;
 
             }
 
-            return new Response(Response::HTTP_OK); # status code 200
+            #return new Response(Response::HTTP_OK); # status code 200
+            $r = new Response();
+            $r->setStatusCode(200);
+            return $r;
         }
         else{
-            return new Response(Response::HTTP_PARTIAL_CONTENT); #status code 206
+            #return new Response(Response::HTTP_PARTIAL_CONTENT); #status code 206
+            $r = new Response();
+            $r->setStatusCode(206);
+            return $r;
         }
     }
 
