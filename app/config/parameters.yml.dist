@@ -3,8 +3,8 @@ parameters:
     database_host: us-cdbr-azure-southcentral-f.cloudapp.net
     database_port: 3306
     database_name: elephpants
-    database_user: b605e5e9fbdce0                   
-    database_password: ed715a10                 
+    database_user: b605e5e9fbdce0                    #id3437583_gymappuser
+    database_password: ed715a10                 #1234567890qwerty
     mailer_transport: smtp
     mailer_host: 127.0.0.1
     mailer_user: null
