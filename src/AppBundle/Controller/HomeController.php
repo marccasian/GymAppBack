@@ -1,10 +1,8 @@
 <?php
 
 /**
- * Created by PhpStorm.
- * User: User
- * Date: 10/30/2017
- * Time: 2:49 PM
+ * @author Grozescu Rares <grozescurares@yahoo.com>
+ *
  */
 
 namespace AppBundle\Controller;
