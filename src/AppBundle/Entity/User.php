@@ -1,8 +1,8 @@
 <?php
-
+/**
+ *
+ */
 namespace AppBundle\Entity;
-
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * User
@@ -13,8 +13,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class User
 {
-
-
     /**
      * @var string
      * @ORM\Id
@@ -35,9 +33,7 @@ class User
      * @ORM\Column(name="Email", type="string", length=255, unique=true)
      */
     private $email;
-
-
-
+    
 
     /**
      * Set username
@@ -46,7 +42,7 @@ class User
      *
      * @return User
      */
-    public function setUsername($username)
+    public function setUsername(string $username) : User
     {
         $this->username = $username;
 
@@ -58,7 +54,7 @@ class User
      *
      * @return string
      */
-    public function getUsername()
+    public function getUsername() : string
     {
         return $this->username;
     }
@@ -70,7 +66,7 @@ class User
      *
      * @return User
      */
-    public function setPassword($password)
+    public function setPassword(string $password) : User
     {
         $this->password = $password;
 
@@ -82,7 +78,7 @@ class User
      *
      * @return string
      */
-    public function getPassword()
+    public function getPassword() : string
     {
         return $this->password;
     }
@@ -94,7 +90,7 @@ class User
      *
      * @return User
      */
-    public function setEmail($email)
+    public function setEmail(string $email)
     {
         $this->email = $email;
 
@@ -106,7 +102,7 @@ class User
      *
      * @return string
      */
-    public function getEmail()
+    public function getEmail() : string
     {
         return $this->email;
     }
