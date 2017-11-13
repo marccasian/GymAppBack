@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="AppBundle\Entity\Evidentainscrieri" table="evidentainscrieri">
+    <indexes>
+      <index name="evidenta_curs_idx" columns="CursId"/>
+      <index name="IDX_509A8491286421" columns="Username"/>
+    </indexes>
+    <unique-constraints>
+      <unique-constraint name="user_curs" columns="Username,CursId"/>
+    </unique-constraints>
+    <id name="idevidentainscrieri" type="integer" column="idevidentainscrieri">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <many-to-one field="username" target-entity="User" fetch="LAZY">
+      <join-columns>
+        <join-column name="Username" referenced-column-name="Username"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="cursid" target-entity="Curs" fetch="LAZY">
+      <join-columns>
+        <join-column name="CursId" referenced-column-name="CursId"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>
