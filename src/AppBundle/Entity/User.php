@@ -1,110 +1,139 @@
 <?php
-/**
- *
- */
+
 namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * User
  *
- * @ORM\Table(name="user", uniqueConstraints = {@ORM\UniqueConstraint(name="username_password", columns={"Username", "Password"})})
- * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
- *
+ * @ORM\Table(name="user", uniqueConstraints={@ORM\UniqueConstraint(name="username_password", columns={"Username", "Password"}), @ORM\UniqueConstraint(name="UNIQ_8D93D64926535370", columns={"Email"})}, indexes={@ORM\Index(name="user_rol_idx", columns={"RolId"})})
+ * @ORM\Entity
  */
 class User
 {
-    /**
-     * @var string
-     * @ORM\Id
-     * @ORM\Column(name="Username", type="string", length=255)
-     */
-    private $username;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="Password", type="string", length=255)
+     * @ORM\Column(name="Username", type="string", length=255)
+     * @ORM\Id
+     *
+     */
+    private $username;
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="Password", type="string", length=255, nullable=false)
      */
     private $password;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="Email", type="string", length=255, unique=true)
+     * @ORM\Column(name="Email", type="string", length=255, nullable=false)
      */
     private $email;
-    
 
     /**
-     * Set username
+     * @var string
      *
-     * @param string $username
-     *
-     * @return User
+     * @ORM\Column(name="FullName", type="string", length=255, nullable=true)
      */
-    public function setUsername(string $username) : User
-    {
-        $this->username = $username;
+    private $fullname;
 
-        return $this;
-    }
+
 
     /**
-     * Get username
+     * @var \AppBundle\Entity\Rol
      *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Rol")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="RolId", referencedColumnName="RolId")
+     * })
+     */
+    private $rolid;
+
+    /**
      * @return string
      */
-    public function getUsername() : string
-    {
-        return $this->username;
-    }
-
-    /**
-     * Set password
-     *
-     * @param string $password
-     *
-     * @return User
-     */
-    public function setPassword(string $password) : User
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
-    /**
-     * Get password
-     *
-     * @return string
-     */
-    public function getPassword() : string
+    public function getPassword(): string
     {
         return $this->password;
     }
 
     /**
-     * Set email
-     *
+     * @param string $password
+     */
+    public function setPassword(string $password)
+    {
+        $this->password = $password;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    /**
      * @param string $email
-     *
-     * @return User
      */
     public function setEmail(string $email)
     {
         $this->email = $email;
-
-        return $this;
     }
 
     /**
-     * Get email
-     *
      * @return string
      */
-    public function getEmail() : string
+    public function getFullname(): string
     {
-        return $this->email;
+        return $this->fullname;
     }
+
+    /**
+     * @param string $fullname
+     */
+    public function setFullname(string $fullname)
+    {
+        $this->fullname = $fullname;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
+
+    /**
+     * @param string $username
+     */
+    public function setUsername(string $username)
+    {
+        $this->username = $username;
+    }
+
+    /**
+     * @return Rol
+     */
+    public function getRolid(): Rol
+    {
+        return $this->rolid;
+    }
+
+    /**
+     * @param Rol $rolid
+     */
+    public function setRolid(Rol $rolid)
+    {
+        $this->rolid = $rolid;
+    }
+
+
 }
 

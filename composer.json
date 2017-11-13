@@ -48,7 +48,7 @@
     },
     "config": {
         "platform": {
-            "php": "^7.1"
+            "php": "5.5.9"
         },
         "sort-packages": true
     },

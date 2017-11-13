@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="AppBundle\Entity\User" table="user">
+    <indexes>
+      <index name="user_rol_idx" columns="RolId"/>
+    </indexes>
+    <unique-constraints>
+      <unique-constraint name="username_password" columns="Username,Password"/>
+      <unique-constraint name="UNIQ_8D93D64926535370" columns="Email"/>
+    </unique-constraints>
+    <id name="username" type="string" column="Username" length="255">
+
+    </id>
+    <field name="password" type="string" column="Password" length="255" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="email" type="string" column="Email" length="255" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="fullname" type="string" column="FullName" length="255" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <many-to-one field="rolid" target-entity="Rol" fetch="LAZY">
+      <join-columns>
+        <join-column name="RolId" referenced-column-name="RolId"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>
