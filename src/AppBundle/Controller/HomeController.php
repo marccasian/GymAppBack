@@ -109,6 +109,10 @@ class HomeController extends Controller
 
         if(!$username or !$password or !$email or !$fullname)
             $flag = false;
+        if (strlen($password) < 6)
+            $flag = false;
+        if (!$this->isValidEmail($email))
+            $flag = false;
 
         if($flag) {
             $em = $this->getDoctrine()->getManager();
@@ -187,9 +191,17 @@ class HomeController extends Controller
                 $errors .= ';';
                 $errors .= 'Please enter the password';
             }
+            elseif (strlen($password) < 6) {
+                $errors .= ';';
+                $errors .= 'Please use a longer password. Minimum of 6 characters';
+            }
             if(!$email) {
                 $errors .= ';';
                 $errors .= 'Please enter the email';
+            }
+            elseif (!$this->isValidEmail($email)){
+                $errors .= ';';
+                $errors .= 'Invalid email format. Please enter a valid email';
             }
             if(!$fullname) {
                 $errors .= ';';
@@ -202,6 +214,10 @@ class HomeController extends Controller
             $r->headers->set('Content-Type', 'application/json');
             return $r;
         }
+    }
+
+    function isValidEmail($email){
+        return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
     }
 
 }
