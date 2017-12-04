@@ -57,6 +57,7 @@ class HomeController extends Controller
                     'fullname' => $user->getFullname()
                 )));
 
+                $request->headers->set('Content-Type', 'application/json');
                 return $r;
 
             } else {
@@ -67,6 +68,8 @@ class HomeController extends Controller
                 $r->setContent($this->json(array(
                     'errors' => 'Incorrect username or password.'
                 )));
+
+                $request->headers->set('Content-Type', 'application/json');
                 return $r;
             }
         }
@@ -84,6 +87,8 @@ class HomeController extends Controller
             $r->setContent($this->json(array(
                 'errors' => $errors
             )));
+
+            $request->headers->set('Content-Type', 'application/json');
             return $r;
         }
 
@@ -133,6 +138,8 @@ class HomeController extends Controller
                     'password' =>$password
                 ));
 
+                $request->headers->set('Content-Type', 'application/json');
+
                 return $this->logInAction($request);
 
 
@@ -161,6 +168,8 @@ class HomeController extends Controller
                 $r->setContent($this->json(array(
                     'errors' => $errors
                 )));
+
+                $request->headers->set('Content-Type', 'application/json');
                 return $r;
 
             }
@@ -189,6 +198,8 @@ class HomeController extends Controller
             $r->setContent($this->json(array(
                 'errors' => $errors
             )));
+
+            $request->headers->set('Content-Type', 'application/json');
             return $r;
         }
     }
