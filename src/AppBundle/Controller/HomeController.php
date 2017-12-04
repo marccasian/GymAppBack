@@ -187,27 +187,27 @@ class HomeController extends Controller
                 $errors .= 'Please enter the username';
             }
             if(!$password) {
-                if (strlen($password) > 0)
+                if (strlen($errors) > 0)
                     $errors .= ';';
                 $errors .= 'Please enter the password';
             }
             elseif (strlen($password) < 6) {
-                if (strlen($password) > 0)
+                if (strlen($errors) > 0)
                     $errors .= ';';
                 $errors .= 'Please use a longer password. Minimum of 6 characters';
             }
             if(!$email) {
-                if (strlen($password) > 0)
+                if (strlen($errors) > 0)
                     $errors .= ';';
                 $errors .= 'Please enter the email';
             }
             elseif (!$this->isValidEmail($email)){
-                if (strlen($password) > 0)
+                if (strlen($errors) > 0)
                     $errors .= ';';
                 $errors .= 'Invalid email format. Please enter a valid email';
             }
             if(!$fullname) {
-                if (strlen($password) > 0)
+                if (strlen($errors) > 0)
                     $errors .= ';';
                 $errors .= 'Please enter the fullname';
             }
