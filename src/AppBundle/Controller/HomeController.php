@@ -52,7 +52,7 @@ class HomeController extends Controller
                 $r = new Response();
                 $r->setStatusCode(200);
 
-                $r->setContent($this->json(array(
+                $r->setContent(json_encode(array(
                     'username' => $username,
                     'fullname' => $user->getFullname()
                 )));
@@ -65,7 +65,7 @@ class HomeController extends Controller
                 #return new Response(Response::HTTP_NOT_FOUND); #status code 404
                 $r = new Response();
                 $r->setStatusCode(404);
-                $r->setContent($this->json(array(
+                $r->setContent(json_encode(array(
                     'errors' => 'Incorrect username or password.'
                 )));
 
@@ -84,7 +84,7 @@ class HomeController extends Controller
                 $errors .= ";";
                 $errors .= "Please enter the password";
             }
-            $r->setContent($this->json(array(
+            $r->setContent(json_encode(array(
                 'errors' => $errors
             )));
 
@@ -165,7 +165,7 @@ class HomeController extends Controller
                     $errors .= 'Email is already used';
                 }
 
-                $r->setContent($this->json(array(
+                $r->setContent(json_encode(array(
                     'errors' => $errors
                 )));
 
@@ -195,7 +195,7 @@ class HomeController extends Controller
                 $errors .= ';';
                 $errors .= 'Please enter the fullname';
             }
-            $r->setContent($this->json(array(
+            $r->setContent(json_encode(array(
                 'errors' => $errors
             )));
 
