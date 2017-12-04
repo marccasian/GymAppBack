@@ -52,11 +52,12 @@ class HomeController extends Controller
                 $r = new Response();
                 $r->setStatusCode(200);
 
-                $r->setContent($this->json(array(
+                $r->setContent(json_encode(array(
                     'username' => $username,
                     'fullname' => $user->getFullname()
                 )));
 
+                $r->headers->set('Content-Type', 'application/json');
                 return $r;
 
             } else {
@@ -64,9 +65,11 @@ class HomeController extends Controller
                 #return new Response(Response::HTTP_NOT_FOUND); #status code 404
                 $r = new Response();
                 $r->setStatusCode(404);
-                $r->setContent($this->json(array(
+                $r->setContent(json_encode(array(
                     'errors' => 'Incorrect username or password.'
                 )));
+
+                $r->headers->set('Content-Type', 'application/json');
                 return $r;
             }
         }
@@ -81,9 +84,11 @@ class HomeController extends Controller
                 $errors .= ";";
                 $errors .= "Please enter the password";
             }
-            $r->setContent($this->json(array(
+            $r->setContent(json_encode(array(
                 'errors' => $errors
             )));
+
+            $r->headers->set('Content-Type', 'application/json');
             return $r;
         }
 
@@ -103,6 +108,10 @@ class HomeController extends Controller
         $fullname = $request->request->get('fullname');
 
         if(!$username or !$password or !$email or !$fullname)
+            $flag = false;
+        if (strlen($password) < 6)
+            $flag = false;
+        if (!$this->isValidEmail($email))
             $flag = false;
 
         if($flag) {
@@ -133,6 +142,8 @@ class HomeController extends Controller
                     'password' =>$password
                 ));
 
+                $request->headers->set('Content-Type', 'application/json');
+
                 return $this->logInAction($request);
 
 
@@ -158,9 +169,11 @@ class HomeController extends Controller
                     $errors .= 'Email is already used';
                 }
 
-                $r->setContent($this->json(array(
+                $r->setContent(json_encode(array(
                     'errors' => $errors
                 )));
+
+                $r->headers->set('Content-Type', 'application/json');
                 return $r;
 
             }
@@ -174,23 +187,41 @@ class HomeController extends Controller
                 $errors .= 'Please enter the username';
             }
             if(!$password) {
-
-                $errors .= ';';
+                if (strlen($errors) > 0)
+                    $errors .= ';';
                 $errors .= 'Please enter the password';
             }
+            elseif (strlen($password) < 6) {
+                if (strlen($errors) > 0)
+                    $errors .= ';';
+                $errors .= 'Please use a longer password. Minimum of 6 characters';
+            }
             if(!$email) {
-                $errors .= ';';
+                if (strlen($errors) > 0)
+                    $errors .= ';';
                 $errors .= 'Please enter the email';
             }
+            elseif (!$this->isValidEmail($email)){
+                if (strlen($errors) > 0)
+                    $errors .= ';';
+                $errors .= 'Invalid email format. Please enter a valid email';
+            }
             if(!$fullname) {
-                $errors .= ';';
+                if (strlen($errors) > 0)
+                    $errors .= ';';
                 $errors .= 'Please enter the fullname';
             }
-            $r->setContent($this->json(array(
+            $r->setContent(json_encode(array(
                 'errors' => $errors
             )));
+
+            $r->headers->set('Content-Type', 'application/json');
             return $r;
         }
+    }
+
+    function isValidEmail($email){
+        return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
     }
 
 }
