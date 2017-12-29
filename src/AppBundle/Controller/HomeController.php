@@ -39,6 +39,7 @@ class HomeController extends Controller
 
             $repository = $this->getDoctrine()->getRepository(User::class);
 
+            
             $user = $repository->findOneBy(array(
                 'username' => $username,
                 'password' => $password

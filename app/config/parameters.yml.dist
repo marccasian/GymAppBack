@@ -1,12 +1,12 @@
 # This file is auto-generated during the composer install
 parameters:
-    database_host: us-cdbr-azure-southcentral-f.cloudapp.net
+    database_host: elephpants.mysql.database.azure.com
     database_port: 3306
     database_name: elephpants
-    database_user: b605e5e9fbdce0                    #id3437583_gymappuser
-    database_password: ed715a10                 #1234567890qwerty
+    database_user: gym-app-user@elephpants
+    database_password: Qwerty1.
     mailer_transport: smtp
     mailer_host: 127.0.0.1
     mailer_user: null
     mailer_password: null
-    secret: secretGurita
+    secret: secretGurita1
