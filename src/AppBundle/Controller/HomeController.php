@@ -116,6 +116,23 @@ class HomeController extends Controller
         $password = $request->request->get('password');
         $email = $request->request->get('email');
         $fullname = $request->request->get('fullname');
+        $content_dict = json_decode($request->getContent());
+        if (!$username){
+            $key = "username";
+            $username = $content_dict->$key;
+        }
+        if (!$password){
+            $key = "password";
+            $password = $content_dict->$key;
+        }
+        if (!$email){
+            $key = "email";
+            $email = $content_dict->$key;
+        }
+        if (!$fullname){
+            $key = "fullname";
+            $fullname = $content_dict->$key;
+        }
 
         if(!$username or !$password or !$email or !$fullname)
             $flag = false;
