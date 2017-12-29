@@ -24,13 +24,23 @@ class HomeController extends Controller
     /**
      * @Route("/home/login", name = "home_login")
      * @Method({"POST"})
-     *
+     * @param Request $request
+     * @return Response
      */
     public function logInAction(Request $request){
 
         $flag = true;
         $username = $request->request->get('username');
         $password = $request->request->get('password');
+        $content_dict = json_decode($request->getContent());
+        if (!$username){
+            $key = "username";
+            $username = $content_dict->$key;
+        }
+        if (!$password){
+            $key = "password";
+            $password = $content_dict->$key;
+        }
 
         if(!$username or !$password)
             $flag = false;
@@ -46,7 +56,6 @@ class HomeController extends Controller
             ));
 
             if ($user) {
-
 
                 #return new Response(Response::HTTP_OK); #status code 200
 
@@ -107,6 +116,23 @@ class HomeController extends Controller
         $password = $request->request->get('password');
         $email = $request->request->get('email');
         $fullname = $request->request->get('fullname');
+        $content_dict = json_decode($request->getContent());
+        if (!$username){
+            $key = "username";
+            $username = $content_dict->$key;
+        }
+        if (!$password){
+            $key = "password";
+            $password = $content_dict->$key;
+        }
+        if (!$email){
+            $key = "email";
+            $email = $content_dict->$key;
+        }
+        if (!$fullname){
+            $key = "fullname";
+            $fullname = $content_dict->$key;
+        }
 
         if(!$username or !$password or !$email or !$fullname)
             $flag = false;
