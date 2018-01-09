@@ -14,6 +14,7 @@ use AppBundle\Entity\Rol;
 use Doctrine\DBAL\Driver\PDOException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Entity\User;
@@ -71,9 +72,16 @@ class TrainerController extends Controller
                     $user->setRolid($normalUser);
 
                     //salvez in baza de date
-                    $em = $this->getDoctrine()->getManager();
-                    $em->persist($user);
-                    $em->flush();
+                    try {
+                        $em = $this->getDoctrine()->getManager();
+                        $em->persist($user);
+                        $em->flush();
+                    }
+                    catch (Exception $e){
+                        return $utils->createRespone(409, array(
+                           'errors' => $e,
+                        ));
+                    }
 
                     return $utils->createRespone(200, array(
                         'username' => $username,
@@ -137,9 +145,16 @@ class TrainerController extends Controller
                     $user->setRolid($normalUser);
 
                     //salvez in bd
-                    $em = $this->getDoctrine()->getManager();
-                    $em->persist($user);
-                    $em->flush();
+                    try {
+                        $em = $this->getDoctrine()->getManager();
+                        $em->persist($user);
+                        $em->flush();
+                    }
+                    catch (Exception $e){
+                        return $utils->createRespone(409, array(
+                           'errors' => $e,
+                        ));
+                    }
 
 
                     return $utils->createRespone(200, array(
@@ -171,6 +186,96 @@ class TrainerController extends Controller
                 'errors' => "Partial data",
             ));
         }
+    }
+
+
+    /**
+     * @Route("/trainer/getAllTrainers", name = "get_all_trainers")
+     * @Method({"GET"})
+     *
+     */
+    public function getAllTrainers(){
+
+        $utils = new Functions();
+
+        $repoRol = $this->getDoctrine()->getManager()->getRepository(Rol::class);
+        $rol = $repoRol->findOneBy(array(
+           'description' => "antrenor",
+        ));
+
+        $repository = $this->getDoctrine()->getManager()->getRepository(User::class);
+
+        $users = $repository->findBy(array(
+           'rolid' =>  $rol,
+        ));
+
+
+        $result = array();
+        if(count($users)){
+
+            foreach ($users as $trainer){
+                $result[] = array(
+                    'username' => $trainer->getUsername(),
+                    'fullname' => $trainer->getFullname(),
+                    'email' => $trainer -> getEmail(),
+
+                );
+            }
+            return $utils->createRespone(200, array(
+                'trainers' => $result,
+            ));
+        }
+        else{
+            return $utils->createRespone(404, array(
+                'errors' => "There are no trainers.",
+            ));
+        }
+
+    }
+
+
+    /**
+     * @Route("/user/getAllUsers", name = "get_all_users")
+     * @Method({"GET"})
+     *
+     */
+    public function getAllUsers(){
+
+        $utils = new Functions();
+
+        $repoRol = $this->getDoctrine()->getManager()->getRepository(Rol::class);
+        $rol = $repoRol->findOneBy(array(
+            'description' => "user",
+        ));
+
+        $repository = $this->getDoctrine()->getManager()->getRepository(User::class);
+
+        $users = $repository->findBy(array(
+            'rolid' =>  $rol,
+        ));
+
+
+        $result = array();
+        if(count($users)){
+
+            foreach ($users as $trainer){
+                $result[] = array(
+                    'username' => $trainer->getUsername(),
+                    'fullname' => $trainer->getFullname(),
+                    'email' => $trainer -> getEmail(),
+
+                );
+            }
+            return $utils->createRespone(200, array(
+                'users' => $result,
+            ));
+        }
+        else{
+            return $utils->createRespone(404, array(
+                'errors' => "There are no normal users.",
+            ));
+        }
+
     }
 
 

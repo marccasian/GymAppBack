@@ -12,10 +12,12 @@
     <field name="enddate" type="datetime" column="EndDate" nullable="true"/>
     <field name="price" type="float" column="Price" precision="10" scale="0" nullable="true"/>
     <field name="level" type="integer" column="Level" nullable="true">
+
       <options>
         <option name="unsigned"/>
       </options>
     </field>
+    <field name = "active" type="integer" column="Active" ></field>
     <many-to-one field="abonamenttypeid" target-entity="Abonamenttype" fetch="LAZY">
       <join-columns>
         <join-column name="AbonamentTypeId" referenced-column-name="AbonamentTypeId"/>
