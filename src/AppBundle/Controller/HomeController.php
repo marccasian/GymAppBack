@@ -163,6 +163,13 @@ class HomeController extends Controller
             try {
                 $em->flush();
 
+                $msg = "Hello ".$username.",\nThank you for registering your GymApp account!\n\nYour access data:\nUsername:  ".$username."\nEmail address: ".$email."\nPassword: ".$password."\n\nThank you,\nGymApp Team";
+
+                // use wordwrap() if lines are longer than 70 characters
+                $msg = wordwrap($msg,70);
+                // send email
+                mail($email,"No Reply Register",$msg);
+
                 #return new Response(Response::HTTP_OK); # status code 200
 
                 $request = Request::create('home_login', "POST", array(

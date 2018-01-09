@@ -41,6 +41,13 @@ class Abonament
     private $level;
 
     /**
+     * @ORM\Column(name="Active", type="integer")
+     */
+    private $active;
+
+
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="AbonamentId", type="integer")
@@ -68,6 +75,137 @@ class Abonament
      * })
      */
     private $username;
+
+    /**
+     * @return \DateTime
+     */
+    public function getStartdate(): \DateTime
+    {
+        return $this->startdate;
+    }
+
+    /**
+     * @param \DateTime $startdate
+     */
+    public function setStartdate(\DateTime $startdate)
+    {
+        $this->startdate = $startdate;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getEnddate(): \DateTime
+    {
+        return $this->enddate;
+    }
+
+    /**
+     * @param \DateTime $enddate
+     */
+    public function setEnddate(\DateTime $enddate)
+    {
+        $this->enddate = $enddate;
+    }
+
+    /**
+     * @return float
+     */
+    public function getPrice(): float
+    {
+        return $this->price;
+    }
+
+    /**
+     * @param float $price
+     */
+    public function setPrice(float $price)
+    {
+        $this->price = $price;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLevel(): int
+    {
+        return $this->level;
+    }
+
+    /**
+     * @param int $level
+     */
+    public function setLevel(int $level)
+    {
+        $this->level = $level;
+    }
+
+    /**
+     * @return int
+     */
+    public function getAbonamentid(): int
+    {
+        return $this->abonamentid;
+    }
+
+    /**
+     * @param int $abonamentid
+     */
+    public function setAbonamentid(int $abonamentid)
+    {
+        $this->abonamentid = $abonamentid;
+    }
+
+    /**
+     * @return Abonamenttype
+     */
+    public function getAbonamenttypeid(): Abonamenttype
+    {
+        return $this->abonamenttypeid;
+    }
+
+    /**
+     * @param Abonamenttype $abonamenttypeid
+     */
+    public function setAbonamenttypeid(Abonamenttype $abonamenttypeid)
+    {
+        $this->abonamenttypeid = $abonamenttypeid;
+    }
+
+    /**
+     * @return User
+     */
+    public function getUsername(): User
+    {
+        return $this->username;
+    }
+
+    /**
+     * @param User $username
+     */
+    public function setUsername(User $username)
+    {
+        $this->username = $username;
+    }
+
+    /**
+     * @return int
+     */
+    public function getActive(): int
+    {
+        return $this->active;
+    }
+
+    /**
+     * @param int $active
+     */
+    public function setActive(int $active)
+    {
+        $this->active = $active;
+    }
+
+
+
 
 
 }
