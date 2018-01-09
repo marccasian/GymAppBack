@@ -8,6 +8,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Rol;
+use AppBundle\Utils\Functions;
 use Doctrine\DBAL\Driver\PDOException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
