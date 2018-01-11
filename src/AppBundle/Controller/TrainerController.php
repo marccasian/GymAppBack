@@ -83,7 +83,7 @@ class TrainerController extends Controller
                     }
                     catch (Exception $e){
                         return $utils->createRespone(409, array(
-                           'errors' => $e,
+                           'errors' => $e->getMessage(),
                         ));
                     }
                     catch (UniqueConstraintViolationException  $e) {
@@ -166,7 +166,7 @@ class TrainerController extends Controller
                     }
                     catch (Exception $e){
                         return $utils->createRespone(409, array(
-                           'errors' => $e,
+                           'errors' => $e->getMessage(),
                         ));
                     }
                     catch (UniqueConstraintViolationException  $e) {

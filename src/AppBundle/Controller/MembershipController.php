@@ -44,6 +44,24 @@ class MembershipController extends Controller
         $stardDate = $request->request->get('startDate');
         $price = $request->request->get('price');
         $level = $request->request->get('level');
+        //nu le filtram pentru ca le primim din sursa sigura
+
+        if(!filter_var($level, FILTER_VALIDATE_INT))
+        {
+            if(!($level >= 1 and $level <=3)) {
+                return $utils->createRespone(404, array(
+                    'errors' => 'Level must be an integer between 1 and 3',
+                ));
+            }
+        }
+
+        if(!filter_var($price, FILTER_VALIDATE_FLOAT))
+        {
+            return $utils->createRespone(404, array(
+               'errors' => "Price must be a float.",
+            ));
+        }
+
 
 
         if (!$username || !$level)
@@ -124,6 +142,11 @@ class MembershipController extends Controller
                             ));
                         }
                         catch (PDOException  $e) {
+                            return $utils->createRespone(409, array(
+                                'errors' => $e->getMessage(),
+                            ));
+                        }
+                        catch (\Exception  $e) {
                             return $utils->createRespone(409, array(
                                 'errors' => $e->getMessage(),
                             ));
@@ -268,7 +291,7 @@ class MembershipController extends Controller
                                 $em->flush();
                             } catch (Exception $e) {
                                 return $utils->createRespone(409, array(
-                                    'errors' => $e,
+                                    'errors' => $e->getMessage(),
                                 ));
                             }
                         }
