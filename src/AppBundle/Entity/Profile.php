@@ -45,6 +45,93 @@ class Profile
      */
     private $username;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="Fullname", type="string", length=255, nullable=true)
+     */
+    private $fullname;
+
+    /**
+     * @return string
+     */
+    public function getSex(): string
+    {
+        return $this->sex;
+    }
+
+    /**
+     * @param string $sex
+     */
+    public function setSex(string $sex)
+    {
+        $this->sex = $sex;
+    }
+
+    /**
+     * @return int
+     */
+    public function getVarsta(): int
+    {
+        return $this->varsta;
+    }
+
+    /**
+     * @param int $varsta
+     */
+    public function setVarsta(int $varsta)
+    {
+        $this->varsta = $varsta;
+    }
+
+    /**
+     * @return int
+     */
+    public function getProfileid(): int
+    {
+        return $this->profileid;
+    }
+
+    /**
+     * @param int $profileid
+     */
+    public function setProfileid(int $profileid)
+    {
+        $this->profileid = $profileid;
+    }
+
+    /**
+     * @return User
+     */
+    public function getUsername(): User
+    {
+        return $this->username;
+    }
+
+    /**
+     * @param User $username
+     */
+    public function setUsername(User $username)
+    {
+        $this->username = $username;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFullname(): string
+    {
+        return $this->fullname;
+    }
+
+    /**
+     * @param string $fullname
+     */
+    public function setFullname(string $fullname)
+    {
+        $this->fullname = $fullname;
+    }
+
 
 }
 

@@ -21,11 +21,7 @@
         <option name="fixed"/>
       </options>
     </field>
-    <field name="fullname" type="string" column="FullName" length="255" nullable="true">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
+
     <many-to-one field="rolid" target-entity="Rol" fetch="LAZY">
       <join-columns>
         <join-column name="RolId" referenced-column-name="RolId"/>
