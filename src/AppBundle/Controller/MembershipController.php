@@ -11,12 +11,14 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Abonament;
 use AppBundle\Entity\Abonamenttype;
+
+use Doctrine\DBAL\Driver\PDOException;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use AppBundle\Entity\Rol;
-use Doctrine\DBAL\Driver\PDOException;
+use Doctrine\DBAL\Exception;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Entity\User;
@@ -42,6 +44,24 @@ class MembershipController extends Controller
         $stardDate = $request->request->get('startDate');
         $price = $request->request->get('price');
         $level = $request->request->get('level');
+        //nu le filtram pentru ca le primim din sursa sigura
+
+        if(!filter_var($level, FILTER_VALIDATE_INT))
+        {
+            if(!($level >= 1 and $level <=3)) {
+                return $utils->createRespone(404, array(
+                    'errors' => 'Level must be an integer between 1 and 3',
+                ));
+            }
+        }
+
+        if(!filter_var($price, FILTER_VALIDATE_FLOAT))
+        {
+            return $utils->createRespone(404, array(
+               'errors' => "Price must be a float.",
+            ));
+        }
+
 
 
         if (!$username || !$level)
@@ -73,6 +93,12 @@ class MembershipController extends Controller
                 $abonament = $repoAbonament->findOneBy(array(
                     'username' => $username,
                     'level' => $level,
+                    'active' => 1,
+                ));
+
+
+                $abonamentActiv = $repoAbonament->findOneBy(array(
+                   'username' => $username,
                     'active' => 1,
                 ));
 
@@ -110,9 +136,19 @@ class MembershipController extends Controller
                                 'message' => "The membership has been extended with one month.",
                             ));
 
-                        } catch (Exception $e) {
+                        } catch (UniqueConstraintViolationException  $e) {
                             return $utils->createRespone(409, array(
-                                'errors' => $e,
+                                'errors' => $e->getMessage(),
+                            ));
+                        }
+                        catch (PDOException  $e) {
+                            return $utils->createRespone(409, array(
+                                'errors' => $e->getMessage(),
+                            ));
+                        }
+                        catch (\Exception  $e) {
+                            return $utils->createRespone(409, array(
+                                'errors' => $e->getMessage(),
                             ));
                         }
 
@@ -121,31 +157,43 @@ class MembershipController extends Controller
                 } else {
                     //creeam un nou abonament
 
-                    $newMemberhip = new Abonament();
-                    $newMemberhip->setUsername($user);
-                    $newMemberhip->setPrice($price);
-                    $newMemberhip->setStartdate(new \DateTime($stardDate));
-                    $newMemberhip->setLevel($level);
-                    $newMemberhip->setAbonamenttypeid($nivel);
-                    $newMemberhip->setActive(1);
+                    if(!$abonamentActiv) {
+
+                        $newMemberhip = new Abonament();
+                        $newMemberhip->setUsername($user);
+                        $newMemberhip->setPrice($price);
+                        $newMemberhip->setStartdate(new \DateTime($stardDate));
+                        $newMemberhip->setLevel($level);
+                        $newMemberhip->setAbonamenttypeid($nivel);
+                        $newMemberhip->setActive(1);
 
 
-                    $futureEndDate = new \DateTime($stardDate);
-                    if ($futureEndDate instanceof \DateTime) {
-                        $futureEndDate->modify('+1 months');
-                        $newMemberhip->setEnddate($futureEndDate);
+                        $futureEndDate = new \DateTime($stardDate);
+                        if ($futureEndDate instanceof \DateTime) {
+                            $futureEndDate->modify('+1 months');
+                            $newMemberhip->setEnddate($futureEndDate);
+                        }
+
+                        try {
+                            $em = $this->getDoctrine()->getManager();
+                            $em->persist($newMemberhip);
+                            $em->flush();
+                            return $utils->createRespone(200, array(
+                                'message' => "The membership has been created.",
+                            ));
+                        } catch (UniqueConstraintViolationException  $e) {
+                            return $utils->createRespone(409, array(
+                                'errors' => "This user already has a membership.",
+                            ));
+                        } catch (PDOException  $e) {
+                            return $utils->createRespone(409, array(
+                                'errors' => $e->getMessage(),
+                            ));
+                        }
                     }
-
-                    try {
-                        $em = $this->getDoctrine()->getManager();
-                        $em->persist($newMemberhip);
-                        $em->flush();
-                        return $utils->createRespone(200, array(
-                            'message' => "The membership has been created.",
-                        ));
-                    } catch (Exception $e) {
-                        return $utils->createRespone(409, array(
-                            'errors' => $e,
+                    else{
+                        return $utils->createRespone(226, array(
+                            'errors' => "This user already has a membership.",
                         ));
                     }
                 }
@@ -243,7 +291,7 @@ class MembershipController extends Controller
                                 $em->flush();
                             } catch (Exception $e) {
                                 return $utils->createRespone(409, array(
-                                    'errors' => $e,
+                                    'errors' => $e->getMessage(),
                                 ));
                             }
                         }
@@ -257,7 +305,7 @@ class MembershipController extends Controller
                 }
 
 
-                return $utils->createRespone(404, array(
+                return $utils->createRespone(403, array(
                     'errors' => "No membership.",
                 ));
 

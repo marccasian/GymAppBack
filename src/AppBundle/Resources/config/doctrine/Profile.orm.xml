@@ -17,6 +17,11 @@
         <option name="unsigned"/>
       </options>
     </field>
+    <field name="fullname" type="string" column="Fullname" length="255" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
     <many-to-one field="username" target-entity="User" fetch="LAZY">
       <join-columns>
         <join-column name="Username" referenced-column-name="Username"/>

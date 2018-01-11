@@ -30,18 +30,11 @@ class HomeController extends Controller
      */
     public function logInAction(Request $request){
 
+        $utils = new Functions();
         $flag = true;
         $username = $request->request->get('username');
         $password = $request->request->get('password');
-        $content_dict = json_decode($request->getContent());
-        if (!$username){
-            $key = "username";
-            $username = $content_dict->$key;
-        }
-        if (!$password){
-            $key = "password";
-            $password = $content_dict->$key;
-        }
+
 
         if(!$username or !$password)
             $flag = false;
@@ -50,7 +43,7 @@ class HomeController extends Controller
 
             $repository = $this->getDoctrine()->getRepository(User::class);
 
-            
+
             $user = $repository->findOneBy(array(
                 'username' => $username,
                 'password' => $password
@@ -60,34 +53,20 @@ class HomeController extends Controller
 
                 #return new Response(Response::HTTP_OK); #status code 200
 
-                $r = new Response();
-                $r->setStatusCode(200);
-
-                $r->setContent(json_encode(array(
+                return $utils->createRespone(200, array(
                     'username' => $username,
-                    'fullname' => $user->getFullname()
-                )));
-
-                $r->headers->set('Content-Type', 'application/json');
-                return $r;
+                ));
 
             } else {
 
                 #return new Response(Response::HTTP_NOT_FOUND); #status code 404
-                $r = new Response();
-                $r->setStatusCode(404);
-                $r->setContent(json_encode(array(
+                return $utils->createRespone(404, array(
                     'errors' => 'Incorrect username or password.'
-                )));
-
-                $r->headers->set('Content-Type', 'application/json');
-                return $r;
+                ));
             }
         }
         else{
             #return new Response(Response::HTTP_PARTIAL_CONTENT); #status code 206
-            $r = new Response();
-            $r->setStatusCode(206);
             $errors = "";
             if(!$username)
                 $errors .= "Please enter the username";
@@ -95,12 +74,9 @@ class HomeController extends Controller
                 $errors .= ";";
                 $errors .= "Please enter the password";
             }
-            $r->setContent(json_encode(array(
+            return $utils->createRespone(206, array(
                 'errors' => $errors
-            )));
-
-            $r->headers->set('Content-Type', 'application/json');
-            return $r;
+            ));
         }
 
     }
@@ -112,30 +88,17 @@ class HomeController extends Controller
      */
     public function registerAction(Request $request){
 
+        $utils = new Functions();
         $flag = true;
         $username = $request->request->get('username');
         $password = $request->request->get('password');
         $email = $request->request->get('email');
-        $fullname = $request->request->get('fullname');
-        $content_dict = json_decode($request->getContent());
-        if (!$username){
-            $key = "username";
-            $username = $content_dict->$key;
-        }
-        if (!$password){
-            $key = "password";
-            $password = $content_dict->$key;
-        }
-        if (!$email){
-            $key = "email";
-            $email = $content_dict->$key;
-        }
-        if (!$fullname){
-            $key = "fullname";
-            $fullname = $content_dict->$key;
-        }
+        $confirmPassword = $request->request->get('confirmPassword');
 
-        if(!$username or !$password or !$email or !$fullname)
+
+
+
+        if(!$username or !$password or !$email or !$confirmPassword)
             $flag = false;
         if (strlen($password) < 6)
             $flag = false;
@@ -143,80 +106,74 @@ class HomeController extends Controller
             $flag = false;
 
         if($flag) {
-            $em = $this->getDoctrine()->getManager();
 
-            $user = new User();
-            $user->setUsername($username);
-            $user->setPassword($password);
-            $user->setEmail($email);
-            $user->setFullname($fullname);
+            if($password === $confirmPassword) {
+                $em = $this->getDoctrine()->getManager();
 
-
-            $repoRol = $this->getDoctrine()->getRepository(Rol::class);
-            $normalUser = $repoRol->findOneBy(array(
-               'description' => 'user'
-            ));
-            $user->setRolid($normalUser);
+                $user = new User();
+                $user->setUsername($username);
+                $user->setPassword($password);
+                $user->setEmail($email);
 
 
-            $em->persist($user);
-            try {
-                $em->flush();
-
-                $msg = "Hello ".$username.",\nThank you for registering your GymApp account!\n\nYour access data:\nUsername:  ".$username."\nEmail address: ".$email."\nPassword: ".$password."\n\nThank you,\nGymApp Team";
-
-                // use wordwrap() if lines are longer than 70 characters
-                $msg = wordwrap($msg,70);
-                // send email
-                mail($email,"No Reply Register",$msg);
-
-                #return new Response(Response::HTTP_OK); # status code 200
-
-                $request = Request::create('home_login', "POST", array(
-                   'username' => $username,
-                    'password' =>$password
+                $repoRol = $this->getDoctrine()->getRepository(Rol::class);
+                $normalUser = $repoRol->findOneBy(array(
+                    'description' => 'user'
                 ));
-
-                $request->headers->set('Content-Type', 'application/json');
-
-                return $this->logInAction($request);
+                $user->setRolid($normalUser);
 
 
+                $em->persist($user);
+                try {
+                    $em->flush();
 
-            }
-            catch (\Exception $e){
 
-                #return new Response(Response::HTTP_IM_USED); #status code 226
+                    #return new Response(Response::HTTP_OK); # status code 200
 
-                $r = new Response();
-                $r->setStatusCode(226);
+                    $request = Request::create('home_login', "POST", array(
+                        'username' => $username,
+                        'password' => $password
+                    ));
 
-                $errors = "";
-                $repo = $this->getDoctrine()->getRepository(User::class);
-                if($repo->findOneBy(array(
-                    'username' => $username
-                )))
-                    $errors .= 'Username is already used';
-                if($repo->findOneBy(array(
-                    'email' => $email
-                ))) {
-                    $errors .= ';';
-                    $errors .= 'Email is already used';
+                    $request->headers->set('Content-Type', 'application/json');
+
+                    return $this->logInAction($request);
+
+
+                } catch (\Exception $e) {
+
+                    #return new Response(Response::HTTP_IM_USED); #status code 226
+                    $errors = "";
+                    $repo = $this->getDoctrine()->getRepository(User::class);
+                    if ($repo->findOneBy(array(
+                        'username' => $username
+                    ))
+                    )
+                        $errors .= 'Username is already used';
+                    if ($repo->findOneBy(array(
+                        'email' => $email
+                    ))
+                    ) {
+                        $errors .= ';';
+                        $errors .= 'Email is already used';
+                    }
+                    return $utils->createRespone(226, array(
+                       'errors' => $errors,
+                    ));
+
                 }
+            }
+            else{
 
-                $r->setContent(json_encode(array(
-                    'errors' => $errors
-                )));
-
-                $r->headers->set('Content-Type', 'application/json');
-                return $r;
+                return $utils->createRespone(409, array(
+                    'errors' => "The password fields don't match.",
+                ));
 
             }
         }
         else{
             #return new Response(Response::HTTP_PARTIAL_CONTENT); #status code 206
-            $r = new Response();
-            $r->setStatusCode(206);
+
             $errors = "";
             if(!$username) {
                 $errors .= 'Please enter the username';
@@ -241,17 +198,10 @@ class HomeController extends Controller
                     $errors .= ';';
                 $errors .= 'Invalid email format. Please enter a valid email';
             }
-            if(!$fullname) {
-                if (strlen($errors) > 0)
-                    $errors .= ';';
-                $errors .= 'Please enter the fullname';
-            }
-            $r->setContent(json_encode(array(
-                'errors' => $errors
-            )));
 
-            $r->headers->set('Content-Type', 'application/json');
-            return $r;
+            return $utils->createRespone(206, array(
+                'errors' => $errors,
+            ));
         }
     }
 

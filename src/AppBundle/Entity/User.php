@@ -35,12 +35,7 @@ class User
      */
     private $email;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="FullName", type="string", length=255, nullable=true)
-     */
-    private $fullname;
+
 
 
 
@@ -86,21 +81,6 @@ class User
         $this->email = $email;
     }
 
-    /**
-     * @return string
-     */
-    public function getFullname(): string
-    {
-        return $this->fullname;
-    }
-
-    /**
-     * @param string $fullname
-     */
-    public function setFullname(string $fullname)
-    {
-        $this->fullname = $fullname;
-    }
 
     /**
      * @return string

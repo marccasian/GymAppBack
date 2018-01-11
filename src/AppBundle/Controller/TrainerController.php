@@ -4,11 +4,15 @@
  * User: User
  * Date: 12/11/2017
  * Time: 2:37 PM
+ **
+ * @author Grozescu Rares <grozescurares@yahoo.com>
+ *
  */
 
 namespace AppBundle\Controller;
 
 
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use AppBundle\Entity\Rol;
 use Doctrine\DBAL\Driver\PDOException;
@@ -79,7 +83,17 @@ class TrainerController extends Controller
                     }
                     catch (Exception $e){
                         return $utils->createRespone(409, array(
-                           'errors' => $e,
+                           'errors' => $e->getMessage(),
+                        ));
+                    }
+                    catch (UniqueConstraintViolationException  $e) {
+                        return $utils->createRespone(409, array(
+                            'errors' => $e->getMessage(),
+                        ));
+                    }
+                    catch (PDOException  $e) {
+                        return $utils->createRespone(409, array(
+                            'errors' => $e->getMessage(),
                         ));
                     }
 
@@ -152,7 +166,17 @@ class TrainerController extends Controller
                     }
                     catch (Exception $e){
                         return $utils->createRespone(409, array(
-                           'errors' => $e,
+                           'errors' => $e->getMessage(),
+                        ));
+                    }
+                    catch (UniqueConstraintViolationException  $e) {
+                        return $utils->createRespone(409, array(
+                            'errors' => $e->getMessage(),
+                        ));
+                    }
+                    catch (PDOException  $e) {
+                        return $utils->createRespone(409, array(
+                            'errors' => $e->getMessage(),
                         ));
                     }
 
@@ -216,7 +240,6 @@ class TrainerController extends Controller
             foreach ($users as $trainer){
                 $result[] = array(
                     'username' => $trainer->getUsername(),
-                    'fullname' => $trainer->getFullname(),
                     'email' => $trainer -> getEmail(),
 
                 );
@@ -261,7 +284,6 @@ class TrainerController extends Controller
             foreach ($users as $trainer){
                 $result[] = array(
                     'username' => $trainer->getUsername(),
-                    'fullname' => $trainer->getFullname(),
                     'email' => $trainer -> getEmail(),
 
                 );
