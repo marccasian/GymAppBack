@@ -55,6 +55,7 @@ class HomeController extends Controller
 
                 return $utils->createRespone(200, array(
                     'username' => $username,
+                    'role' => $user->getRolid()->getRolid(),
                 ));
 
             } else {
