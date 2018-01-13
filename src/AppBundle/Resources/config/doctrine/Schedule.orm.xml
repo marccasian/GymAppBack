@@ -8,7 +8,6 @@
     <id name="id" type="integer" column="Id">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="startdate" type="datetime" column="StartDate" nullable="true"/>
     <field name="weekday" type="integer" column="WeekDay" nullable="true">
       <options>
         <option name="unsigned"/>
