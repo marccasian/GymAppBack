@@ -184,5 +184,39 @@ class ScheduleController extends Controller
         return $errors;
     }
 
+    /**
+     * @Route("/schedule/getAllSchedule", name = "get_all_schedule")
+     * @Method({"GET"})
+     *
+     */
+    public function getAllSchedule()
+    {
+        $utils = new Functions();
+        $repoAbonamente = $this->getDoctrine()->getManager()->getRepository(Schedule::class);
+        $schedules = $repoAbonamente->findAll();
+        $result = [];
+        if (count($schedules)) {
+            /** @var  $item Schedule */
+            foreach ($schedules as $item) {
+                $result[] = [
+                    'id'                => $item->getId(),
+                    'courseId'          => $item->getIdcurs(),
+                    'weekDay'           => $item->getWeekday(),
+                    'startTime'         => $item->getStarttime(),
+                    'endTime'           => $item->getEndtime(),
+                    'periodEndDate'     => $item->getPeriodenddate(),
+                    'periodStartDate'   => $item->getPeriodstartdate(),
+                    'trainerId'         => $item->getIdtrainer(),
+                ];
 
+            }
+            return $utils->createRespone(200, array(
+                'abonamente' => $result,
+            ));
+        } else {
+            return $utils->createRespone(404, array(
+                'errors' => "No schedules in db.",
+            ));
+        }
+    }
 }
