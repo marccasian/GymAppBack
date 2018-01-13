@@ -7,6 +7,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Profile;
 use AppBundle\Entity\Rol;
 use AppBundle\Utils\Functions;
 use Doctrine\DBAL\Driver\PDOException;
@@ -95,10 +96,12 @@ class HomeController extends Controller
         $password = $request->request->get('password');
         $email = $request->request->get('email');
         $confirmPassword = $request->request->get('confirmPassword');
-        error_log($username);
-        error_log($password);
-        error_log($email);
-        error_log($confirmPassword);
+
+        if(is_null($confirmPassword) || is_null($username) || is_null($email) || is_null($password)) {
+            return $utils->createRespone(403, array(
+                'errors' => "Unul din campuri este null",
+            ));
+        }
         $errors = "";
 
         if(!$username or !$password or !$email or !$confirmPassword)
@@ -112,11 +115,11 @@ class HomeController extends Controller
 
             if($password === $confirmPassword) {
 
-
                 $user = new User();
                 $user->setUsername($username);
                 $user->setPassword($password);
                 $user->setEmail($email);
+
 
 
                 $repoRol = $this->getDoctrine()->getRepository(Rol::class);
@@ -125,26 +128,30 @@ class HomeController extends Controller
                 ));
                 $user->setRolid($normalUser);
 
+
                 try {
 
                     $em = $this->getDoctrine()->getManager();
                     $em->persist($user);
                     $em->flush();
-                    error_log(0);
-                    error_log($user->getUsername());
-                    error_log($user->__toString());
 
-                    error_log(1);
+                    //update profile table
+                    $profile = new Profile();
+                    $profile->setFullname('-');
+                    $profile->setSex('-');
+                    $profile->setUsername($user);
+                    $profile->setVarsta(18);
 
+                    $em = $this->getDoctrine()->getManager();
+                    $em->persist($profile);
+                    $em->flush();
                     #return new Response(Response::HTTP_OK); # status code 200
 
                     $request = Request::create('home_login', "POST", array(
                         'username' => $username,
                         'password' => $password
                     ));
-                    error_log(2);
                     $request->headers->set('Content-Type', 'application/json');
-                    error_log(3);
                     return $this->logInAction($request);
 
 

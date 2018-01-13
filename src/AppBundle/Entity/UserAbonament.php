@@ -36,6 +36,13 @@ class UserAbonament
     /**
      * @var integer
      *
+     * @ORM\Column(name="Platit", type="integer", nullable=true)
+     */
+    private $platit;
+
+    /**
+     * @var integer
+     *
      * @ORM\Column(name="Id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")

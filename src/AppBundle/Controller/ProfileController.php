@@ -77,7 +77,8 @@ class ProfileController extends Controller
     /**
      * @Route("/profile/editProfile", name = "edit_profile")
      * @Method({"POST"})
-     *
+     * @param Request $request
+     * @return Response
      */
     public function editProfile(Request $request)
     {

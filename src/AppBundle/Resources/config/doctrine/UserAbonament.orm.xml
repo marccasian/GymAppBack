@@ -10,6 +10,7 @@
     </id>
     <field name="abonamentstartdate" type="datetime" column="AbonamentStartDate" nullable="true"/>
     <field name="abonamentenddate" type="datetime" column="AbonamentEndDate" nullable="true"/>
+    <field name="platit" type="integer" column="Platit" nullable="true"/>
     <field name="activ" type="integer" column="Activ" nullable="true">
       <options>
         <option name="unsigned"/>
