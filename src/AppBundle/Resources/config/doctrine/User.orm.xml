@@ -9,7 +9,6 @@
       <unique-constraint name="UNIQ_8D93D64926535370" columns="Email"/>
     </unique-constraints>
     <id name="username" type="string" column="Username" length="255">
-      <generator strategy="IDENTITY"/>
     </id>
     <field name="password" type="string" column="Password" length="255" nullable="false">
       <options>

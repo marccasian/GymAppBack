@@ -31,7 +31,6 @@ class User
      *
      * @ORM\Column(name="Username", type="string", length=255)
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $username;
 
@@ -44,6 +43,75 @@ class User
      * })
      */
     private $rolid;
+
+    /**
+     * @return string
+     */
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    /**
+     * @param string $password
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * @param string $email
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUsername()
+    {
+        return $this->username;
+    }
+
+    /**
+     * @param string $username
+     */
+    public function setUsername($username)
+    {
+        $this->username = $username;
+    }
+
+    /**
+     * @return Rol
+     */
+    public function getRolid()
+    {
+        return $this->rolid;
+    }
+
+    /**
+     * @param Rol $rolid
+     */
+    public function setRolid($rolid)
+    {
+        $this->rolid = $rolid;
+    }
+
+    public function __toString()
+    {
+        return "User: ".$this->username." Password: ".$this->password. " Email: ".$this->email." RolId: ".$this->rolid->getRolid();
+    }
 
 
 }

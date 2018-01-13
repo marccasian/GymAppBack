@@ -95,9 +95,11 @@ class HomeController extends Controller
         $password = $request->request->get('password');
         $email = $request->request->get('email');
         $confirmPassword = $request->request->get('confirmPassword');
-
-
-
+        error_log($username);
+        error_log($password);
+        error_log($email);
+        error_log($confirmPassword);
+        $errors = "";
 
         if(!$username or !$password or !$email or !$confirmPassword)
             $flag = false;
@@ -109,7 +111,7 @@ class HomeController extends Controller
         if($flag) {
 
             if($password === $confirmPassword) {
-                $em = $this->getDoctrine()->getManager();
+
 
                 $user = new User();
                 $user->setUsername($username);
@@ -123,11 +125,16 @@ class HomeController extends Controller
                 ));
                 $user->setRolid($normalUser);
 
-
-                $em->persist($user);
                 try {
-                    $em->flush();
 
+                    $em = $this->getDoctrine()->getManager();
+                    $em->persist($user);
+                    $em->flush();
+                    error_log(0);
+                    error_log($user->getUsername());
+                    error_log($user->__toString());
+
+                    error_log(1);
 
                     #return new Response(Response::HTTP_OK); # status code 200
 
@@ -135,14 +142,14 @@ class HomeController extends Controller
                         'username' => $username,
                         'password' => $password
                     ));
-
+                    error_log(2);
                     $request->headers->set('Content-Type', 'application/json');
-
+                    error_log(3);
                     return $this->logInAction($request);
 
 
                 } catch (\Exception $e) {
-
+                    error_log($e->getMessage());
                     #return new Response(Response::HTTP_IM_USED); #status code 226
                     $errors = "";
                     $repo = $this->getDoctrine()->getRepository(User::class);

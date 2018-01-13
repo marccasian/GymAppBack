@@ -28,6 +28,38 @@ class Rol
      */
     private $rolid;
 
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRolid()
+    {
+        return $this->rolid;
+    }
+
+    /**
+     * @param int $rolid
+     */
+    public function setRolid($rolid)
+    {
+        $this->rolid = $rolid;
+    }
+
 
 }
 
