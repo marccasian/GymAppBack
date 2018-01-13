@@ -264,4 +264,66 @@ class ScheduleController extends Controller
             ));
         }
     }
+
+    /**
+     * @Route("/schedule/delete_schedule/{id}", name = "delete_schedule")
+     * @Method({"GET"})
+     * @param $id
+     * @return Response
+     * @internal param $scheduleId
+     * @internal param Request $request
+     */
+    public function deleteSchedule($id)
+    {
+        $utils = new Functions();
+
+        if (is_null($id)) {
+            return $utils->createRespone(403, array(
+                'errors' => "Id cannot be null",
+            ));
+        }
+        if (!filter_var($id, FILTER_VALIDATE_INT)) {
+            return $utils->createRespone(403, array(
+                'errors' => "Id has to be integer",
+            ));
+        }
+        $repository = $this->getDoctrine()->getRepository(Schedule::class);
+
+        $schedule = $repository->findOneBy(array(
+            'id' => $id,
+        ));
+
+
+        if ($schedule) {
+
+            try {
+                $em = $this->getDoctrine()->getManager();
+                $em->remove($schedule);
+                $em->flush();
+            } catch (Exception $e) {
+                return $utils->createRespone(409, array(
+                    'errors' => $e->getMessage(),
+                ));
+            } catch (UniqueConstraintViolationException  $e) {
+                return $utils->createRespone(409, array(
+                    'errors' => $e->getMessage(),
+                ));
+            } catch (PDOException  $e) {
+                return $utils->createRespone(409, array(
+                    'errors' => $e->getMessage(),
+                ));
+            }
+            return $utils->createRespone(200, array(
+                'succes' => true,
+                'message' => "Schedule deleted",
+            ));
+
+        } else {
+
+            return $utils->createRespone(404, array(
+                'errors' => "No schedule with given id.",
+            ));
+        }
+    }
+
 }
