@@ -192,8 +192,8 @@ class ScheduleController extends Controller
     public function getAllSchedule()
     {
         $utils = new Functions();
-        $repoAbonamente = $this->getDoctrine()->getManager()->getRepository(Schedule::class);
-        $schedules = $repoAbonamente->findAll();
+        $repo = $this->getDoctrine()->getManager()->getRepository(Schedule::class);
+        $schedules = $repo->findAll();
         $result = [];
         if (count($schedules)) {
             /** @var  $item Schedule */
@@ -216,6 +216,51 @@ class ScheduleController extends Controller
         } else {
             return $utils->createRespone(404, array(
                 'errors' => "No schedules in db.",
+            ));
+        }
+    }
+
+    /**
+     * @Route("/schedule/get_schedule/{id}", name = "get_schedule")
+     * @Method({"GET"})
+     * @param $id
+     * @return Response
+     */
+    public function getSchedule($id)
+    {
+        $utils = new Functions();
+
+        if (is_null($id)) {
+            return $utils->createRespone(403, array(
+                'errors' => "Id cannot be null",
+            ));
+        }
+        if (!filter_var($id, FILTER_VALIDATE_INT)) {
+            return $utils->createRespone(403, array(
+                'errors' => "Id has to be integer",
+            ));
+        }
+        $repository = $this->getDoctrine()->getManager()->getRepository(Schedule::class);
+
+        $schedule = $repository->findOneBy(array(
+            'id' => $id,
+        ));
+
+        /** @var $schedule Schedule */
+        if ($schedule) {
+            return $utils->createRespone(200, array(
+                'id'                => $schedule->getId(),
+                'courseId'          => $schedule->getIdcurs(),
+                'weekDay'           => $schedule->getWeekday(),
+                'startTime'         => $schedule->getStarttime(),
+                'endTime'           => $schedule->getEndtime(),
+                'periodEndDate'     => $schedule->getPeriodenddate(),
+                'periodStartDate'   => $schedule->getPeriodstartdate(),
+                'trainerId'         => $schedule->getIdtrainer(),
+            ));
+        } else {
+            return $utils->createRespone(404, array(
+                'errors' => "No schedules with given id",
             ));
         }
     }
