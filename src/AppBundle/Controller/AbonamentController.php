@@ -42,7 +42,7 @@ class AbonamentController extends Controller
         $type = $request->request->get('type');
         $description = $request->request->get('description');
 
-        $errors = $this->checkIfNull($level, $price, $type, $description);
+        $errors = $this->   checkIfNull($level, $price, $type, $description);
 
         if ($errors) {
             return $utils->createRespone(403, array(
@@ -131,7 +131,6 @@ class AbonamentController extends Controller
     }
 
 
-    //TODO : update by ID
 
     /**
      * @Route("/abonament/get_all", name = "get_all_abonamente")
@@ -169,7 +168,7 @@ class AbonamentController extends Controller
 
     /**
      * @Route("/abonament/delete_abonament/{abonamentId}", name = "delete_abonament")
-     * @Method({"POST"})
+     * @Method({"GET"})
      * @param $abonamentId
      * @return Response
      * @internal param Request $request

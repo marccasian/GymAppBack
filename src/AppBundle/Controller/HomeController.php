@@ -196,6 +196,11 @@ class HomeController extends Controller
                     $errors .= ';';
                 $errors .= 'Please use a longer password. Minimum of 6 characters';
             }
+            if(!$confirmPassword) {
+                if (strlen($errors) > 0)
+                    $errors .= ';';
+                $errors .= 'Please confirm password';
+            }
             if(!$email) {
                 if (strlen($errors) > 0)
                     $errors .= ';';

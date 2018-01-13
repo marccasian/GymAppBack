@@ -71,5 +71,118 @@ class Curs
         $this->idabonament = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
+    /**
+     * @return \DateTime
+     */
+    public function getStartdate()
+    {
+        return $this->startdate;
+    }
+
+    /**
+     * @param \DateTime $startdate
+     */
+    public function setStartdate($startdate)
+    {
+        $this->startdate = $startdate;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getEnddate()
+    {
+        return $this->enddate;
+    }
+
+    /**
+     * @param \DateTime $enddate
+     */
+    public function setEnddate($enddate)
+    {
+        $this->enddate = $enddate;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPlaces()
+    {
+        return $this->places;
+    }
+
+    /**
+     * @param int $places
+     */
+    public function setPlaces($places)
+    {
+        $this->places = $places;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLevel()
+    {
+        return $this->level;
+    }
+
+    /**
+     * @param int $level
+     */
+    public function setLevel($level)
+    {
+        $this->level = $level;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCursid()
+    {
+        return $this->cursid;
+    }
+
+    /**
+     * @param int $cursid
+     */
+    public function setCursid($cursid)
+    {
+        $this->cursid = $cursid;
+    }
+
+    /**
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getIdabonament()
+    {
+        return $this->idabonament;
+    }
+
+    /**
+     * @param \Doctrine\Common\Collections\Collection $idabonament
+     */
+    public function setIdabonament($idabonament)
+    {
+        $this->idabonament = $idabonament;
+    }
+
+
 }
 
