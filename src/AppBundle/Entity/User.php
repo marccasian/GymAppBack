@@ -12,15 +12,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class User
 {
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="Username", type="string", length=255)
-     * @ORM\Id
-     *
-     */
-    private $username;
     /**
      * @var string
      *
@@ -35,9 +26,14 @@ class User
      */
     private $email;
 
-
-
-
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="Username", type="string", length=255)
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $username;
 
     /**
      * @var \AppBundle\Entity\Rol
@@ -48,71 +44,6 @@ class User
      * })
      */
     private $rolid;
-
-    /**
-     * @return string
-     */
-    public function getPassword(): string
-    {
-        return $this->password;
-    }
-
-    /**
-     * @param string $password
-     */
-    public function setPassword(string $password)
-    {
-        $this->password = $password;
-    }
-
-    /**
-     * @return string
-     */
-    public function getEmail(): string
-    {
-        return $this->email;
-    }
-
-    /**
-     * @param string $email
-     */
-    public function setEmail(string $email)
-    {
-        $this->email = $email;
-    }
-
-
-    /**
-     * @return string
-     */
-    public function getUsername(): string
-    {
-        return $this->username;
-    }
-
-    /**
-     * @param string $username
-     */
-    public function setUsername(string $username)
-    {
-        $this->username = $username;
-    }
-
-    /**
-     * @return Rol
-     */
-    public function getRolid(): Rol
-    {
-        return $this->rolid;
-    }
-
-    /**
-     * @param Rol $rolid
-     */
-    public function setRolid(Rol $rolid)
-    {
-        $this->rolid = $rolid;
-    }
 
 
 }

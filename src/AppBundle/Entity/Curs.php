@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Curs
  *
- * @ORM\Table(name="curs", indexes={@ORM\Index(name="curs_user_idx", columns={"Trainer"}), @ORM\Index(name="curs_cursType_idx", columns={"CursTypeId"})})
+ * @ORM\Table(name="curs")
  * @ORM\Entity
  */
 class Curs
@@ -41,6 +41,13 @@ class Curs
     private $level;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="Type", type="string", length=100, nullable=true)
+     */
+    private $type;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="CursId", type="integer")
@@ -50,25 +57,19 @@ class Curs
     private $cursid;
 
     /**
-     * @var \AppBundle\Entity\Curstype
+     * @var \Doctrine\Common\Collections\Collection
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Curstype")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="CursTypeId", referencedColumnName="CursTypeId")
-     * })
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Abonament", mappedBy="idcurs")
      */
-    private $curstypeid;
+    private $idabonament;
 
     /**
-     * @var \AppBundle\Entity\User
-     *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="Trainer", referencedColumnName="Username")
-     * })
+     * Constructor
      */
-    private $trainer;
-
+    public function __construct()
+    {
+        $this->idabonament = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
 }
 

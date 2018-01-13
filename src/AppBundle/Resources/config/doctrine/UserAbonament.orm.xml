@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="AppBundle\Entity\UserAbonament" table="user_abonament">
+    <indexes>
+      <index name="user_abonament__abonament_fk_idx" columns="IdAbonament"/>
+      <index name="user_abonament__user_idx" columns="IdUser"/>
+    </indexes>
+    <id name="id" type="integer" column="Id">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="abonamentstartdate" type="datetime" column="AbonamentStartDate" nullable="true"/>
+    <field name="abonamentenddate" type="datetime" column="AbonamentEndDate" nullable="true"/>
+    <field name="activ" type="integer" column="Activ" nullable="true">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <many-to-one field="idabonament" target-entity="Abonament" fetch="LAZY">
+      <join-columns>
+        <join-column name="IdAbonament" referenced-column-name="AbonamentId"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="iduser" target-entity="Profile" fetch="LAZY">
+      <join-columns>
+        <join-column name="IdUser" referenced-column-name="ProfileId"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>
