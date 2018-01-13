@@ -7,25 +7,11 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Abonament
  *
- * @ORM\Table(name="abonament", indexes={@ORM\Index(name="abonament_user_idx", columns={"Username"}), @ORM\Index(name="abonament_abonamentType_idx", columns={"AbonamentTypeId"})})
+ * @ORM\Table(name="abonament")
  * @ORM\Entity
  */
 class Abonament
 {
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="StartDate", type="datetime", nullable=true)
-     */
-    private $startdate;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="EndDate", type="datetime", nullable=true)
-     */
-    private $enddate;
-
     /**
      * @var float
      *
@@ -41,11 +27,18 @@ class Abonament
     private $level;
 
     /**
-     * @ORM\Column(name="Active", type="integer")
+     * @var string
+     *
+     * @ORM\Column(name="Type", type="string", length=200, nullable=true)
      */
-    private $active;
+    private $type;
 
-
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="Description", type="string", length=2000, nullable=true)
+     */
+    private $description;
 
     /**
      * @var integer
@@ -57,156 +50,27 @@ class Abonament
     private $abonamentid;
 
     /**
-     * @var \AppBundle\Entity\Abonamenttype
+     * @var \Doctrine\Common\Collections\Collection
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Abonamenttype")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="AbonamentTypeId", referencedColumnName="AbonamentTypeId")
-     * })
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Curs", inversedBy="idabonament")
+     * @ORM\JoinTable(name="curs_abonament",
+     *   joinColumns={
+     *     @ORM\JoinColumn(name="IdAbonament", referencedColumnName="AbonamentId")
+     *   },
+     *   inverseJoinColumns={
+     *     @ORM\JoinColumn(name="IdCurs", referencedColumnName="CursId")
+     *   }
+     * )
      */
-    private $abonamenttypeid;
+    private $idcurs;
 
     /**
-     * @var \AppBundle\Entity\User
-     *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="Username", referencedColumnName="Username")
-     * })
+     * Constructor
      */
-    private $username;
-
-    /**
-     * @return \DateTime
-     */
-    public function getStartdate(): \DateTime
+    public function __construct()
     {
-        return $this->startdate;
+        $this->idcurs = new \Doctrine\Common\Collections\ArrayCollection();
     }
-
-    /**
-     * @param \DateTime $startdate
-     */
-    public function setStartdate(\DateTime $startdate)
-    {
-        $this->startdate = $startdate;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getEnddate(): \DateTime
-    {
-        return $this->enddate;
-    }
-
-    /**
-     * @param \DateTime $enddate
-     */
-    public function setEnddate(\DateTime $enddate)
-    {
-        $this->enddate = $enddate;
-    }
-
-    /**
-     * @return float
-     */
-    public function getPrice(): float
-    {
-        return $this->price;
-    }
-
-    /**
-     * @param float $price
-     */
-    public function setPrice(float $price)
-    {
-        $this->price = $price;
-    }
-
-    /**
-     * @return int
-     */
-    public function getLevel(): int
-    {
-        return $this->level;
-    }
-
-    /**
-     * @param int $level
-     */
-    public function setLevel(int $level)
-    {
-        $this->level = $level;
-    }
-
-    /**
-     * @return int
-     */
-    public function getAbonamentid(): int
-    {
-        return $this->abonamentid;
-    }
-
-    /**
-     * @param int $abonamentid
-     */
-    public function setAbonamentid(int $abonamentid)
-    {
-        $this->abonamentid = $abonamentid;
-    }
-
-    /**
-     * @return Abonamenttype
-     */
-    public function getAbonamenttypeid(): Abonamenttype
-    {
-        return $this->abonamenttypeid;
-    }
-
-    /**
-     * @param Abonamenttype $abonamenttypeid
-     */
-    public function setAbonamenttypeid(Abonamenttype $abonamenttypeid)
-    {
-        $this->abonamenttypeid = $abonamenttypeid;
-    }
-
-    /**
-     * @return User
-     */
-    public function getUsername(): User
-    {
-        return $this->username;
-    }
-
-    /**
-     * @param User $username
-     */
-    public function setUsername(User $username)
-    {
-        $this->username = $username;
-    }
-
-    /**
-     * @return int
-     */
-    public function getActive(): int
-    {
-        return $this->active;
-    }
-
-    /**
-     * @param int $active
-     */
-    public function setActive(int $active)
-    {
-        $this->active = $active;
-    }
-
-
-
-
 
 }
 
