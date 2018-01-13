@@ -282,7 +282,7 @@ class AbonamentController extends Controller
 
         if($bodyAbonamentId != $abonamentId){
             return $utils->createRespone(403, array(
-                'errors' => "Id-urile nu sunt identice",
+                'errors' => "Mismatch between url id and body id",
             ));
         }
 

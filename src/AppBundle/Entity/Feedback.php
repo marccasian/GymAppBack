@@ -55,6 +55,86 @@ class Feedback
      */
     private $evaluatorid;
 
+    /**
+     * @return string
+     */
+    public function getText()
+    {
+        return $this->text;
+    }
+
+    /**
+     * @param string $text
+     */
+    public function setText($text)
+    {
+        $this->text = $text;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRating()
+    {
+        return $this->rating;
+    }
+
+    /**
+     * @param int $rating
+     */
+    public function setRating($rating)
+    {
+        $this->rating = $rating;
+    }
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @return Profile
+     */
+    public function getEvaluatid()
+    {
+        return $this->evaluatid;
+    }
+
+    /**
+     * @param Profile $evaluatid
+     */
+    public function setEvaluatid($evaluatid)
+    {
+        $this->evaluatid = $evaluatid;
+    }
+
+    /**
+     * @return Profile
+     */
+    public function getEvaluatorid()
+    {
+        return $this->evaluatorid;
+    }
+
+    /**
+     * @param Profile $evaluatorid
+     */
+    public function setEvaluatorid($evaluatorid)
+    {
+        $this->evaluatorid = $evaluatorid;
+    }
+
 
 }
 

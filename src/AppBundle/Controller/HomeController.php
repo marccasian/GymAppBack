@@ -97,11 +97,6 @@ class HomeController extends Controller
         $email = $request->request->get('email');
         $confirmPassword = $request->request->get('confirmPassword');
 
-        if(is_null($confirmPassword) || is_null($username) || is_null($email) || is_null($password)) {
-            return $utils->createRespone(403, array(
-                'errors' => "Unul din campuri este null",
-            ));
-        }
         $errors = "";
 
         if(!$username or !$password or !$email or !$confirmPassword)
