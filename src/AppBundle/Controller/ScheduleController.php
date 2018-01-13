@@ -184,15 +184,5 @@ class ScheduleController extends Controller
         return $errors;
     }
 
-    /**
-     * @Route("/schedule/getSilviu", name = "get_silviu")
-     * @Method({"POST"})
-     *
-     */
-    public function getSilviu(Request $request)
-    {
-       $ceva = $request->request->all();
 
-       die(var_dump($ceva));
-    }
 }
