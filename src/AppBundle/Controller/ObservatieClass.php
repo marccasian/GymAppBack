@@ -1,13 +1,14 @@
 <?php
 /**
  * @author Casian Marc <marccasiannicolae@gmail.com>
- * Class FeedbackController
+ * Class ObservatieController
  * @package AppBundle\Controller
  */
 
 namespace AppBundle\Controller;
 
 
+use AppBundle\Entity\Curs;
 use AppBundle\Entity\ObservatiiCurs;
 use AppBundle\Entity\Profile;
 use AppBundle\Utils\Functions;
@@ -22,24 +23,24 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
-class FeedbackController extends Controller
+class ObservatieClass extends Controller
 {
 
     /**
-     * @Route("/feedback/create_feedback", name = "create_feedback")
+     * @Route("/observation/create_observation", name = "create_observation")
      * @Method({"POST"})
      * @param Request $request
      * @return Response
      */
 
-    public function createFeedback(Request $request){
+    public function createObservatie(Request $request){
         $utils = new Functions();
 
         $evaluatorId = $request->request->get('evaluatorId');
-        $evaluatId = $request->request->get('evaluatId');
+        $idCurs = $request->request->get('idCurs');
         $text= $request->request->get('text');
         $rating = $request->request->get('rating');
-        $errors = $this->checkIfNull($evaluatorId, $evaluatId, $text, $rating);
+        $errors = $this->checkIfNull($evaluatorId, $idCurs, $text, $rating);
         if ($errors){
             return $utils->createRespone(403, array(
                 'errors' => $errors,
@@ -58,10 +59,11 @@ class FeedbackController extends Controller
         }
         try {
             $repoProfile = $this->getDoctrine()->getManager()->getRepository(Profile::class);
+            $repoCurs = $this->getDoctrine()->getManager()->getRepository(Curs::class);
 
-            /** @var  $evaluat Profile*/
-            $evaluat = $repoProfile->findOneBy(array(
-                'profileid' => $evaluatId,
+            /** @var  $curs Curs*/
+            $curs = $repoCurs->findOneBy(array(
+                'cursid' => $idCurs,
             ));
 
             /** @var  $evaluator Profile*/
@@ -70,12 +72,12 @@ class FeedbackController extends Controller
             ));
 
             $manager = $this->getDoctrine()->getManager();
-            $feedback = new ObservatiiCurs();
-            $feedback->setEvaluatid($evaluat);
-            $feedback->setEvaluatorid($evaluator);
-            $feedback->setText($text);
-            $feedback->setRating($rating);
-            $manager->persist($feedback);
+            $observatie = new ObservatiiCurs();
+            $observatie->setIdcurs($curs);
+            $observatie->setEvaluatorid($evaluator);
+            $observatie->setText($text);
+            $observatie->setRating($rating);
+            $manager->persist($observatie);
             $manager->flush();
         } catch (Exception $e) {
             return $utils->createRespone(403, array(
@@ -94,10 +96,10 @@ class FeedbackController extends Controller
         return $utils->createRespone(200, array(
             'success' => true,
             'data' => [
-                'evaluatedId' => $feedback->getEvaluatid()->getUsername()->getUsername(),
-                'evaluatorId' => $feedback->getEvaluatorid()->getUsername()->getUsername(),
-                'rating' => $feedback->getRating(),
-                'text' => $feedback->getText()
+                'idCurs' => $observatie->getIdcurs()->getCursid(),
+                'evaluatorId' => $observatie->getEvaluatorid()->getUsername()->getUsername(),
+                'rating' => $observatie->getRating(),
+                'text' => $observatie->getText()
             ]
         ));
 
@@ -106,12 +108,12 @@ class FeedbackController extends Controller
     /**
      * Check if parameters from request are null
      * @param $evaluatorId
-     * @param $evaluatId
+     * @param $idCurs
      * @param $text
      * @param $rating
      * @return string
      */
-    private function checkIfNull($evaluatorId, $evaluatId, $text, $rating)
+    private function checkIfNull($evaluatorId, $idCurs, $text, $rating)
     {
         $errors = '';
 
@@ -119,12 +121,12 @@ class FeedbackController extends Controller
             $errors .= 'Missing evaluator user;';
         }
 
-        if (is_null($evaluatId)) {
-            $errors .= 'Missing evaluated user;';
+        if (is_null($idCurs)) {
+            $errors .= 'Missing curs id;';
         }
 
         if (is_null($text)) {
-            $errors .= 'Missing feedback text;';
+            $errors .= 'Missing observation text;';
         }
 
         if (is_null($rating)) {
@@ -135,7 +137,7 @@ class FeedbackController extends Controller
     }
 
     /**
-     * @Route("/feedback/get_all", name = "get_all_feedback")
+     * @Route("/observation/get_all", name = "get_all_observation")
      * @Method({"GET"})
      * @return Response
      *
@@ -144,12 +146,12 @@ class FeedbackController extends Controller
     {
         $utils = new Functions();
         $repoCurs = $this->getDoctrine()->getManager()->getRepository(ObservatiiCurs::class);
-        $feedback_entries = $repoCurs->findAll();
+        $observations = $repoCurs->findAll();
         $result = [];
         /** @var  $item ObservatiiCurs */
-        foreach ($feedback_entries as $item) {
+        foreach ($observations as $item) {
             $result[] = [
-                'evaluatedId' => $item->getEvaluatid()->getUsername()->getUsername(),
+                'idCurs' => $item->getIdcurs()->getCursid(),
                 'evaluatorId' => $item->getEvaluatorid()->getUsername()->getUsername(),
                 'rating' => $item->getRating(),
                 'text' => $item->getText()
@@ -160,7 +162,7 @@ class FeedbackController extends Controller
     }
 
     /**
-     * @Route("/feedback/get_all_by_ratings", name = "get_all_by_ratings")
+     * @Route("/observations/get_all_by_ratings", name = "get_all_by_ratings")
      * @Method({"GET"})
      * @return Response
      *
@@ -171,12 +173,12 @@ class FeedbackController extends Controller
         $repoCurs = $this->getDoctrine()->getManager()->getRepository(ObservatiiCurs::class);
         $sql = " 
                     SELECT 
-                        profile.username, AVG(feedback.rating) AS Rating
+                        curs.type, AVG(curs_observatii.rating) AS Rating
                     FROM
-                        feedback
+                        curs_observatii
                             JOIN
-                        profile ON profile.ProfileId = feedback.EvaluatId
-                    GROUP BY EvaluatId
+                        curs ON curs.CursId = curs_observatii.IdCurs
+                    GROUP BY curs.type
                 ";
 
         $conn = $this->getDoctrine()->getConnection();
@@ -189,38 +191,38 @@ class FeedbackController extends Controller
     }
 
     /**
-     * @Route("/feedback/delete_feedback/{feedbackId}", name = "delete_feedback")
+     * @Route("/observation/delete_observation/{observationId}", name = "delete_observation")
      * @Method({"GET"})
-     * @param $feedbackId
+     * @param $observationId
      * @return Response
      * @internal param Request $request
      */
-    public function deleteFeedback($feedbackId)
+    public function deleteFeedback($observationId)
     {
         $utils = new Functions();
 
-        if (is_null($feedbackId)) {
+        if (is_null($observationId)) {
             return $utils->createRespone(403, array(
-                'errors' => "Missing feedback id",
+                'errors' => "Missing observation id",
             ));
         }
-        if (!filter_var($feedbackId, FILTER_VALIDATE_INT)) {
+        if (!filter_var($observationId, FILTER_VALIDATE_INT)) {
             return $utils->createRespone(403, array(
-                'errors' => "Feedback if must be integer",
+                'errors' => "Observation id must be integer",
             ));
         }
         $repository = $this->getDoctrine()->getRepository(ObservatiiCurs::class);
 
-        $feedback = $repository->findOneBy(array(
-            'id' => $feedbackId,
+        $observation = $repository->findOneBy(array(
+            'id' => $observationId,
         ));
 
 
-        if ($feedback) {
+        if ($observation) {
 
             try {
                 $em = $this->getDoctrine()->getManager();
-                $em->remove($feedback);
+                $em->remove($observation);
                 $em->flush();
             } catch (Exception $e) {
                 return $utils->createRespone(409, array(
@@ -237,120 +239,120 @@ class FeedbackController extends Controller
             }
             return $utils->createRespone(200, array(
                 'succes' => true,
-                'message' => "Feedback successfully deleted!",
+                'message' => "Observation successfully deleted!",
             ));
 
         } else {
             return $utils->createRespone(404, array(
-                'errors' => "Feedback doesn't exist!",
+                'errors' => "Observation doesn't exist!",
             ));
         }
     }
 
     /**
-     * @Route("/feedback/get_feedback_evaluator/{evaluator}", name = "get_feedback_evaluator")
+     * @Route("/observation/get_observation_evaluator/{evaluator}", name = "get_observation_evaluator")
      * @Method({"GET"})
      * @param $evaluator
      * @return Response
      */
-    public function getFeedbackByEvaluator($evaluator)
+    public function getObservationByEvaluator($evaluator)
     {
         $utils = new Functions();
 
         if (is_null($evaluator)) {
             return $utils->createRespone(403, array(
-                'errors' => "Missing feedback id",
+                'errors' => "Missing observation id",
             ));
         }
         $repository = $this->getDoctrine()->getManager()->getRepository(ObservatiiCurs::class);
 
-        $feedback_entries = $repository->findBy(array(
+        $observation_entries = $repository->findBy(array(
             'evaluatorid' => $evaluator,
         ));
 
-        /** @var $feedback ObservatiiCurs */
+        /** @var $observation ObservatiiCurs */
         $response_array = [];
-        foreach ($feedback_entries as $feedback){
+        foreach ($observation_entries as $observation){
             $response_array[] = [
-                    'id' => $feedback->getId(),
-                    'evaluatId' => $feedback->getEvaluatid()->getUsername()->getUsername(),
-                    'evaluatorId' => $feedback->getEvaluatorid()->getUsername()->getUsername(),
-                    'text' => $feedback->getText(),
-                    'rating' => $feedback->getRating()
-                ];
-        }
-        return $utils->createRespone(200, $response_array);
-    }
-
-    /**
-     * @Route("/feedback/get_feedback_evaluated/{evaluated}", name = "get_feedback_evaluated")
-     * @Method({"GET"})
-     * @param $evaluated
-     * @return Response
-     */
-    public function getFeedbackByEvaluated($evaluated)
-    {
-        $utils = new Functions();
-
-        if (is_null($evaluated)) {
-            return $utils->createRespone(403, array(
-                'errors' => "Missing feedback id",
-            ));
-        }
-        $repository = $this->getDoctrine()->getManager()->getRepository(ObservatiiCurs::class);
-
-        $feedback_entries = $repository->findBy(array(
-            'evaluatid' => $evaluated,
-        ));
-
-        /** @var $feedback ObservatiiCurs */
-        $response_array = [];
-        foreach ($feedback_entries as $feedback){
-            $response_array[] = [
-                'id' => $feedback->getId(),
-                'evaluatId' => $feedback->getEvaluatid()->getUsername()->getUsername(),
-                'evaluatorId' => $feedback->getEvaluatorid()->getUsername()->getUsername(),
-                'text' => $feedback->getText(),
-                'rating' => $feedback->getRating()
+                'id' => $observation->getId(),
+                'idCurs' => $observation->getIdcurs()->getCursid(),
+                'evaluatorId' => $observation->getEvaluatorid()->getUsername()->getUsername(),
+                'text' => $observation->getText(),
+                'rating' => $observation->getRating()
             ];
         }
         return $utils->createRespone(200, $response_array);
     }
 
     /**
-     * @Route("/feedback/get_feedback/{feedbackId}", name = "get_feedback")
+     * @Route("/observation/get_observation_course/{evaluated}", name = "get_observation_course")
      * @Method({"GET"})
-     * @param $feedbackId
+     * @param $course
      * @return Response
      */
-    public function getFeedback($feedbackId)
+    public function getFeedbackByEvaluated($course)
     {
         $utils = new Functions();
 
-        if (is_null($feedbackId)) {
+        if (is_null($course)) {
             return $utils->createRespone(403, array(
-                'errors' => "Missing feedback id",
-            ));
-        }
-        if (!filter_var($feedbackId, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(403, array(
-                'errors' => "Feedback id must be integer",
+                'errors' => "Missing observation id",
             ));
         }
         $repository = $this->getDoctrine()->getManager()->getRepository(ObservatiiCurs::class);
 
-        $feedback = $repository->findOneBy(array(
-            'id' => $feedbackId,
+        $observations = $repository->findBy(array(
+            'cursid' => $course,
         ));
 
-        /** @var $feedback ObservatiiCurs */
-        if ($feedback) {
+        /** @var $observation ObservatiiCurs */
+        $response_array = [];
+        foreach ($observations as $observation){
+            $response_array[] = [
+                'id' => $observation->getId(),
+                'idCurs' => $observation->getIdcurs()->getCursid(),
+                'evaluatorId' => $observation->getEvaluatorid()->getUsername()->getUsername(),
+                'text' => $observation->getText(),
+                'rating' => $observation->getRating()
+            ];
+        }
+        return $utils->createRespone(200, $response_array);
+    }
+
+    /**
+     * @Route("/observation/get_observation/{observationId}", name = "get_observation")
+     * @Method({"GET"})
+     * @param $observationId
+     * @return Response
+     */
+    public function getFeedback($observationId)
+    {
+        $utils = new Functions();
+
+        if (is_null($observationId)) {
+            return $utils->createRespone(403, array(
+                'errors' => "Missing observation id",
+            ));
+        }
+        if (!filter_var($observationId, FILTER_VALIDATE_INT)) {
+            return $utils->createRespone(403, array(
+                'errors' => "Observation id must be integer",
+            ));
+        }
+        $repository = $this->getDoctrine()->getManager()->getRepository(ObservatiiCurs::class);
+
+        $observation = $repository->findOneBy(array(
+            'id' => $observationId,
+        ));
+
+        /** @var $observation ObservatiiCurs */
+        if ($observation) {
             return $utils->createRespone(200, array(
-                'id' => $feedback->getId(),
-                'evaluatId' => $feedback->getEvaluatid()->getUsername()->getUsername(),
-                'evaluatorId' => $feedback->getEvaluatorid()->getUsername()->getUsername(),
-                'text' => $feedback->getText(),
-                'rating' => $feedback->getRating()
+                'id' => $observation->getId(),
+                'idCurs' => $observation->getIdcurs()->getCursid(),
+                'evaluatorId' => $observation->getEvaluatorid()->getUsername()->getUsername(),
+                'text' => $observation->getText(),
+                'rating' => $observation->getRating()
             ));
         } else {
             return $utils->createRespone(404, array(
@@ -361,60 +363,60 @@ class FeedbackController extends Controller
 
 
     /**
-     * @Route("/feedback/update_feedback/{feedbackId}", name = "update_feedback")
+     * @Route("/observation/update_observation/{observationId}", name = "update_observation")
      * @Method({"POST"})
-     * @param $feedbackId
+     * @param $observationId
      * @param Request $request
      * @return Response
      */
-    public function updateFeedback($feedbackId, Request $request)
+    public function updateFeedback($observationId, Request $request)
     {
         $utils = new Functions();
 
-        $bodyFeedbackId = $request->request->get('feedbackId');
+        $bodyObservationId = $request->request->get('observationId');
 
-        if ($bodyFeedbackId != $feedbackId) {
+        if ($bodyObservationId != $observationId) {
             return $utils->createRespone(403, array(
                 'errors' => "Mismatch between url id and body id",
             ));
         }
 
-        if (is_null($bodyFeedbackId)) {
+        if (is_null($bodyObservationId)) {
             return $utils->createRespone(403, array(
                 'errors' => "Missing course id from body!;",
             ));
         }
-        if (!filter_var($bodyFeedbackId, FILTER_VALIDATE_INT)) {
+        if (!filter_var($bodyObservationId, FILTER_VALIDATE_INT)) {
             return $utils->createRespone(403, array(
-                'errors' => "Feedback id from body must be integer;",
+                'errors' => "Observation id from body must be integer;",
             ));
         }
 
-        if (is_null($feedbackId)) {
+        if (is_null($observationId)) {
             return $utils->createRespone(403, array(
-                'errors' => "Missing feedback id;",
+                'errors' => "Missing observation id;",
             ));
         }
-        if (!filter_var($feedbackId, FILTER_VALIDATE_INT)) {
+        if (!filter_var($observationId, FILTER_VALIDATE_INT)) {
             return $utils->createRespone(403, array(
-                'errors' => "Feedback id must be integer;",
+                'errors' => "Observation id must be integer;",
             ));
         }
 
         $repository = $this->getDoctrine()->getManager()->getRepository(ObservatiiCurs::class);
 
-        /** @var $feedback ObservatiiCurs */
-        $feedback = $repository->findOneBy(array(
-            'id' => $feedbackId,
+        /** @var $observation ObservatiiCurs */
+        $observation = $repository->findOneBy(array(
+            'id' => $observationId,
         ));
 
-        if ($feedback) {
+        if ($observation) {
             $text = $request->request->get('text');
             $rating = $request->request->get('rating');
             $evaluatorId = $request->request->get('evaluatorId');
-            $evaluatId = $request->request->get('evaluatedId');
+            $cursId = $request->request->get('idCurs');
 
-            $errors = $this->checkIfNull($evaluatorId, $evaluatId, $text, $rating);
+            $errors = $this->checkIfNull($evaluatorId, $cursId, $text, $rating);
 
             if ($errors) {
                 return $utils->createRespone(404, array(
@@ -430,10 +432,11 @@ class FeedbackController extends Controller
 
 
             $repoProfile = $this->getDoctrine()->getManager()->getRepository(Profile::class);
+            $repoCurs = $this->getDoctrine()->getManager()->getRepository(Curs::class);
             try{
-                /** @var  $evaluat Profile*/
-                $evaluat = $repoProfile->findOneBy(array(
-                    'profileid' => $evaluatId,
+                /** @var  $curs Curs*/
+                $curs = $repoProfile->findOneBy(array(
+                    'cursid' => $cursId,
                 ));
 
                 /** @var  $evaluator Profile*/
@@ -441,13 +444,13 @@ class FeedbackController extends Controller
                     'profileid' => $evaluatorId,
                 ));
 
-                $feedback->setEvaluatorid($evaluator);
-                $feedback->setEvaluatid($evaluat);
-                $feedback->setText($text);
-                $feedback->setRating($rating);
+                $observation->setEvaluatorid($evaluator);
+                $observation->setIdcurs($curs);
+                $observation->setText($text);
+                $observation->setRating($rating);
 
                 $manager = $this->getDoctrine()->getManager();
-                $manager->persist($feedback);
+                $manager->persist($observation);
                 $manager->flush();
 
             } catch (Exception $e) {
@@ -467,9 +470,9 @@ class FeedbackController extends Controller
             return $utils->createRespone(200, array(
                 'succes' => true,
                 'data' => [
-                    'feedbackId' => $feedback->getId(),
+                    'feedbackId' => $observation->getId(),
                     'evaluatorId' => $evaluatorId,
-                    'evaluatedId' => $evaluatId,
+                    'idCurs' => $cursId,
                     'text' => $text,
                     'rating' => $rating
                 ]
@@ -477,7 +480,7 @@ class FeedbackController extends Controller
 
         } else {
             return $utils->createRespone(404, array(
-                'errors' => "There isn't any feedback with given id;",
+                'errors' => "There isn't any observation with given id;",
             ));
         }
 

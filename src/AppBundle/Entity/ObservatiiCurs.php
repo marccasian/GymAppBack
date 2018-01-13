@@ -55,6 +55,86 @@ class ObservatiiCurs
      */
     private $evaluatorid;
 
+    /**
+     * @return string
+     */
+    public function getText(): string
+    {
+        return $this->text;
+    }
+
+    /**
+     * @param string $text
+     */
+    public function setText(string $text)
+    {
+        $this->text = $text;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRating(): int
+    {
+        return $this->rating;
+    }
+
+    /**
+     * @param int $rating
+     */
+    public function setRating(int $rating)
+    {
+        $this->rating = $rating;
+    }
+
+    /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId(int $id)
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @return Curs
+     */
+    public function getIdcurs(): Curs
+    {
+        return $this->idcurs;
+    }
+
+    /**
+     * @param Curs $idcurs
+     */
+    public function setIdcurs(Curs $idcurs)
+    {
+        $this->idcurs = $idcurs;
+    }
+
+    /**
+     * @return Profile
+     */
+    public function getEvaluatorid(): Profile
+    {
+        return $this->evaluatorid;
+    }
+
+    /**
+     * @param Profile $evaluatorid
+     */
+    public function setEvaluatorid(Profile $evaluatorid)
+    {
+        $this->evaluatorid = $evaluatorid;
+    }
+
 
 }
 
