@@ -1,9 +1,9 @@
 # This file is auto-generated during the composer install
 parameters:
-    database_host: elephpants.mysql.database.azure.com
+    database_host: gym-app.mysql.database.azure.com
     database_port: 3306
-    database_name: elephpants
-    database_user: gym-app-user@elephpants
+    database_name: elephpants_new
+    database_user: gym-app-admin@gym-app
     database_password: Qwerty1.
     mailer_transport: smtp
     mailer_host: 127.0.0.1
