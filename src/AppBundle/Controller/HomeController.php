@@ -142,6 +142,16 @@ class HomeController extends Controller
                     $em = $this->getDoctrine()->getManager();
                     $em->persist($profile);
                     $em->flush();
+
+
+                    $message = \Swift_Message::newInstance('Test')
+                        ->setFrom('noreplyelephpants@gmail.com')
+                        ->setTo($email)
+                        ->setSubject('Thank you for registration.')
+                        ->setBody('saluut', 'text/html');
+
+                    $result = $this->get('mailer')->send($message);
+
                     #return new Response(Response::HTTP_OK); # status code 200
 
                     $request = Request::create('home_login', "POST", array(
@@ -153,6 +163,8 @@ class HomeController extends Controller
 
 
                 } catch (\Exception $e) {
+                    echo $e->getMessage();
+                    die();
                     error_log($e->getMessage());
                     #return new Response(Response::HTTP_IM_USED); #status code 226
                     $errors = "";
