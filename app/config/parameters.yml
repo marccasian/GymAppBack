@@ -1,12 +1,13 @@
 # This file is auto-generated during the composer install
 parameters:
+    secret: secretGurita1
     database_host: gym-app.mysql.database.azure.com
     database_port: 3306
     database_name: elephpants_new
     database_user: gym-app-admin@gym-app
     database_password: Qwerty1.
-    mailer_transport: mail
+    mailer_transport: gmail
     mailer_host: smtp.gmail.com
     mailer_user: noreplyelephpants@gmail.com
     mailer_password: qwerty1234567890
-    secret: secretGurita1
+
