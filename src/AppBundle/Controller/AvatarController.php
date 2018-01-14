@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Lucaciu Mircea <lucaciumircea5@gmail.com>
+ * @author Grozescu Rares
  */
 
 namespace AppBundle\Controller;
