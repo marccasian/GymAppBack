@@ -516,4 +516,32 @@ class CursController extends Controller
         }
     }
 
+    /**
+     * @Route("/course/get_all_course_subscription", name = "get_all_course_subscription")
+     * @Method({"GET"})
+     * @return Response
+     */
+    public function getAllCourseSubscription()
+    {
+        $utils = new Functions();
+        try {
+            $sql = " SELECT * FROM curs_abonament";
+
+            $conn = $this->getDoctrine()->getConnection();
+
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+
+            $result = $stmt->fetchAll();
+           
+            return $utils->createResponse(200, $result);
+
+        }catch(Exception $e){
+            error_log($e->getMessage());
+            return $utils->createResponse(404, [
+                'errors' => "Something went wrong;",
+            ]);
+        }
+
+    }
 }
