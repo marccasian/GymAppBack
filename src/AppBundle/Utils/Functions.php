@@ -19,13 +19,13 @@ class Functions
     {
     }
 
-    public function createRespone($statusCode, $content){
+    public function createResponse($statusCode, $content){
 
-        $respone = new Response();
-        $respone->headers->set('Content-Type', 'application/json');
-        $respone->setStatusCode($statusCode);
-        $respone->setContent(json_encode($content));
-        return $respone;
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->setStatusCode($statusCode);
+        $response->setContent(json_encode($content));
+        return $response;
     }
 
 }

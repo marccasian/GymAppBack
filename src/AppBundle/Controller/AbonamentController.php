@@ -10,19 +10,15 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Abonament;
 use AppBundle\Utils\Functions;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use AppBundle\Entity\Rol;
 use Doctrine\DBAL\Driver\PDOException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use AppBundle\Repository\UserRepository;
-use AppBundle\Entity\User;
 
 class AbonamentController extends Controller
 {
@@ -45,19 +41,19 @@ class AbonamentController extends Controller
         $errors = $this->   checkIfNull($level, $price, $type, $description);
 
         if ($errors) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => $errors,
             ));
         }
         if (!filter_var($level, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(403, array(
-                'errors' => "Levelul trebuie sa fie integer",
+            return $utils->createResponse(403, array(
+                'errors' => "Level must be integer",
             ));
         }
 
         if (!filter_var($price, FILTER_VALIDATE_FLOAT)) {
-            return $utils->createRespone(403, array(
-                'errors' => "Pretul trebuie sa fie float",
+            return $utils->createResponse(403, array(
+                'errors' => "Price must be float",
             ));
         }
 
@@ -72,20 +68,18 @@ class AbonamentController extends Controller
             $manager->persist($abonament);
             $manager->flush();
         } catch (Exception $e) {
-            return $utils->createRespone(500, array(
-                'errors' => $e->getMessage(),
-            ));
-        } catch (UniqueConstraintViolationException  $e) {
-            return $utils->createRespone(500, array(
-                'errors' => $e->getMessage(),
+            error_log($e->getMessage());
+            return $utils->createResponse(403, array(
+                'errors' => "Something went wrong ...",
             ));
         } catch (PDOException  $e) {
-            return $utils->createRespone(500, array(
-                'errors' => $e->getMessage(),
+            error_log($e->getMessage());
+            return $utils->createResponse(403, array(
+                'errors' => "Something went wrong ...",
             ));
         }
 
-        return $utils->createRespone(200, array(
+        return $utils->createResponse(200, array(
             'abonamentId' => $abonament->getAbonamentid(),
             'level' => $level,
             'price' => $price,
@@ -109,19 +103,19 @@ class AbonamentController extends Controller
         $errors = '';
 
         if (is_null($price)) {
-            $errors .= 'Pretul nu poate fi null;';
+            $errors .= 'Missing price;';
         }
 
         if (is_null($level)) {
-            $errors .= 'Levelul nu poate fi null;';
+            $errors .= 'Missing level';
         }
 
         if (is_null($type)) {
-            $errors .= 'Tipul nu poate fi null;';
+            $errors .= 'Missing type;';
         }
 
         if (is_null($description)) {
-            $errors .= 'Descrierea nu poate fi null;';
+            $errors .= 'Missing description;';
         }
 
         return $errors;
@@ -152,7 +146,7 @@ class AbonamentController extends Controller
             ];
 
         }
-        return $utils->createRespone(200, $results);
+        return $utils->createResponse(200, $results);
     }
 
     /**
@@ -167,12 +161,12 @@ class AbonamentController extends Controller
         $utils = new Functions();
 
         if (is_null($abonamentId)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Missing subscription id",
             ));
         }
         if (!filter_var($abonamentId, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Subscription id must be integer",
             ));
         }
@@ -194,19 +188,17 @@ class AbonamentController extends Controller
                 $em->remove($abonament);
                 $em->flush();
             } catch (Exception $e) {
-                return $utils->createRespone(409, array(
-                    'errors' => $e->getMessage(),
-                ));
-            } catch (UniqueConstraintViolationException  $e) {
-                return $utils->createRespone(409, array(
-                    'errors' => $e->getMessage(),
+                error_log($e->getMessage());
+                return $utils->createResponse(409, array(
+                    'errors' => "Something went wrong ...",
                 ));
             } catch (PDOException  $e) {
-                return $utils->createRespone(409, array(
-                    'errors' => $e->getMessage(),
+                error_log($e->getMessage());
+                return $utils->createResponse(409, array(
+                    'errors' => "Something went wrong ...",
                 ));
             }
-            return $utils->createRespone(200, array(
+            return $utils->createResponse(200, array(
                 'abonamentId' => $abonamentId,
                 'level' => $level,
                 'price' => $price,
@@ -215,7 +207,7 @@ class AbonamentController extends Controller
             ));
 
         } else {
-            return $utils->createRespone(404, array(
+            return $utils->createResponse(404, array(
                 'errors' => "Unable to delete subscription because there isn't any subscription with given id!",
             ));
         }
@@ -224,19 +216,20 @@ class AbonamentController extends Controller
     /**
      * @Route("/abonament/get_abonament/{abonamentId}", name = "get_abonament")
      * @Method({"GET"})
-     *
+     * @param $abonamentId
+     * @return Response
      */
     public function getAbonament($abonamentId)
     {
         $utils = new Functions();
 
         if (is_null($abonamentId)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Missing subscription id",
             ));
         }
         if (!filter_var($abonamentId, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Subscription id must be integer",
             ));
         }
@@ -248,7 +241,7 @@ class AbonamentController extends Controller
 
         /** @var $abonament Abonament */
         if ($abonament) {
-            return $utils->createRespone(200, array(
+            return $utils->createResponse(200, array(
                 'abonamentId' => $abonament->getAbonamentid(),
                 'price' => $abonament->getPrice(),
                 'type' => $abonament->getType(),
@@ -256,7 +249,7 @@ class AbonamentController extends Controller
                 'level' => $abonament->getLevel(),
             ));
         } else {
-            return $utils->createRespone(404, array(
+            return $utils->createResponse(404, array(
                 'errors' => "Unable to get subscription because there isn't any subscription with given id!",
             ));
         }
@@ -276,29 +269,29 @@ class AbonamentController extends Controller
         $bodyAbonamentId = $request->request->get('abonamentId');
 
         if($bodyAbonamentId != $abonamentId){
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Mismatch between url id and body id",
             ));
         }
 
         if (is_null($bodyAbonamentId)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Missing subscription id from body",
             ));
         }
         if (!filter_var($bodyAbonamentId, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Subscription id from body must be integer",
             ));
         }
 
         if (is_null($abonamentId)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Missing subscription id",
             ));
         }
         if (!filter_var($abonamentId, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Subscription id must be integer",
             ));
         }
@@ -319,19 +312,19 @@ class AbonamentController extends Controller
             $errors = $this->checkIfNull($level,$price,$type,$description);
 
             if($errors){
-                return $utils->createRespone(404, array(
+                return $utils->createResponse(404, array(
                     'errors' => $errors,
                 ));
             }
 
             if (!filter_var($level, FILTER_VALIDATE_INT)) {
-                return $utils->createRespone(403, array(
+                return $utils->createResponse(403, array(
                     'errors' => "Level must be integer",
                 ));
             }
 
             if (!filter_var($price, FILTER_VALIDATE_FLOAT)) {
-                return $utils->createRespone(403, array(
+                return $utils->createResponse(403, array(
                     'errors' => "Price must be float",
                 ));
             }
@@ -346,7 +339,7 @@ class AbonamentController extends Controller
             $manager->flush();
 
             //succes
-            return $utils->createRespone(200, array(
+            return $utils->createResponse(200, array(
                 'abonamentId' => $abonament->getAbonamentid(),
                 'level' => $level,
                 'price' => $price,
@@ -354,19 +347,12 @@ class AbonamentController extends Controller
                 'description' => $description
             ));
 
-        }else {
-            return $utils->createRespone(404, array(
+        }
+        else
+        {
+            return $utils->createResponse(404, array(
                 'errors' => "Unable to update subscription because there isn't any subscription with given id!",
             ));
         }
-
-
-        return $utils->createRespone(500, array(
-            'errors' => "An unexpected error occurred!",
-        ));
-
     }
-
-
-
 }

@@ -12,7 +12,6 @@ use AppBundle\Entity\Curs;
 use AppBundle\Entity\ObservatiiCurs;
 use AppBundle\Entity\Profile;
 use AppBundle\Utils\Functions;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
@@ -42,18 +41,18 @@ class ObservatieController extends Controller
         $rating = $request->request->get('rating');
         $errors = $this->checkIfNull($evaluatorId, $idCurs, $text, $rating);
         if ($errors){
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => $errors,
             ));
         }
         if (!filter_var($rating, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Rating must be integer",
             ));
         }
 
         if ($rating < 0){
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Rating must be a positive number",
             ));
         }
@@ -80,20 +79,18 @@ class ObservatieController extends Controller
             $manager->persist($observatie);
             $manager->flush();
         } catch (Exception $e) {
-            return $utils->createRespone(403, array(
-                'errors' => $e->getMessage(),
-            ));
-        } catch (UniqueConstraintViolationException  $e) {
-            return $utils->createRespone(403, array(
-                'errors' => $e->getMessage(),
+            error_log($e->getMessage());
+            return $utils->createResponse(403, array(
+                'errors' => "Something went wrong ...",
             ));
         } catch (PDOException  $e) {
-            return $utils->createRespone(500, array(
-                'errors' => $e->getMessage(),
+            error_log($e->getMessage());
+            return $utils->createResponse(403, array(
+                'errors' => "Something went wrong ...",
             ));
         }
 
-        return $utils->createRespone(200, array(
+        return $utils->createResponse(200, array(
             'idCurs' => $observatie->getIdcurs()->getCursid(),
             'evaluatorId' => $observatie->getEvaluatorid()->getUsername()->getUsername(),
             'rating' => $observatie->getRating(),
@@ -155,7 +152,7 @@ class ObservatieController extends Controller
             ];
 
         }
-        return $utils->createRespone(200, $result);
+        return $utils->createResponse(200, $result);
     }
 
     /**
@@ -176,6 +173,7 @@ class ObservatieController extends Controller
                             JOIN
                         curs ON curs.CursId = observatii_curs.IdCurs
                     GROUP BY curs.type
+                    ORDER BY Rating DESC
                 ";
 
         $conn = $this->getDoctrine()->getConnection();
@@ -184,7 +182,7 @@ class ObservatieController extends Controller
         $stmt->execute();
 
         $result = $stmt->fetchAll();
-        return $utils->createRespone(200, $result);
+        return $utils->createResponse(200, $result);
     }
 
     /**
@@ -194,17 +192,17 @@ class ObservatieController extends Controller
      * @return Response
      * @internal param Request $request
      */
-    public function deleteFeedback($observationId)
+    public function deleteObservation($observationId)
     {
         $utils = new Functions();
 
         if (is_null($observationId)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Missing observation id",
             ));
         }
         if (!filter_var($observationId, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Observation id must be integer",
             ));
         }
@@ -216,34 +214,36 @@ class ObservatieController extends Controller
 
 
         if ($observation) {
-
+            $id = $observation->getId();
+            $idCurs = $observation->getIdcurs()->getCursid();
+            $evaluatorId = $observation->getEvaluatorid()->getUsername()->getUsername();
+            $text = $observation->getText();
+            $rating = $observation->getRating();
             try {
                 $em = $this->getDoctrine()->getManager();
                 $em->remove($observation);
                 $em->flush();
             } catch (Exception $e) {
-                return $utils->createRespone(409, array(
-                    'errors' => $e->getMessage(),
-                ));
-            } catch (UniqueConstraintViolationException  $e) {
-                return $utils->createRespone(409, array(
-                    'errors' => $e->getMessage(),
+                error_log($e->getMessage());
+                return $utils->createResponse(409, array(
+                    'errors' => "Something went wrong ...",
                 ));
             } catch (PDOException  $e) {
-                return $utils->createRespone(409, array(
-                    'errors' => $e->getMessage(),
+                error_log($e->getMessage());
+                return $utils->createResponse(409, array(
+                    'errors' => "Something went wrong ...",
                 ));
             }
-            return $utils->createRespone(200, array(
-                'id' => $observation->getId(),
-                'idCurs' => $observation->getIdcurs()->getCursid(),
-                'evaluatorId' => $observation->getEvaluatorid()->getUsername()->getUsername(),
-                'text' => $observation->getText(),
-                'rating' => $observation->getRating(),
+            return $utils->createResponse(200, array(
+                'id' => $id,
+                'idCurs' => $idCurs,
+                'evaluatorId' => $evaluatorId,
+                'text' => $text,
+                'rating' => $rating,
             ));
 
         } else {
-            return $utils->createRespone(404, array(
+            return $utils->createResponse(404, array(
                 'errors' => "Observation doesn't exist!",
             ));
         }
@@ -260,7 +260,7 @@ class ObservatieController extends Controller
         $utils = new Functions();
 
         if (is_null($evaluator)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Missing observation id",
             ));
         }
@@ -281,7 +281,7 @@ class ObservatieController extends Controller
                 'rating' => $observation->getRating()
             ];
         }
-        return $utils->createRespone(200, $response_array);
+        return $utils->createResponse(200, $response_array);
     }
 
     /**
@@ -295,7 +295,7 @@ class ObservatieController extends Controller
         $utils = new Functions();
 
         if (is_null($course)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Missing observation id",
             ));
         }
@@ -316,7 +316,7 @@ class ObservatieController extends Controller
                 'rating' => $observation->getRating()
             ];
         }
-        return $utils->createRespone(200, $response_array);
+        return $utils->createResponse(200, $response_array);
     }
 
     /**
@@ -330,12 +330,12 @@ class ObservatieController extends Controller
         $utils = new Functions();
 
         if (is_null($observationId)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Missing observation id",
             ));
         }
         if (!filter_var($observationId, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Observation id must be integer",
             ));
         }
@@ -347,7 +347,7 @@ class ObservatieController extends Controller
 
         /** @var $observation ObservatiiCurs */
         if ($observation) {
-            return $utils->createRespone(200, array(
+            return $utils->createResponse(200, array(
                 'id' => $observation->getId(),
                 'idCurs' => $observation->getIdcurs()->getCursid(),
                 'evaluatorId' => $observation->getEvaluatorid()->getUsername()->getUsername(),
@@ -355,7 +355,7 @@ class ObservatieController extends Controller
                 'rating' => $observation->getRating()
             ));
         } else {
-            return $utils->createRespone(404, array(
+            return $utils->createResponse(404, array(
                 'errors' => "Given id doesn't exists",
             ));
         }
@@ -369,36 +369,36 @@ class ObservatieController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function updateFeedback($observationId, Request $request)
+    public function updateObservatii($observationId, Request $request)
     {
         $utils = new Functions();
 
         $bodyObservationId = $request->request->get('observationId');
 
         if ($bodyObservationId != $observationId) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Mismatch between url id and body id",
             ));
         }
 
         if (is_null($bodyObservationId)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Missing course id from body!;",
             ));
         }
         if (!filter_var($bodyObservationId, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Observation id from body must be integer;",
             ));
         }
 
         if (is_null($observationId)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Missing observation id;",
             ));
         }
         if (!filter_var($observationId, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Observation id must be integer;",
             ));
         }
@@ -419,13 +419,13 @@ class ObservatieController extends Controller
             $errors = $this->checkIfNull($evaluatorId, $cursId, $text, $rating);
 
             if ($errors) {
-                return $utils->createRespone(404, array(
+                return $utils->createResponse(404, array(
                     'errors' => $errors,
                 ));
             }
 
             if (!filter_var($rating, FILTER_VALIDATE_INT)) {
-                return $utils->createRespone(403, array(
+                return $utils->createResponse(403, array(
                     'errors' => "Rating must be integer;",
                 ));
             }
@@ -454,21 +454,19 @@ class ObservatieController extends Controller
                 $manager->flush();
 
             } catch (Exception $e) {
-                return $utils->createRespone(403, array(
-                    'errors' => $e->getMessage(),
-                ));
-            } catch (UniqueConstraintViolationException  $e) {
-                return $utils->createRespone(403, array(
-                    'errors' => $e->getMessage(),
+                error_log($e->getMessage());
+                return $utils->createResponse(403, array(
+                    'errors' => "Something went wrong ...",
                 ));
             } catch (PDOException  $e) {
-                return $utils->createRespone(403, array(
-                    'errors' => $e->getMessage(),
+                error_log($e->getMessage());
+                return $utils->createResponse(403, array(
+                    'errors' => "Something went wrong ...",
                 ));
             }
 
-            return $utils->createRespone(200, array(
-                'feedbackId' => $observation->getId(),
+            return $utils->createResponse(200, array(
+                'observationId' => $observation->getId(),
                 'evaluatorId' => $evaluatorId,
                 'idCurs' => $cursId,
                 'text' => $text,
@@ -476,17 +474,9 @@ class ObservatieController extends Controller
             ));
 
         } else {
-            return $utils->createRespone(404, array(
+            return $utils->createResponse(404, array(
                 'errors' => "There isn't any observation with given id;",
             ));
         }
-
-
-        return $utils->createRespone(403, array(
-            'errors' => "An unexpected error occurred!;",
-        ));
-
     }
-
-
 }
