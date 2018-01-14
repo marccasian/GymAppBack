@@ -206,9 +206,7 @@ class ScheduleController extends Controller
                 ];
 
             }
-            return $utils->createResponse(200, array(
-                'abonamente' => $result,
-            ));
+            return $utils->createResponse(200, $result);
         } else {
             return $utils->createResponse(404, array(
                 'errors' => "No schedules in db.",
