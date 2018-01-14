@@ -13,4 +13,5 @@ use Symfony\Component\HttpFoundation\Response;
 class AllMyConstants
 {
     const NUME_ANTRENOR = 'trainer';
+    const NUME_USER = 'user';
 }
