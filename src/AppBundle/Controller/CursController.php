@@ -30,7 +30,7 @@ use AppBundle\Entity\User;
 class CursController extends Controller
 {
     /**
-     * @Route("/course/create_course", name = "create_abonament")
+     * @Route("/course/create_course", name = "create_course")
      * @Method({"POST"})
      * @param Request $request
      * @return Response
