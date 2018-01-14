@@ -162,7 +162,7 @@ class ObservatieClass extends Controller
     }
 
     /**
-     * @Route("/observations/get_all_by_ratings", name = "get_all_by_ratings")
+     * @Route("/observation/get_all_by_ratings", name = "get_all_by_ratings")
      * @Method({"GET"})
      * @return Response
      *
@@ -173,11 +173,11 @@ class ObservatieClass extends Controller
         $repoCurs = $this->getDoctrine()->getManager()->getRepository(ObservatiiCurs::class);
         $sql = " 
                     SELECT 
-                        curs.type, AVG(curs_observatii.rating) AS Rating
+                        curs.type, AVG(observatii_curs.rating) AS Rating
                     FROM
-                        curs_observatii
+                        observatii_curs
                             JOIN
-                        curs ON curs.CursId = curs_observatii.IdCurs
+                        curs ON curs.CursId = observatii_curs.IdCurs
                     GROUP BY curs.type
                 ";
 
@@ -285,12 +285,12 @@ class ObservatieClass extends Controller
     }
 
     /**
-     * @Route("/observation/get_observation_course/{evaluated}", name = "get_observation_course")
+     * @Route("/observation/get_observation_course/{course}", name = "get_observation_course")
      * @Method({"GET"})
      * @param $course
      * @return Response
      */
-    public function getFeedbackByEvaluated($course)
+    public function getObservationsByCourse($course)
     {
         $utils = new Functions();
 
@@ -302,7 +302,7 @@ class ObservatieClass extends Controller
         $repository = $this->getDoctrine()->getManager()->getRepository(ObservatiiCurs::class);
 
         $observations = $repository->findBy(array(
-            'cursid' => $course,
+            'idcurs' => $course,
         ));
 
         /** @var $observation ObservatiiCurs */
@@ -325,7 +325,7 @@ class ObservatieClass extends Controller
      * @param $observationId
      * @return Response
      */
-    public function getFeedback($observationId)
+    public function getObservation($observationId)
     {
         $utils = new Functions();
 
@@ -435,7 +435,7 @@ class ObservatieClass extends Controller
             $repoCurs = $this->getDoctrine()->getManager()->getRepository(Curs::class);
             try{
                 /** @var  $curs Curs*/
-                $curs = $repoProfile->findOneBy(array(
+                $curs = $repoCurs->findOneBy(array(
                     'cursid' => $cursId,
                 ));
 
