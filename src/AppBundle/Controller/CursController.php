@@ -410,7 +410,7 @@ class CursController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function assignCurs(Request $request)
+    public function assignCourse(Request $request)
     {
         $utils = new Functions();
         $cursId =       $request->request->get('courseId');
@@ -463,7 +463,7 @@ class CursController extends Controller
                 'errors' => "No course existing with given ID;",
             ]);
         }
-       
+
     }
 
 }

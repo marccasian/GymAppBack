@@ -76,7 +76,7 @@ class HomeController extends Controller
                 $errors .= ";";
                 $errors .= "Please enter the password";
             }
-            return $utils->createResponse(206, array(
+            return $utils->createResponse(404, array(
                 'errors' => $errors
             ));
         }
