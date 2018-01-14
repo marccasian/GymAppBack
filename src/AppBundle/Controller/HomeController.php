@@ -30,7 +30,6 @@ class HomeController extends Controller
      * @return Response
      */
     public function logInAction(Request $request){
-        error_log("ici yuhuuuuuu");
         $utils = new Functions();
         $flag = true;
         $username = $request->request->get('username');
@@ -152,7 +151,7 @@ class HomeController extends Controller
 
                 } catch (\Exception $e) {
                     error_log($e->getMessage());
-                    #return new Response(Response::HTTP_IM_USED); #status code 226
+
                     $errors = "";
                     $repo = $this->getDoctrine()->getRepository(User::class);
                     if ($repo->findOneBy(array(
@@ -167,7 +166,7 @@ class HomeController extends Controller
                         $errors .= ';';
                         $errors .= 'Email is already used';
                     }
-                    return $utils->createResponse(226, array(
+                    return $utils->createResponse(404, array(
                        'errors' => $errors,
                     ));
 
@@ -214,7 +213,7 @@ class HomeController extends Controller
                 $errors .= 'Invalid email format. Please enter a valid email';
             }
 
-            return $utils->createResponse(206, array(
+            return $utils->createResponse(404, array(
                 'errors' => $errors,
             ));
         }
