@@ -36,8 +36,6 @@ class AvatarController extends Controller
         $utils = new Functions();
 
 
-        echo $file;
-        die();
 
         if(!$username or !$file){
             return $utils->createRespone(206, array(
@@ -54,6 +52,7 @@ class AvatarController extends Controller
 
         $nume = explode("\\", $file);
         $fileName = $nume[count($nume)-1];
+        $fileName.=$file->guessExtension();
 
         if($user){
 
