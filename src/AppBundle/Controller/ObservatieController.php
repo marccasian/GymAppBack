@@ -23,7 +23,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
-class ObservatieClass extends Controller
+class ObservatieController extends Controller
 {
 
     /**
@@ -94,13 +94,10 @@ class ObservatieClass extends Controller
         }
 
         return $utils->createRespone(200, array(
-            'success' => true,
-            'data' => [
-                'idCurs' => $observatie->getIdcurs()->getCursid(),
-                'evaluatorId' => $observatie->getEvaluatorid()->getUsername()->getUsername(),
-                'rating' => $observatie->getRating(),
-                'text' => $observatie->getText()
-            ]
+            'idCurs' => $observatie->getIdcurs()->getCursid(),
+            'evaluatorId' => $observatie->getEvaluatorid()->getUsername()->getUsername(),
+            'rating' => $observatie->getRating(),
+            'text' => $observatie->getText()
         ));
 
     }
@@ -238,8 +235,11 @@ class ObservatieClass extends Controller
                 ));
             }
             return $utils->createRespone(200, array(
-                'succes' => true,
-                'message' => "Observation successfully deleted!",
+                'id' => $observation->getId(),
+                'idCurs' => $observation->getIdcurs()->getCursid(),
+                'evaluatorId' => $observation->getEvaluatorid()->getUsername()->getUsername(),
+                'text' => $observation->getText(),
+                'rating' => $observation->getRating(),
             ));
 
         } else {
@@ -468,14 +468,11 @@ class ObservatieClass extends Controller
             }
 
             return $utils->createRespone(200, array(
-                'succes' => true,
-                'data' => [
-                    'feedbackId' => $observation->getId(),
-                    'evaluatorId' => $evaluatorId,
-                    'idCurs' => $cursId,
-                    'text' => $text,
-                    'rating' => $rating
-                ]
+                'feedbackId' => $observation->getId(),
+                'evaluatorId' => $evaluatorId,
+                'idCurs' => $cursId,
+                'text' => $text,
+                'rating' => $rating
             ));
 
         } else {
