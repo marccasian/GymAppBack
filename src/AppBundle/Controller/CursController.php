@@ -405,7 +405,7 @@ class CursController extends Controller
 
 
     /**
-     * @Route("/course/assign_course/", name = "assign_course")
+     * @Route("/course/assign_course", name = "assign_course")
      * @Method({"POST"})
      * @param Request $request
      * @return Response
@@ -441,12 +441,14 @@ class CursController extends Controller
             ));
 
             if($abonament){
-                $manager = $this->getDoctrine()->getManager();
-                $curs->getIdabonament()->add($abonamentId);
-                $abonament->getIdcurs()->add($cursId);
-                $manager->persist($curs);
-                $manager->persist($abonament);
-                $manager->flush();
+                $em = $this->getDoctrine()->getManager();
+                /** @var $curss Curs*/
+                $curss = $em->find('AppBundle\Entity\Curs', $cursId);
+                /** @var $abonamentt Abonament*/
+                $abonamentt = $em->find('AppBundle\Entity\Abonament', $abonamentId);
+                $curss->getIdabonament()->add($abonamentt);
+                $abonamentt->getIdcurs()->add($curss);
+                $em->flush();
 
                 return $utils->createResponse(200, [
                     'courseId'      => $cursId,
