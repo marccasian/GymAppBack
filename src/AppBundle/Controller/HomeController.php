@@ -30,7 +30,7 @@ class HomeController extends Controller
      * @return Response
      */
     public function logInAction(Request $request){
-
+        error_log("ici yuhuuuuuu");
         $utils = new Functions();
         $flag = true;
         $username = $request->request->get('username');
