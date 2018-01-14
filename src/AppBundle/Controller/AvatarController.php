@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Entity\User;
 use AppBundle\Entity\Avatar;
+use Symfony\Component\Validator\Constraints\Image;
 
 class AvatarController extends Controller
 {
@@ -31,6 +32,8 @@ class AvatarController extends Controller
 
     public function uploadAvatar(Request $request){
 
+
+
         $username = $request->request->get('username');
         $file = $request->files->get('fileName');
         $utils = new Functions();
@@ -43,16 +46,22 @@ class AvatarController extends Controller
             ));
         }
 
+        if($file->guessExtension() == "png" or $file->guessExtension() == "jpg" or $file->guessExtension() == "jpeg" ){
+
+        }
+        else{
+            return $utils->createRespone(403, array(
+                'errors' => 'The file that is uploaded must have png, jpg or jpeg format.',
+            ));
+        }
+
+
         //mergem mai departe
 
         $repoUser = $this->getDoctrine()->getManager()->getRepository(User::class);
         $user = $repoUser->findOneBy(array(
             'username' => $username
         ));
-
-        $nume = explode("\\", $file);
-        $fileName = $nume[count($nume)-1];
-        $fileName.=$file->guessExtension();
 
         if($user){
 
@@ -63,7 +72,7 @@ class AvatarController extends Controller
 
             $em = $this->getDoctrine()->getManager();
             if($avatar){
-                $avatar->setFile($fileName);
+                $avatar->setFile($username.'Avatar.'.$file->guessExtension());
                 try {
                     $em->persist($avatar);
                     $em->flush();
@@ -71,7 +80,7 @@ class AvatarController extends Controller
 
 
                     $file->move(
-                        $this->getParameter('images_location').$fileName
+                        $this->getParameter('images_location'), $username.'Avatar.'.$file->guessExtension()
                     );
                     return $utils->createRespone(202, array(
                        'message' => 'Avatar updated.',
@@ -98,14 +107,14 @@ class AvatarController extends Controller
 
             $newAvatar = new Avatar();
             $newAvatar->setUsername($user);
-            $newAvatar->setFile($fileName);
+            $newAvatar->setFile($username.'Avatar.'.$file->guessExtension());
 
 
             try{
                 $em->persist($newAvatar);
                 $em->flush();
                 $file->move(
-                    $this->getParameter('images_location').$fileName
+                    $this->getParameter('images_location'), $username.'Avatar.'.$file->guessExtension()
                 );
                 return $utils->createRespone(200, array(
                    'message' => 'Avatar uploaded.'
@@ -164,12 +173,10 @@ class AvatarController extends Controller
 
             if ($avatar) {
 
-
                 $filePath = $this->getParameter('images_location').$avatar->getFile();
-                $content = "<img src='$filePath' >";
-                $response = new Response();
-                $response->setContent($content);
-                return $response;
+                return $utils->createRespone(200, array(
+                   'avatar_path' => $filePath,
+                ));
             }
             else{
                 return $utils->createRespone(404, array(
