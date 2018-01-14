@@ -1,6 +1,6 @@
 # This file is auto-generated during the composer install
 parameters:
-    secret: secretGurita1
+    secret: 'secretGurita1'
     database_host: gym-app.mysql.database.azure.com
     database_port: 3306
     database_name: elephpants_new
