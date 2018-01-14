@@ -88,7 +88,7 @@ class ObservatieController extends Controller
                 'errors' => $e->getMessage(),
             ));
         } catch (PDOException  $e) {
-            return $utils->createRespone(500, array(
+            return $utils->createRespone(403, array(
                 'errors' => $e->getMessage(),
             ));
         }
@@ -194,7 +194,7 @@ class ObservatieController extends Controller
      * @return Response
      * @internal param Request $request
      */
-    public function deleteFeedback($observationId)
+    public function deleteObservation($observationId)
     {
         $utils = new Functions();
 
@@ -216,7 +216,11 @@ class ObservatieController extends Controller
 
 
         if ($observation) {
-
+            $id = $observation->getId();
+            $idCurs = $observation->getIdcurs()->getCursid();
+            $evaluatorId = $observation->getEvaluatorid()->getUsername()->getUsername();
+            $text = $observation->getText();
+            $rating = $observation->getRating();
             try {
                 $em = $this->getDoctrine()->getManager();
                 $em->remove($observation);
@@ -235,11 +239,11 @@ class ObservatieController extends Controller
                 ));
             }
             return $utils->createRespone(200, array(
-                'id' => $observation->getId(),
-                'idCurs' => $observation->getIdcurs()->getCursid(),
-                'evaluatorId' => $observation->getEvaluatorid()->getUsername()->getUsername(),
-                'text' => $observation->getText(),
-                'rating' => $observation->getRating(),
+                'id' => $id,
+                'idCurs' => $idCurs,
+                'evaluatorId' => $evaluatorId,
+                'text' => $text,
+                'rating' => $rating,
             ));
 
         } else {
@@ -369,7 +373,7 @@ class ObservatieController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function updateFeedback($observationId, Request $request)
+    public function updateObservatii($observationId, Request $request)
     {
         $utils = new Functions();
 
@@ -468,7 +472,7 @@ class ObservatieController extends Controller
             }
 
             return $utils->createRespone(200, array(
-                'feedbackId' => $observation->getId(),
+                'observationId' => $observation->getId(),
                 'evaluatorId' => $evaluatorId,
                 'idCurs' => $cursId,
                 'text' => $text,
