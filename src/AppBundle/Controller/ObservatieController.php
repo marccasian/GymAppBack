@@ -12,16 +12,11 @@ use AppBundle\Entity\Curs;
 use AppBundle\Entity\ObservatiiCurs;
 use AppBundle\Entity\Profile;
 use AppBundle\Utils\Functions;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Driver\PDOException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class ObservatieController extends Controller
 {
@@ -80,16 +75,14 @@ class ObservatieController extends Controller
             $manager->persist($observatie);
             $manager->flush();
         } catch (Exception $e) {
+            error_log($e->getMessage());
             return $utils->createResponse(403, array(
-                'errors' => $e->getMessage(),
-            ));
-        } catch (UniqueConstraintViolationException  $e) {
-            return $utils->createResponse(403, array(
-                'errors' => $e->getMessage(),
+                'errors' => "Something went wrong ...",
             ));
         } catch (PDOException  $e) {
+            error_log($e->getMessage());
             return $utils->createResponse(403, array(
-                'errors' => $e->getMessage(),
+                'errors' => "Something went wrong ...",
             ));
         }
 
@@ -176,6 +169,7 @@ class ObservatieController extends Controller
                             JOIN
                         curs ON curs.CursId = observatii_curs.IdCurs
                     GROUP BY curs.type
+                    ORDER BY Rating DESC
                 ";
 
         $conn = $this->getDoctrine()->getConnection();
@@ -226,16 +220,14 @@ class ObservatieController extends Controller
                 $em->remove($observation);
                 $em->flush();
             } catch (Exception $e) {
+                error_log($e->getMessage());
                 return $utils->createResponse(409, array(
-                    'errors' => $e->getMessage(),
-                ));
-            } catch (UniqueConstraintViolationException  $e) {
-                return $utils->createResponse(409, array(
-                    'errors' => $e->getMessage(),
+                    'errors' => "Something went wrong ...",
                 ));
             } catch (PDOException  $e) {
+                error_log($e->getMessage());
                 return $utils->createResponse(409, array(
-                    'errors' => $e->getMessage(),
+                    'errors' => "Something went wrong ...",
                 ));
             }
             return $utils->createResponse(200, array(
@@ -458,16 +450,14 @@ class ObservatieController extends Controller
                 $manager->flush();
 
             } catch (Exception $e) {
+                error_log($e->getMessage());
                 return $utils->createResponse(403, array(
-                    'errors' => $e->getMessage(),
-                ));
-            } catch (UniqueConstraintViolationException  $e) {
-                return $utils->createResponse(403, array(
-                    'errors' => $e->getMessage(),
+                    'errors' => "Something went wrong ...",
                 ));
             } catch (PDOException  $e) {
+                error_log($e->getMessage());
                 return $utils->createResponse(403, array(
-                    'errors' => $e->getMessage(),
+                    'errors' => "Something went wrong ...",
                 ));
             }
 
@@ -484,13 +474,5 @@ class ObservatieController extends Controller
                 'errors' => "There isn't any observation with given id;",
             ));
         }
-
-
-        return $utils->createRespone(403, array(
-            'errors' => "An unexpected error occurred!;",
-        ));
-
     }
-
-
 }
