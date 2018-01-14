@@ -35,39 +35,31 @@ class HomeController extends Controller
         $username = $request->request->get('username');
         $password = $request->request->get('password');
 
-
         if(!$username or !$password)
             $flag = false;
 
         if($flag) {
-
             $repository = $this->getDoctrine()->getRepository(User::class);
-
-
             $user = $repository->findOneBy(array(
                 'username' => $username,
                 'password' => $password
             ));
 
             if ($user) {
-
-                #return new Response(Response::HTTP_OK); #status code 200
-
                 return $utils->createResponse(200, array(
                     'username' => $username,
                     'role' => $user->getRolid()->getRolid(),
                 ));
-
-            } else {
-
-                #return new Response(Response::HTTP_NOT_FOUND); #status code 404
+            }
+            else
+            {
                 return $utils->createResponse(404, array(
                     'errors' => 'Incorrect username or password.'
                 ));
             }
         }
-        else{
-            #return new Response(Response::HTTP_PARTIAL_CONTENT); #status code 206
+        else
+        {
             $errors = "";
             if(!$username)
                 $errors .= "Please enter the username";
@@ -79,13 +71,13 @@ class HomeController extends Controller
                 'errors' => $errors
             ));
         }
-
     }
 
     /**
      * @Route("/home/register", name = "home_register")
      * @Method({"POST"})
-     *
+     * @param Request $request
+     * @return Response
      */
     public function registerAction(Request $request){
 
@@ -106,25 +98,20 @@ class HomeController extends Controller
             $flag = false;
 
         if($flag) {
-
             if($password === $confirmPassword) {
-
                 $user = new User();
                 $user->setUsername($username);
                 $user->setPassword($password);
                 $user->setEmail($email);
 
-
-
                 $repoRol = $this->getDoctrine()->getRepository(Rol::class);
+                /** @var  $normalUser Rol*/
                 $normalUser = $repoRol->findOneBy(array(
                     'description' => 'user'
                 ));
                 $user->setRolid($normalUser);
 
-
                 try {
-
                     $em = $this->getDoctrine()->getManager();
                     $em->persist($user);
                     $em->flush();
@@ -139,7 +126,6 @@ class HomeController extends Controller
                     $em = $this->getDoctrine()->getManager();
                     $em->persist($profile);
                     $em->flush();
-                    #return new Response(Response::HTTP_OK); # status code 200
 
                     $request = Request::create('home_login', "POST", array(
                         'username' => $username,
@@ -147,18 +133,18 @@ class HomeController extends Controller
                     ));
                     $request->headers->set('Content-Type', 'application/json');
                     return $this->logInAction($request);
-
-
                 } catch (\Exception $e) {
                     error_log($e->getMessage());
-
                     $errors = "";
                     $repo = $this->getDoctrine()->getRepository(User::class);
                     if ($repo->findOneBy(array(
-                        'username' => $username
-                    ))
-                    )
+                            'username' => $username
+                            ))
+                        )
+                    {
                         $errors .= 'Username is already used';
+                    }
+
                     if ($repo->findOneBy(array(
                         'email' => $email
                     ))
@@ -169,11 +155,9 @@ class HomeController extends Controller
                     return $utils->createResponse(404, array(
                        'errors' => $errors,
                     ));
-
                 }
             }
             else{
-
                 return $utils->createResponse(409, array(
                     'errors' => "The password fields don't match.",
                 ));
@@ -181,8 +165,6 @@ class HomeController extends Controller
             }
         }
         else{
-            #return new Response(Response::HTTP_PARTIAL_CONTENT); #status code 206
-
             $errors = "";
             if(!$username) {
                 $errors .= 'Please enter the username';
@@ -222,5 +204,4 @@ class HomeController extends Controller
     function isValidEmail($email){
         return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
     }
-
 }
