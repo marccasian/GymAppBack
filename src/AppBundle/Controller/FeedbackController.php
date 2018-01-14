@@ -8,7 +8,7 @@
 namespace AppBundle\Controller;
 
 
-use AppBundle\Entity\ObservatiiCurs;
+use AppBundle\Entity\Feedback;
 use AppBundle\Entity\Profile;
 use AppBundle\Utils\Functions;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
@@ -70,7 +70,7 @@ class FeedbackController extends Controller
             ));
 
             $manager = $this->getDoctrine()->getManager();
-            $feedback = new ObservatiiCurs();
+            $feedback = new Feedback();
             $feedback->setEvaluatid($evaluat);
             $feedback->setEvaluatorid($evaluator);
             $feedback->setText($text);
@@ -78,27 +78,22 @@ class FeedbackController extends Controller
             $manager->persist($feedback);
             $manager->flush();
         } catch (Exception $e) {
+            error_log($e->getMessage());
             return $utils->createResponse(403, array(
-                'errors' => $e->getMessage(),
-            ));
-        } catch (UniqueConstraintViolationException  $e) {
-            return $utils->createResponse(403, array(
-                'errors' => $e->getMessage(),
+                'errors' => "Something went wrong ...",
             ));
         } catch (PDOException  $e) {
-            return $utils->createResponse(500, array(
-                'errors' => $e->getMessage(),
+            error_log($e->getMessage());
+            return $utils->createResponse(403, array(
+                'errors' => "Something went wrong ...",
             ));
         }
 
         return $utils->createResponse(200, array(
-            'success' => true,
-            'data' => [
-                'evaluatedId' => $feedback->getEvaluatid()->getUsername()->getUsername(),
-                'evaluatorId' => $feedback->getEvaluatorid()->getUsername()->getUsername(),
-                'rating' => $feedback->getRating(),
-                'text' => $feedback->getText()
-            ]
+            'evaluatedId' => $feedback->getEvaluatid()->getUsername()->getUsername(),
+            'evaluatorId' => $feedback->getEvaluatorid()->getUsername()->getUsername(),
+            'rating' => $feedback->getRating(),
+            'text' => $feedback->getText()
         ));
 
     }
@@ -143,10 +138,10 @@ class FeedbackController extends Controller
     public function getAll()
     {
         $utils = new Functions();
-        $repoCurs = $this->getDoctrine()->getManager()->getRepository(ObservatiiCurs::class);
+        $repoCurs = $this->getDoctrine()->getManager()->getRepository(Feedback::class);
         $feedback_entries = $repoCurs->findAll();
         $result = [];
-        /** @var  $item ObservatiiCurs */
+        /** @var  $item Feedback */
         foreach ($feedback_entries as $item) {
             $result[] = [
                 'evaluatedId' => $item->getEvaluatid()->getUsername()->getUsername(),
@@ -168,7 +163,6 @@ class FeedbackController extends Controller
     public function getAllByRating()
     {
         $utils = new Functions();
-        $repoCurs = $this->getDoctrine()->getManager()->getRepository(ObservatiiCurs::class);
         $sql = " 
                     SELECT 
                         profile.username, AVG(feedback.rating) AS Rating
@@ -206,10 +200,10 @@ class FeedbackController extends Controller
         }
         if (!filter_var($feedbackId, FILTER_VALIDATE_INT)) {
             return $utils->createResponse(403, array(
-                'errors' => "Feedback if must be integer",
+                'errors' => "Feedback id must be integer",
             ));
         }
-        $repository = $this->getDoctrine()->getRepository(ObservatiiCurs::class);
+        $repository = $this->getDoctrine()->getRepository(Feedback::class);
 
         $feedback = $repository->findOneBy(array(
             'id' => $feedbackId,
@@ -217,27 +211,30 @@ class FeedbackController extends Controller
 
 
         if ($feedback) {
-
+            $evaluatedId = $feedback->getEvaluatid()->getUsername()->getUsername();
+            $evaluatorId = $feedback->getEvaluatorid()->getUsername()->getUsername();
+            $rating = $feedback->getRating();
+            $text = $feedback->getText();
             try {
                 $em = $this->getDoctrine()->getManager();
                 $em->remove($feedback);
                 $em->flush();
             } catch (Exception $e) {
+                error_log($e->getMessage());
                 return $utils->createResponse(409, array(
-                    'errors' => $e->getMessage(),
-                ));
-            } catch (UniqueConstraintViolationException  $e) {
-                return $utils->createResponse(409, array(
-                    'errors' => $e->getMessage(),
+                    'errors' => "Something went wrong ...",
                 ));
             } catch (PDOException  $e) {
+                error_log($e->getMessage());
                 return $utils->createResponse(409, array(
-                    'errors' => $e->getMessage(),
+                    'errors' => "Something went wrong ...",
                 ));
             }
             return $utils->createResponse(200, array(
-                'succes' => true,
-                'message' => "Feedback successfully deleted!",
+                'evaluatedId' => $evaluatedId,
+                'evaluatorId' => $evaluatorId,
+                'rating' => $rating,
+                'text' => $text
             ));
 
         } else {
@@ -262,13 +259,13 @@ class FeedbackController extends Controller
                 'errors' => "Missing feedback id",
             ));
         }
-        $repository = $this->getDoctrine()->getManager()->getRepository(ObservatiiCurs::class);
+        $repository = $this->getDoctrine()->getManager()->getRepository(Feedback::class);
 
         $feedback_entries = $repository->findBy(array(
             'evaluatorid' => $evaluator,
         ));
 
-        /** @var $feedback ObservatiiCurs */
+        /** @var $feedback Feedback */
         $response_array = [];
         foreach ($feedback_entries as $feedback){
             $response_array[] = [
@@ -297,13 +294,13 @@ class FeedbackController extends Controller
                 'errors' => "Missing feedback id",
             ));
         }
-        $repository = $this->getDoctrine()->getManager()->getRepository(ObservatiiCurs::class);
+        $repository = $this->getDoctrine()->getManager()->getRepository(Feedback::class);
 
         $feedback_entries = $repository->findBy(array(
             'evaluatid' => $evaluated,
         ));
 
-        /** @var $feedback ObservatiiCurs */
+        /** @var $feedback Feedback */
         $response_array = [];
         foreach ($feedback_entries as $feedback){
             $response_array[] = [
@@ -337,13 +334,13 @@ class FeedbackController extends Controller
                 'errors' => "Feedback id must be integer",
             ));
         }
-        $repository = $this->getDoctrine()->getManager()->getRepository(ObservatiiCurs::class);
+        $repository = $this->getDoctrine()->getManager()->getRepository(Feedback::class);
 
         $feedback = $repository->findOneBy(array(
             'id' => $feedbackId,
         ));
 
-        /** @var $feedback ObservatiiCurs */
+        /** @var $feedback Feedback */
         if ($feedback) {
             return $utils->createResponse(200, array(
                 'id' => $feedback->getId(),
@@ -401,9 +398,9 @@ class FeedbackController extends Controller
             ));
         }
 
-        $repository = $this->getDoctrine()->getManager()->getRepository(ObservatiiCurs::class);
+        $repository = $this->getDoctrine()->getManager()->getRepository(Feedback::class);
 
-        /** @var $feedback ObservatiiCurs */
+        /** @var $feedback Feedback */
         $feedback = $repository->findOneBy(array(
             'id' => $feedbackId,
         ));
@@ -451,28 +448,23 @@ class FeedbackController extends Controller
                 $manager->flush();
 
             } catch (Exception $e) {
+                error_log($e->getMessage());
                 return $utils->createResponse(403, array(
-                    'errors' => $e->getMessage(),
-                ));
-            } catch (UniqueConstraintViolationException  $e) {
-                return $utils->createResponse(403, array(
-                    'errors' => $e->getMessage(),
+                    'errors' => "Something went wrong ...",
                 ));
             } catch (PDOException  $e) {
+                error_log($e->getMessage());
                 return $utils->createResponse(403, array(
-                    'errors' => $e->getMessage(),
+                    'errors' => "Something went wrong ...",
                 ));
             }
 
             return $utils->createResponse(200, array(
-                'succes' => true,
-                'data' => [
-                    'feedbackId' => $feedback->getId(),
-                    'evaluatorId' => $evaluatorId,
-                    'evaluatedId' => $evaluatId,
-                    'text' => $text,
-                    'rating' => $rating
-                ]
+                'feedbackId' => $feedback->getId(),
+                'evaluatorId' => $evaluatorId,
+                'evaluatedId' => $evaluatId,
+                'text' => $text,
+                'rating' => $rating
             ));
 
         } else {
@@ -480,13 +472,5 @@ class FeedbackController extends Controller
                 'errors' => "There isn't any feedback with given id;",
             ));
         }
-
-
-        return $utils->createRespone(403, array(
-            'errors' => "An unexpected error occurred!;",
-        ));
-
     }
-
-
 }
