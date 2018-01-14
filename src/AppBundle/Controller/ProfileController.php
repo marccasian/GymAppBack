@@ -1,9 +1,6 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: User
- * Date: 1/11/2018
- * Time: 4:55 PM
+ * @author Lucaciu Mircea <lucaciumircea5@gmail.com>
  */
 
 namespace AppBundle\Controller;
@@ -28,60 +25,52 @@ class ProfileController extends Controller
     /**
      * @Route("/profile/getProfile/{username}", name = "get_user_profile")
      * @Method({"GET"})
-     *
+     * @param $username
+     * @return Response
      */
-    public function getUserProfile($username){
-
+    public function getUserProfile($username)
+    {
         $utils = new Functions();
-
         $repoUser = $this->getDoctrine()->getManager()->getRepository(User::class);
-
         $user = $repoUser->findOneBy(array(
             'username' => $username,
         ));
 
-        if($user){
-
+        if ($user) {
             $repoProfile = $this->getDoctrine()->getManager()->getRepository(Profile::class);
-
             $profile = $repoProfile->findOneBy(array(
-               'username' => $user,
+                'username' => $user,
             ));
 
-            if($profile){
+            if ($profile) {
 
                 return $utils->createRespone(200, array(
-                   'username'  => $user->getUsername(),
-                    'email' => $user -> getEmail(),
-                    'fullname' => $profile->getFullname(),
-                    'sex' => $profile->getSex(),
-                    'age' => $profile->getVarsta(),
+                    'profileid'      => $profile->getProfileid(),
+                    'username'       => $user->getUsername(),
+                    'fullname'       => $profile->getFullname(),
+                    'sex'            => $profile->getSex(),
+                    'age'            => $profile->getVarsta(),
                 ));
             }
 
-            //nu are profil, dar are username si parola
-            return $utils->createRespone(203, array(
-                'username'  => $user->getUsername(),
-                'email' => $user -> getEmail(),
-            ));
-
-        }
-        else{
+        } else {
             return $utils->createRespone(404, array(
-               'errors' => "No user with this username in the db.",
+                'errors' => "No user with this username in the db.",
             ));
         }
-
+        return $utils->createRespone(404, array(
+            'errors' => "Something went wrong.",
+        ));
     }
 
     /**
      * @Route("/profile/editProfile", name = "edit_profile")
      * @Method({"POST"})
-     *
+     * @param Request $request
+     * @return Response
      */
     public function editProfile(Request $request)
     {
-
         $utils = new Functions();
 
         $username = $request->request->get('username');
@@ -89,67 +78,66 @@ class ProfileController extends Controller
         $sex = $request->request->get('sex');
         $varsta = $request->request->get('age');
 
-        if(!filter_var($varsta, FILTER_VALIDATE_INT))
+        if (!filter_var($varsta, FILTER_VALIDATE_INT)) {
             return $utils->createRespone(404, array(
                 'errors' => "Age must be an integer.",
             ));
+        }
 
+        if (count($fullname) > 255) {
+            return $utils->createRespone(404, array(
+                'errors' => "Full name too long.",
+            ));
+        }
+        $repository = $this->getDoctrine()->getRepository(User::class);
 
-        if ($username) {
-            //daca am primit ceva prin post
-            $repoUser = $this->getDoctrine()->getManager()->getRepository(User::class);
+        $user = $repository->findOneBy(array(
+            'username' => $username
+        ));
 
-            $user = $repoUser->findOneBy(array(
-                'username' => $username,
+        //if user exist
+        if ($user) {
+
+            $repoProfile = $this->getDoctrine()->getManager()->getRepository(Profile::class);
+            $newProfile = $repoProfile->findOneBy(array(
+                'username' => $user,
             ));
 
-            if ($user) {
-                //daca exista user-ul
-                $repoProfile = $this->getDoctrine()->getManager()->getRepository(Profile::class);
+            $newProfile->setFullname($fullname);
+            $newProfile->setSex($sex);
+            $newProfile->setVarsta($varsta);
 
-                $newProfile = $repoProfile->findOneBy(array(
-                    'username' => $user,
+            $em = $this->getDoctrine()->getManager();
+            try {
+                $em->persist($newProfile);
+                $em->flush();
+                return $utils->createRespone(200, array(
+                    'profileid'      => $newProfile->getProfileid(),
+                    'username'        => $newProfile->getUsername()->getUserName(),
+                    'fullname'        => $newProfile->getFullname(),
+                    'sex'             => $newProfile->getSex(),
+                    'age'             => $newProfile->getVarsta(),
                 ));
-
-                $newProfile->setFullname($fullname);
-                $newProfile->setSex($sex);
-                $newProfile->setVarsta($varsta);
-
-                $em = $this->getDoctrine()->getManager();
-                try{
-                    $em->persist($newProfile);
-                    $em->flush();
-                    return $utils->createRespone(200, array(
-                        'message' => "Profile updated.",
-                    ));
-                }
-                catch (Exception $e){
-                    return $utils->createRespone(409, array(
-                        'errors' => $e->getMessage(),
-                    ));
-                }
-                catch (UniqueConstraintViolationException  $e) {
-                    return $utils->createRespone(409, array(
-                        'errors' => $e->getMessage(),
-                    ));
-                }
-                catch (PDOException  $e) {
-                    return $utils->createRespone(409, array(
-                        'errors' => $e->getMessage(),
-                    ));
-                }
-
-
-
-            } else {
-                return $utils->createRespone(404, array(
-                    'errors' => "No user with this username in the db.",
+            } catch (Exception $e) {
+                error_log($e->getMessage());
+                return $utils->createRespone(409, array(
+                    'errors' => 'Something went wrong',
+                ));
+            } catch (UniqueConstraintViolationException  $e) {
+                error_log($e->getMessage());
+                return $utils->createRespone(409, array(
+                    'errors' => 'Something went wrong',
+                ));
+            } catch (PDOException  $e) {
+                error_log($e->getMessage());
+                return $utils->createRespone(409, array(
+                    'errors' => 'Something went wrong',
                 ));
             }
 
         } else {
-            return $utils->createRespone(206, array(
-               'errors' => "Partial data.",
+            return $utils->createRespone(404, array(
+                'errors' => "Invalid username",
             ));
 
         }

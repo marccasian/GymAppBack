@@ -23,7 +23,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Entity\User;
 use AppBundle\Utils\Functions;
-
+use AppBundle\Utils\AllMyConstants;
 class TrainerController extends Controller
 {
 
@@ -55,11 +55,9 @@ class TrainerController extends Controller
 
             if ($user) {
 
-                if($user->getRolid()->getDescription() == "antrenor"){
+                if($user->getRolid()->getDescription() == AllMyConstants::NUME_ANTRENOR){
 
                     //403 forbidden, user-ul este deja antrenor
-
-
 
                     return $utils->createRespone(403, array('errors' => "This user is already a trainer"));
 
@@ -69,7 +67,7 @@ class TrainerController extends Controller
                     //obtin repository Rol
                     $repoRol = $this->getDoctrine()->getRepository(Rol::class);
                     $normalUser = $repoRol->findOneBy(array(
-                        'description' => 'antrenor'
+                        'description' => AllMyConstants::NUME_ANTRENOR
                     ));
 
                     //setez rolul la antrenor
@@ -120,15 +118,14 @@ class TrainerController extends Controller
     }
 
     /**
-     * @Route("/trainer/deleteTrainer", name = "trainer_delete")
-     * @Method({"POST"})
+     * @Route("/trainer/deleteTrainer/{username}", name = "trainer_delete")
+     * @Method({"GET"})
      *
      */
-    public function deleteTrainer(Request $request){
+    public function deleteTrainer($username){
 
         $utils = new Functions();
         $flag = true;
-        $username = $request->request->get('username');
 
         if(!$username)
             $flag = false;
@@ -147,8 +144,7 @@ class TrainerController extends Controller
             if ($user) {
 
                 //daca exista user si este antrenor, il fac la loc user
-                if($user->getRolid()->getDescription() == "antrenor") {
-
+                if($user->getRolid()->getDescription() == AllMyConstants::NUME_ANTRENOR) {
 
                     $repoRol = $this->getDoctrine()->getRepository(Rol::class);
                     $normalUser = $repoRol->findOneBy(array(
@@ -224,7 +220,7 @@ class TrainerController extends Controller
 
         $repoRol = $this->getDoctrine()->getManager()->getRepository(Rol::class);
         $rol = $repoRol->findOneBy(array(
-           'description' => "antrenor",
+           'description' => AllMyConstants::NUME_ANTRENOR,
         ));
 
         $repository = $this->getDoctrine()->getManager()->getRepository(User::class);
@@ -301,4 +297,47 @@ class TrainerController extends Controller
     }
 
 
+    /**
+     * @Route("/trainer/getTrainer/{username}", name = "trainer_get")
+     * @Method({"GET"})
+     *
+     */
+    public function getTrainer($username)
+    {
+        $utils = new Functions();
+
+        $repoRol = $this->getDoctrine()->getManager()->getRepository(Rol::class);
+        $rol = $repoRol->findOneBy(array(
+            'description' => AllMyConstants::NUME_ANTRENOR,
+        ));
+
+        $repository = $this->getDoctrine()->getManager()->getRepository(User::class);
+
+        $users = $repository->findOneBy(array(
+            'rolid'     =>  $rol,
+            'username'  =>  $username
+        ));
+
+
+        $result = [];
+        if(!is_null($users)){
+
+        $result[] = [
+            'username' => $users->getUsername(),
+            'email' => $users -> getEmail(),
+
+        ];
+
+            return $utils->createRespone(200, array(
+                'trainer' => $result,
+            ));
+        }
+        else{
+            return $utils->createRespone(404, array(
+                'errors' => "There are no trainers.",
+            ));
+        }
+
+
+    }
 }

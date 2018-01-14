@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Evidentainscrieri
  *
- * @ORM\Table(name="evidentainscrieri", uniqueConstraints={@ORM\UniqueConstraint(name="user_curs", columns={"Username", "CursId"})}, indexes={@ORM\Index(name="evidenta_curs_idx", columns={"CursId"}), @ORM\Index(name="IDX_509A8491286421", columns={"Username"})})
+ * @ORM\Table(name="evidentainscrieri", indexes={@ORM\Index(name="evidenta_schedule_idx", columns={"ScheduleId"}), @ORM\Index(name="evidenta_profile_idx", columns={"ProfileId"})})
  * @ORM\Entity
  */
 class Evidentainscrieri
@@ -22,24 +22,24 @@ class Evidentainscrieri
     private $idevidentainscrieri;
 
     /**
-     * @var \AppBundle\Entity\User
+     * @var \AppBundle\Entity\Profile
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Profile")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="Username", referencedColumnName="Username")
+     *   @ORM\JoinColumn(name="ProfileId", referencedColumnName="ProfileId")
      * })
      */
-    private $username;
+    private $profileid;
 
     /**
-     * @var \AppBundle\Entity\Curs
+     * @var \AppBundle\Entity\Schedule
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Curs")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Schedule")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="CursId", referencedColumnName="CursId")
+     *   @ORM\JoinColumn(name="ScheduleId", referencedColumnName="Id")
      * })
      */
-    private $cursid;
+    private $scheduleid;
 
 
 }
