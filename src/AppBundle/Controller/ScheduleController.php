@@ -80,6 +80,7 @@ class ScheduleController extends Controller
         try {
 
             $repoCurs = $this->getDoctrine()->getManager()->getRepository(Curs::class);
+            /** @var  $curs Curs*/
             $curs = $repoCurs->findOneBy(array(
                 'cursid' => $courseId,
             ));
@@ -90,6 +91,7 @@ class ScheduleController extends Controller
                 ));
             }
             $repoProfile = $this->getDoctrine()->getManager()->getRepository(Profile::class);
+            /** @var  $profile Profile*/
             $profile = $repoProfile->findOneBy(array(
                 'profileid' => $trainerId,
             ));
@@ -113,30 +115,25 @@ class ScheduleController extends Controller
             $manager->flush();
 
         } catch (Exception $e) {
+            error_log($e->getMessage());
             return $utils->createResponse(403, array(
-                'errors' => $e->getMessage(),
-            ));
-        } catch (UniqueConstraintViolationException  $e) {
-            return $utils->createResponse(403, array(
-                'errors' => $e->getMessage(),
+                'errors' => "Something went wrong ...",
             ));
         } catch (PDOException  $e) {
+            error_log($e->getMessage());
             return $utils->createResponse(403, array(
-                'errors' => $e->getMessage(),
+                'errors' => "Something went wrong ...",
             ));
         }
 
         return $utils->createResponse(200, array(
-            'succes' => true,
-            'data' => [
-                'courseId' => $schedule->getIdcurs(),
-                'weekDay' => $schedule->getWeekday(),
-                'startTime' => $schedule->getStarttime(),
-                'endTime' => $schedule->getEndtime(),
-                'periodEndDate' => $schedule->getPeriodenddate(),
-                'periodStartDate' => $schedule->getPeriodstartdate(),
-                'trainerId' => $schedule->getIdtrainer(),
-            ]
+            'courseId' => $schedule->getIdcurs(),
+            'weekDay' => $schedule->getWeekday(),
+            'startTime' => $schedule->getStarttime(),
+            'endTime' => $schedule->getEndtime(),
+            'periodEndDate' => $schedule->getPeriodenddate(),
+            'periodStartDate' => $schedule->getPeriodstartdate(),
+            'trainerId' => $schedule->getIdtrainer(),
         ));
 
 
@@ -145,7 +142,6 @@ class ScheduleController extends Controller
     /**
      * Check if parameters from request are null
      * @param $courseId
-     * @param $startDate
      * @param $trainerId
      * @param $weekDay
      * @param $startTime
@@ -295,27 +291,37 @@ class ScheduleController extends Controller
 
 
         if ($schedule) {
+            $courseId = $schedule->getIdcurs();
+            $weekDay = $schedule->getWeekday();
+            $startTime = $schedule->getStarttime();
+            $endTime = $schedule->getEndtime();
+            $periodEndDate = $schedule->getPeriodenddate();
+            $periodStartDate = $schedule->getPeriodstartdate();
+            $trainerId = $schedule->getIdtrainer();
 
             try {
                 $em = $this->getDoctrine()->getManager();
                 $em->remove($schedule);
                 $em->flush();
             } catch (Exception $e) {
+                error_log($e->getMessage());
                 return $utils->createResponse(409, array(
-                    'errors' => $e->getMessage(),
-                ));
-            } catch (UniqueConstraintViolationException  $e) {
-                return $utils->createResponse(409, array(
-                    'errors' => $e->getMessage(),
+                    'errors' => "Something went wrong ...",
                 ));
             } catch (PDOException  $e) {
+                error_log($e->getMessage());
                 return $utils->createResponse(409, array(
-                    'errors' => $e->getMessage(),
+                    'errors' => "Something went wrong ...",
                 ));
             }
             return $utils->createResponse(200, array(
-                'succes' => true,
-                'message' => "Schedule deleted",
+                'courseId' => $courseId,
+                'weekDay' => $weekDay,
+                'startTime' => $startTime,
+                'endTime' => $endTime,
+                'periodEndDate' => $periodEndDate,
+                'periodStartDate' => $periodStartDate,
+                'trainerId' => $trainerId,
             ));
 
         } else {
@@ -445,31 +451,25 @@ class ScheduleController extends Controller
                 $manager->flush();
 
             } catch (Exception $e) {
+                error_log($e->getMessage());
                 return $utils->createResponse(403, array(
-                    'errors' => $e->getMessage(),
-                ));
-            } catch (UniqueConstraintViolationException  $e) {
-                return $utils->createResponse(403, array(
-                    'errors' => $e->getMessage(),
+                    'errors' => "Something went wrong ...",
                 ));
             } catch (PDOException  $e) {
+                error_log($e->getMessage());
                 return $utils->createResponse(403, array(
-                    'errors' => $e->getMessage(),
+                    'errors' => "Something went wrong ...",
                 ));
             }
-            //succes
             return $utils->createResponse(200, array(
-                'succes' => true,
-                'data' => [
-                    'id'                 =>$schedule->getId(),
-                    'courseId'           => $schedule->getIdcurs(),
-                    'weekDay'            => $schedule->getWeekday(),
-                    'startTime'          => $schedule->getStarttime(),
-                    'endTime'            => $schedule->getEndtime(),
-                    'periodEndDate'      => $schedule->getPeriodenddate(),
-                    'periodStartDate'    => $schedule->getPeriodstartdate(),
-                    'trainerId'          => $schedule->getIdtrainer(),
-                ]
+                'id'                 =>$schedule->getId(),
+                'courseId'           => $schedule->getIdcurs(),
+                'weekDay'            => $schedule->getWeekday(),
+                'startTime'          => $schedule->getStarttime(),
+                'endTime'            => $schedule->getEndtime(),
+                'periodEndDate'      => $schedule->getPeriodenddate(),
+                'periodStartDate'    => $schedule->getPeriodstartdate(),
+                'trainerId'          => $schedule->getIdtrainer(),
             ));
 
         } else {
