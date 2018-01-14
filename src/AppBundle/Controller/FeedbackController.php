@@ -155,7 +155,7 @@ class FeedbackController extends Controller
     }
 
     /**
-     * @Route("/feedback/get_all_by_ratings", name = "get_all_by_ratings")
+     * @Route("/feedback/get_feedback_by_ratings", name = "get_feedback_by_ratings")
      * @Method({"GET"})
      * @return Response
      *
@@ -171,6 +171,7 @@ class FeedbackController extends Controller
                             JOIN
                         profile ON profile.ProfileId = feedback.EvaluatId
                     GROUP BY EvaluatId
+                    ORDER BY Rating DESC
                 ";
 
         $conn = $this->getDoctrine()->getConnection();
