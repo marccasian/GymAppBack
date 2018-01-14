@@ -453,4 +453,67 @@ class CursController extends Controller
 
     }
 
+    /**
+     * @Route("/course/delete_course_subscription", name = "delete_course_subscription")
+     * @Method({"POST"})
+     * @param Request $request
+     * @return Response
+     */
+    public function deleteCourseSubscription(Request $request)
+    {
+        $utils = new Functions();
+        $cursId =       $request->request->get('courseId');
+        $abonamentId =  $request->request->get('abonamentId');
+
+        if(is_null($cursId)){
+            return $utils->createResponse(404, array(
+                'errors' => "Course ID cannot be null;",
+            ));
+        }
+        if(is_null($abonamentId)){
+            return $utils->createResponse(404, array(
+                'errors' => "Subscription ID cannot be null;",
+            ));
+        }
+
+        $repository = $this->getDoctrine()->getManager()->getRepository(Curs::class);
+        /** @var $curs Curs */
+        $curs = $repository->findOneBy(array(
+            'cursid' => $cursId,
+        ));
+
+        if($curs){
+            $repositoryAbonament = $this->getDoctrine()->getManager()->getRepository(Abonament::class);
+            /** @var $abonament Abonament */
+            $abonament = $repositoryAbonament->findOneBy(array(
+                'abonamentid' => $abonamentId,
+            ));
+
+            if($abonament) {
+                $em = $this->getDoctrine()->getManager();
+                /** @var $curss Curs*/
+                $curss = $em->find('AppBundle\Entity\Curs', $cursId);
+                /** @var $abonamentt Abonament*/
+                $abonamentt = $em->find('AppBundle\Entity\Abonament', $abonamentId);
+
+
+                $curss->getIdabonament()->removeElement($abonament);
+                $abonamentt->getIdcurs()->removeElement($curs);
+                $em->flush();
+                return $utils->createResponse(200, [
+                    'courseId'      => $cursId,
+                    'abonamentId'   => $abonamentId
+                ]);
+            }else{
+                return $utils->createResponse(404, [
+                    'errors' => "No subscription existing with given ID;",
+                ]);
+            }
+        }else{
+            return $utils->createResponse(404, [
+                'errors' => "No course existing with given ID;",
+            ]);
+        }
+    }
+
 }
