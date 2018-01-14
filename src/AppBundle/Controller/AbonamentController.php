@@ -68,12 +68,14 @@ class AbonamentController extends Controller
             $manager->persist($abonament);
             $manager->flush();
         } catch (Exception $e) {
-            return $utils->createResponse(500, array(
-                'errors' => $e->getMessage(),
+            error_log($e->getMessage());
+            return $utils->createResponse(403, array(
+                'errors' => "Something went wrong ...",
             ));
         } catch (PDOException  $e) {
-            return $utils->createResponse(500, array(
-                'errors' => $e->getMessage(),
+            error_log($e->getMessage());
+            return $utils->createResponse(403, array(
+                'errors' => "Something went wrong ...",
             ));
         }
 
@@ -186,12 +188,14 @@ class AbonamentController extends Controller
                 $em->remove($abonament);
                 $em->flush();
             } catch (Exception $e) {
+                error_log($e->getMessage());
                 return $utils->createResponse(409, array(
-                    'errors' => $e->getMessage(),
+                    'errors' => "Something went wrong ...",
                 ));
             } catch (PDOException  $e) {
+                error_log($e->getMessage());
                 return $utils->createResponse(409, array(
-                    'errors' => $e->getMessage(),
+                    'errors' => "Something went wrong ...",
                 ));
             }
             return $utils->createResponse(200, array(
