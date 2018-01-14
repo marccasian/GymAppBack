@@ -544,4 +544,74 @@ class CursController extends Controller
         }
 
     }
+
+    /**
+     * @Route("/course/get_course_subscription_by_subscription/{id}", name = "get_course_subscription_by_subscription")
+     * @Method({"GET"})
+     * @param $id
+     * @return Response
+     */
+    public function getCourseSubscriptionBySubscription($id)
+    {
+        $utils = new Functions();
+
+        if(is_null($id)){
+            return $utils->createResponse(404, [
+                'errors' => "Id is null;",
+            ]);
+        }
+
+        if (!filter_var($id, FILTER_VALIDATE_INT)) {
+            return $utils->createResponse(403, array(
+                'errors' => "Id has to be integer",
+            ));
+        }
+
+        $repositoryAbonament = $this->getDoctrine()->getManager()->getRepository(Abonament::class);
+        /** @var $abonament Abonament */
+        $abonament = $repositoryAbonament->findOneBy(array(
+            'abonamentid' => $id,
+        ));
+
+        if($abonament){
+            //$id is validated
+            $sql = " SELECT IdCurs FROM curs_abonament WHERE IdAbonament = $id";
+
+            $conn = $this->getDoctrine()->getConnection();
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+
+            $cursIds = $stmt->fetchAll();
+
+            $repositoryCurs= $this->getDoctrine()->getManager()->getRepository(Curs::class);
+
+            $cursuri = [];
+            foreach ($cursIds as $item => $idCurs)
+            {
+                /** @var $curs Curs*/
+                $curs = $repositoryCurs->findOneBy(array(
+                    'cursid' => $idCurs,
+                ));
+                $cursuri[] = [
+                    'cursId'    => $idCurs,
+                    'startDate' => $curs->getStartdate(),
+                    'endDate'   => $curs->getEnddate(),
+                    'places'    => $curs->getPlaces(),
+                    'level'     => $curs->getLevel(),
+                    'type'      => $curs->getType()
+                ];
+            }
+            return $utils->createResponse(200, $cursuri);
+
+
+        }else{
+            return $utils->createResponse(404, [
+                'errors' => "No subscription with that id;",
+            ]);
+        }
+
+
+    }
+
+
 }
