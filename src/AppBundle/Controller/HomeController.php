@@ -79,7 +79,8 @@ class HomeController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function registerAction(Request $request){
+    public function registerAction(Request $request)
+    {
 
         $utils = new Functions();
         $flag = true;
@@ -201,7 +202,12 @@ class HomeController extends Controller
         }
     }
 
-    function isValidEmail($email){
+    /**
+     * @param $email
+     * @return bool
+     */
+    function isValidEmail($email)
+    {
         return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
     }
 }
