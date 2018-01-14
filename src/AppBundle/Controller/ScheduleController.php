@@ -202,7 +202,7 @@ class ScheduleController extends Controller
                     'endTime' => $item->getEndtime(),
                     'periodEndDate' => $item->getPeriodenddate(),
                     'periodStartDate' => $item->getPeriodstartdate(),
-                    'trainerId' => $item->getIdtrainer()->getUsername(),
+                    'trainerId' => $item->getIdtrainer()->getUsername()->getUsername(),
                 ];
 
             }
