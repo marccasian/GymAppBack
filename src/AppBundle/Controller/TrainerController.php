@@ -24,177 +24,136 @@ use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Entity\User;
 use AppBundle\Utils\Functions;
 use AppBundle\Utils\AllMyConstants;
+use Symfony\Component\Validator\Constraints\All;
+
 class TrainerController extends Controller
 {
 
     /**
-     * @Route("/trainer/createTrainer", name = "trainer_create")
+     * @Route("/trainer/create_trainer", name = "create_trainer")
      * @Method({"POST"})
-     *
+     * @param Request $request
+     * @return Response
      */
-    public function createTrainer(Request $request){
-
+    public function create_trainer(Request $request){
         $utils = new Functions();
-
-        $flag = true;
         $username = $request->request->get('username');
 
-        if(!$username)
-            $flag = false;
-
-
-        if($flag) {
-
-            //obtine repository User
+        if($username) {
             $repository = $this->getDoctrine()->getRepository(User::class);
-
-            //caut user-ul cu username-ul primit prin post
+            /** @var  $user User*/
             $user = $repository->findOneBy(array(
                 'username' => $username,
             ));
 
             if ($user) {
-
                 if($user->getRolid()->getDescription() == AllMyConstants::NUME_ANTRENOR){
-
-                    //403 forbidden, user-ul este deja antrenor
-
                     return $utils->createResponse(403, array('errors' => "This user is already a trainer"));
-
                 }
-                else {
-
-                    //obtin repository Rol
+                else
+                {
                     $repoRol = $this->getDoctrine()->getRepository(Rol::class);
-                    $normalUser = $repoRol->findOneBy(array(
+                    /** @var  $antrenorUserType Rol*/
+                    $antrenorUserType = $repoRol->findOneBy(array(
                         'description' => AllMyConstants::NUME_ANTRENOR
                     ));
-
-                    //setez rolul la antrenor
-                    $user->setRolid($normalUser);
-
-                    //salvez in baza de date
+                    $user->setRolid($antrenorUserType);
                     try {
                         $em = $this->getDoctrine()->getManager();
                         $em->persist($user);
                         $em->flush();
                     }
                     catch (Exception $e){
+                        error_log($e->getMessage());
                         return $utils->createResponse(409, array(
-                           'errors' => $e->getMessage(),
-                        ));
-                    }
-                    catch (UniqueConstraintViolationException  $e) {
-                        return $utils->createResponse(409, array(
-                            'errors' => $e->getMessage(),
+                           'errors' => "Something went wrong ...",
                         ));
                     }
                     catch (PDOException  $e) {
+                        error_log($e->getMessage());
                         return $utils->createResponse(409, array(
-                            'errors' => $e->getMessage(),
+                            'errors' => "Something went wrong ...",
                         ));
                     }
 
                     return $utils->createResponse(200, array(
                         'username' => $username,
-                        'message' => "Successfully added new trainer",
+                        'rolid' => $user->getRolid()->getRolid(),
                     ));
                 }
 
             } else {
-                //nu exista user-ul in baza de date
-
                 return $utils->createResponse(404, array(
                    'errors' => "Username not found",
                 ));
             }
         }
         else{
-            //nu s-a trimis nimic prin POST
-            return $utils->createResponse(206, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Partial data.",
             ));
         }
     }
 
     /**
-     * @Route("/trainer/deleteTrainer/{username}", name = "trainer_delete")
+     * @Route("/trainer/delete_trainer/{username}", name = "delete_trainer")
      * @Method({"GET"})
-     *
+     * @param $username
+     * @return Response
      */
-    public function deleteTrainer($username){
+    public function delete_trainer($username){
 
         $utils = new Functions();
-        $flag = true;
 
-        if(!$username)
-            $flag = false;
-
-
-        if($flag) {
-
-            //obtin repository User
+        if($username) {
             $repository = $this->getDoctrine()->getRepository(User::class);
-
-            //caut user cu username-ul primit prin POST
+            /** @var  $user User*/
             $user = $repository->findOneBy(array(
                 'username' => $username,
             ));
 
             if ($user) {
-
                 //daca exista user si este antrenor, il fac la loc user
                 if($user->getRolid()->getDescription() == AllMyConstants::NUME_ANTRENOR) {
-
                     $repoRol = $this->getDoctrine()->getRepository(Rol::class);
+                    /** @var  $normalUser Rol*/
                     $normalUser = $repoRol->findOneBy(array(
-                        'description' => 'user'
+                        'description' => AllMyConstants::NUME_USER
                     ));
-
-                    //setez rolul la user
                     $user->setRolid($normalUser);
-
-                    //salvez in bd
                     try {
                         $em = $this->getDoctrine()->getManager();
                         $em->persist($user);
                         $em->flush();
                     }
                     catch (Exception $e){
+                        error_log($e->getMessage());
                         return $utils->createResponse(409, array(
-                           'errors' => $e->getMessage(),
-                        ));
-                    }
-                    catch (UniqueConstraintViolationException  $e) {
-                        return $utils->createResponse(409, array(
-                            'errors' => $e->getMessage(),
+                           'errors' => "Something went wrong ...",
                         ));
                     }
                     catch (PDOException  $e) {
+                        error_log($e->getMessage());
                         return $utils->createResponse(409, array(
-                            'errors' => $e->getMessage(),
+                            'errors' => "Something went wrong ...",
                         ));
                     }
 
 
                     return $utils->createResponse(200, array(
                         'username' => $username,
-                        'message'  => $username . " is no longer a trainer",
+                        'rolid' => $user->getRolid()->getRolid()
                     ));
 
                 }
                 else{
-
                     //altfel, username-ul nu este antrenor, deci nu are de ce sa fie modificat
-
                     return $utils->createResponse(403, array(
                         'errors' => $username . " is not a trainer",
                     ));
                 }
 
             } else {
-
-                //nu exista username-ul in bd
                 return $utils->createResponse(404, array(
                     'errors' => "Username not found",
                 ));
@@ -202,7 +161,7 @@ class TrainerController extends Controller
         }
         else{
             //nu s-a primit nimic prin post
-            return $utils->createResponse(206, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Partial data",
             ));
         }
@@ -210,11 +169,11 @@ class TrainerController extends Controller
 
 
     /**
-     * @Route("/trainer/getAllTrainers", name = "get_all_trainers")
+     * @Route("/trainer/get_all_trainers", name = "get_all_trainers")
      * @Method({"GET"})
      *
      */
-    public function getAllTrainers(){
+    public function get_all_trainers(){
 
         $utils = new Functions();
 
@@ -231,40 +190,29 @@ class TrainerController extends Controller
 
 
         $result = array();
-        if(count($users)){
-
-            foreach ($users as $trainer){
-                $result[] = array(
-                    'username' => $trainer->getUsername(),
-                    'email' => $trainer -> getEmail(),
-
-                );
-            }
-            return $utils->createResponse(200, array(
-                'trainers' => $result,
-            ));
+        /** @var  $trainer User*/
+        foreach ($users as $trainer){
+            $result[] = array(
+                'username' => $trainer->getUsername(),
+                'email' => $trainer -> getEmail(),
+            );
         }
-        else{
-            return $utils->createResponse(404, array(
-                'errors' => "There are no trainers.",
-            ));
-        }
-
+        return $utils->createResponse(200, $result);
     }
 
 
     /**
-     * @Route("/user/getAllUsers", name = "get_all_users")
+     * @Route("/user/get_all_users", name = "get_all_users")
      * @Method({"GET"})
      *
      */
-    public function getAllUsers(){
+    public function get_all_users(){
 
         $utils = new Functions();
 
         $repoRol = $this->getDoctrine()->getManager()->getRepository(Rol::class);
         $rol = $repoRol->findOneBy(array(
-            'description' => "user",
+            'description' => AllMyConstants::NUME_USER,
         ));
 
         $repository = $this->getDoctrine()->getManager()->getRepository(User::class);
@@ -275,34 +223,24 @@ class TrainerController extends Controller
 
 
         $result = array();
-        if(count($users)){
-
-            foreach ($users as $trainer){
-                $result[] = array(
-                    'username' => $trainer->getUsername(),
-                    'email' => $trainer -> getEmail(),
-
-                );
-            }
-            return $utils->createResponse(200, array(
-                'users' => $result,
-            ));
+        /** @var  $user User*/
+        foreach ($users as $user){
+            $result[] = array(
+                'username' => $user->getUsername(),
+                'email' => $user -> getEmail(),
+            );
         }
-        else{
-            return $utils->createResponse(404, array(
-                'errors' => "There are no normal users.",
-            ));
-        }
-
+        return $utils->createResponse(200, $result);
     }
 
 
     /**
-     * @Route("/trainer/getTrainer/{username}", name = "trainer_get")
+     * @Route("/trainer/get_trainer/{username}", name = "get_trainer")
      * @Method({"GET"})
-     *
+     * @param $username
+     * @return Response
      */
-    public function getTrainer($username)
+    public function get_trainer($username)
     {
         $utils = new Functions();
 
@@ -318,23 +256,17 @@ class TrainerController extends Controller
             'username'  =>  $username
         ));
 
-
         $result = [];
         if(!is_null($users)){
-
-        $result[] = [
-            'username' => $users->getUsername(),
-            'email' => $users -> getEmail(),
-
-        ];
-
-            return $utils->createResponse(200, array(
-                'trainer' => $result,
-            ));
+            $result[] = [
+                'username' => $users->getUsername(),
+                'email' => $users -> getEmail(),
+            ];
+            return $utils->createResponse(200, $result);
         }
         else{
             return $utils->createResponse(404, array(
-                'errors' => "There are no trainers.",
+                'errors' => "There isn't any trainer with given id.",
             ));
         }
 

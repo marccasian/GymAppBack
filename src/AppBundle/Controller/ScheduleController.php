@@ -196,19 +196,17 @@ class ScheduleController extends Controller
             foreach ($schedules as $item) {
                 $result[] = [
                     'id' => $item->getId(),
-                    'courseId' => $item->getIdcurs(),
+                    'courseId' => $item->getIdcurs()->getCursid(),
                     'weekDay' => $item->getWeekday(),
                     'startTime' => $item->getStarttime(),
                     'endTime' => $item->getEndtime(),
                     'periodEndDate' => $item->getPeriodenddate(),
                     'periodStartDate' => $item->getPeriodstartdate(),
-                    'trainerId' => $item->getIdtrainer(),
+                    'trainerId' => $item->getIdtrainer()->getUsername()->getUsername(),
                 ];
 
             }
-            return $utils->createResponse(200, array(
-                'abonamente' => $result,
-            ));
+            return $utils->createResponse(200, $result);
         } else {
             return $utils->createResponse(404, array(
                 'errors' => "No schedules in db.",
