@@ -86,14 +86,11 @@ class AbonamentController extends Controller
         }
 
         return $utils->createRespone(200, array(
-            'succes' => true,
-            'data' => [
-                'abonamentId' => $abonament->getAbonamentid(),
-                'level' => $level,
-                'price' => $price,
-                'type' => $type,
-                'description' => $description
-            ]
+            'abonamentId' => $abonament->getAbonamentid(),
+            'level' => $level,
+            'price' => $price,
+            'type' => $type,
+            'description' => $description
         ));
 
 
@@ -143,27 +140,19 @@ class AbonamentController extends Controller
         $utils = new Functions();
         $repoAbonamente = $this->getDoctrine()->getManager()->getRepository(Abonament::class);
         $abonamente = $repoAbonamente->findAll();
-        $result = [];
-        if (count($abonamente)) {
-            /** @var  $item Abonament */
-            foreach ($abonamente as $item) {
-                $result[] = [
-                    'abonamentId' => $item->getAbonamentid(),
-                    'price' => $item->getPrice(),
-                    'level' => $item->getLevel(),
-                    'type' => $item->getType(),
-                    'description' => $item->getDescription()
-                ];
+        $results = [];
+        /** @var  $item Abonament */
+        foreach ($abonamente as $item) {
+            $results[] = [
+                'abonamentId' => $item->getAbonamentid(),
+                'price' => $item->getPrice(),
+                'level' => $item->getLevel(),
+                'type' => $item->getType(),
+                'description' => $item->getDescription()
+            ];
 
-            }
-            return $utils->createRespone(200, array(
-                'abonamente' => $result,
-            ));
-        } else {
-            return $utils->createRespone(404, array(
-                'errors' => "Nu exista abonamente",
-            ));
         }
+        return $utils->createRespone(200, $results);
     }
 
     /**
@@ -179,23 +168,27 @@ class AbonamentController extends Controller
 
         if (is_null($abonamentId)) {
             return $utils->createRespone(403, array(
-                'errors' => "Abonament Id este null",
+                'errors' => "Missing subscription id",
             ));
         }
         if (!filter_var($abonamentId, FILTER_VALIDATE_INT)) {
             return $utils->createRespone(403, array(
-                'errors' => "Abonamentul trebuie sa fie integer",
+                'errors' => "Subscription id must be integer",
             ));
         }
         $repository = $this->getDoctrine()->getRepository(Abonament::class);
-
+        /** @var $abonament Abonament*/
         $abonament = $repository->findOneBy(array(
             'abonamentid' => $abonamentId,
         ));
 
 
         if ($abonament) {
-
+            $abonamentId = $abonament->getAbonamentid();
+            $level = $abonament->getLevel();
+            $price = $abonament->getPrice();
+            $type = $abonament->getType();
+            $description = $abonament->getDescription();
             try {
                 $em = $this->getDoctrine()->getManager();
                 $em->remove($abonament);
@@ -214,14 +207,16 @@ class AbonamentController extends Controller
                 ));
             }
             return $utils->createRespone(200, array(
-                'succes' => true,
-                'message' => "Abonamentul a fost sters",
+                'abonamentId' => $abonamentId,
+                'level' => $level,
+                'price' => $price,
+                'type' => $type,
+                'description' => $description
             ));
 
         } else {
-            //nu exista abonamentul-ul in bd
             return $utils->createRespone(404, array(
-                'errors' => "Nu exista abonament",
+                'errors' => "Unable to delete subscription because there isn't any subscription with given id!",
             ));
         }
     }
@@ -237,12 +232,12 @@ class AbonamentController extends Controller
 
         if (is_null($abonamentId)) {
             return $utils->createRespone(403, array(
-                'errors' => "Abonament Id este null",
+                'errors' => "Missing subscription id",
             ));
         }
         if (!filter_var($abonamentId, FILTER_VALIDATE_INT)) {
             return $utils->createRespone(403, array(
-                'errors' => "Abonamentul trebuie sa fie integer",
+                'errors' => "Subscription id must be integer",
             ));
         }
         $repository = $this->getDoctrine()->getManager()->getRepository(Abonament::class);
@@ -262,7 +257,7 @@ class AbonamentController extends Controller
             ));
         } else {
             return $utils->createRespone(404, array(
-                'errors' => "Nu exista abonament cu id-ul dat",
+                'errors' => "Unable to get subscription because there isn't any subscription with given id!",
             ));
         }
     }
@@ -288,23 +283,23 @@ class AbonamentController extends Controller
 
         if (is_null($bodyAbonamentId)) {
             return $utils->createRespone(403, array(
-                'errors' => "Abonament Id este null",
+                'errors' => "Missing subscription id from body",
             ));
         }
         if (!filter_var($bodyAbonamentId, FILTER_VALIDATE_INT)) {
             return $utils->createRespone(403, array(
-                'errors' => "Abonamentul trebuie sa fie integer",
+                'errors' => "Subscription id from body must be integer",
             ));
         }
 
         if (is_null($abonamentId)) {
             return $utils->createRespone(403, array(
-                'errors' => "Abonament Id este null",
+                'errors' => "Missing subscription id",
             ));
         }
         if (!filter_var($abonamentId, FILTER_VALIDATE_INT)) {
             return $utils->createRespone(403, array(
-                'errors' => "Abonamentul trebuie sa fie integer",
+                'errors' => "Subscription id must be integer",
             ));
         }
 
@@ -331,13 +326,13 @@ class AbonamentController extends Controller
 
             if (!filter_var($level, FILTER_VALIDATE_INT)) {
                 return $utils->createRespone(403, array(
-                    'errors' => "Levelul trebuie sa fie integer",
+                    'errors' => "Level must be integer",
                 ));
             }
 
             if (!filter_var($price, FILTER_VALIDATE_FLOAT)) {
                 return $utils->createRespone(403, array(
-                    'errors' => "Pretul trebuie sa fie float",
+                    'errors' => "Price must be float",
                 ));
             }
 
@@ -352,25 +347,22 @@ class AbonamentController extends Controller
 
             //succes
             return $utils->createRespone(200, array(
-                'succes' => true,
-                'data' => [
-                    'abonamentId' => $abonament->getAbonamentid(),
-                    'level' => $level,
-                    'price' => $price,
-                    'type' => $type,
-                    'description' => $description
-                ]
+                'abonamentId' => $abonament->getAbonamentid(),
+                'level' => $level,
+                'price' => $price,
+                'type' => $type,
+                'description' => $description
             ));
 
         }else {
             return $utils->createRespone(404, array(
-                'errors' => "Nu exista abonament cu id-ul dat",
+                'errors' => "Unable to update subscription because there isn't any subscription with given id!",
             ));
         }
 
 
         return $utils->createRespone(500, array(
-            'errors' => "A intervenit o eroare",
+            'errors' => "An unexpected error occurred!",
         ));
 
     }
