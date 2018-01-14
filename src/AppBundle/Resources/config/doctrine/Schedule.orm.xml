@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="AppBundle\Entity\Schedule" table="schedule">
+    <indexes>
+      <index name="schedule_curs_fk_idx" columns="IdCurs"/>
+      <index name="schedule_trainer_fk_idx" columns="IdTrainer"/>
+    </indexes>
+    <id name="id" type="integer" column="Id">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="weekday" type="integer" column="WeekDay" nullable="true">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="starttime" type="datetime" column="StartTime" nullable="true"/>
+    <field name="endtime" type="datetime" column="EndTime" nullable="true"/>
+    <field name="periodstartdate" type="datetime" column="PeriodStartDate" nullable="true"/>
+    <field name="periodenddate" type="datetime" column="PeriodEndDate" nullable="true"/>
+    <many-to-one field="idcurs" target-entity="Curs" fetch="LAZY">
+      <join-columns>
+        <join-column name="IdCurs" referenced-column-name="CursId"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="idtrainer" target-entity="Profile" fetch="LAZY">
+      <join-columns>
+        <join-column name="IdTrainer" referenced-column-name="ProfileId"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>

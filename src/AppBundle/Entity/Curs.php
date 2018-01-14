@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Curs
  *
- * @ORM\Table(name="curs", indexes={@ORM\Index(name="curs_user_idx", columns={"Trainer"}), @ORM\Index(name="curs_cursType_idx", columns={"CursTypeId"})})
+ * @ORM\Table(name="curs")
  * @ORM\Entity
  */
 class Curs
@@ -41,6 +41,13 @@ class Curs
     private $level;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="Type", type="string", length=100, nullable=true)
+     */
+    private $type;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="CursId", type="integer")
@@ -50,24 +57,131 @@ class Curs
     private $cursid;
 
     /**
-     * @var \AppBundle\Entity\Curstype
+     * @var \Doctrine\Common\Collections\Collection
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Curstype")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="CursTypeId", referencedColumnName="CursTypeId")
-     * })
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Abonament", mappedBy="idcurs")
      */
-    private $curstypeid;
+    private $idabonament;
 
     /**
-     * @var \AppBundle\Entity\User
-     *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="Trainer", referencedColumnName="Username")
-     * })
+     * Constructor
      */
-    private $trainer;
+    public function __construct()
+    {
+        $this->idabonament = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getStartdate()
+    {
+        return $this->startdate;
+    }
+
+    /**
+     * @param \DateTime $startdate
+     */
+    public function setStartdate($startdate)
+    {
+        $this->startdate = $startdate;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getEnddate()
+    {
+        return $this->enddate;
+    }
+
+    /**
+     * @param \DateTime $enddate
+     */
+    public function setEnddate($enddate)
+    {
+        $this->enddate = $enddate;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPlaces()
+    {
+        return $this->places;
+    }
+
+    /**
+     * @param int $places
+     */
+    public function setPlaces($places)
+    {
+        $this->places = $places;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLevel()
+    {
+        return $this->level;
+    }
+
+    /**
+     * @param int $level
+     */
+    public function setLevel($level)
+    {
+        $this->level = $level;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCursid()
+    {
+        return $this->cursid;
+    }
+
+    /**
+     * @param int $cursid
+     */
+    public function setCursid($cursid)
+    {
+        $this->cursid = $cursid;
+    }
+
+    /**
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getIdabonament()
+    {
+        return $this->idabonament;
+    }
+
+    /**
+     * @param \Doctrine\Common\Collections\Collection $idabonament
+     */
+    public function setIdabonament($idabonament)
+    {
+        $this->idabonament = $idabonament;
+    }
 
 
 }

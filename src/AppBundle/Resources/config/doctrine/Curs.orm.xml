@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
   <entity name="AppBundle\Entity\Curs" table="curs">
-    <indexes>
-      <index name="curs_user_idx" columns="Trainer"/>
-      <index name="curs_cursType_idx" columns="CursTypeId"/>
-    </indexes>
     <id name="cursid" type="integer" column="CursId">
       <generator strategy="IDENTITY"/>
     </id>
@@ -20,15 +16,11 @@
         <option name="unsigned"/>
       </options>
     </field>
-    <many-to-one field="curstypeid" target-entity="Curstype" fetch="LAZY">
-      <join-columns>
-        <join-column name="CursTypeId" referenced-column-name="CursTypeId"/>
-      </join-columns>
-    </many-to-one>
-    <many-to-one field="trainer" target-entity="User" fetch="LAZY">
-      <join-columns>
-        <join-column name="Trainer" referenced-column-name="Username"/>
-      </join-columns>
-    </many-to-one>
+    <field name="type" type="string" column="Type" length="100" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <many-to-many field="idabonament" target-entity="Abonament" mapped-by="idcurs" fetch="LAZY"/>
   </entity>
 </doctrine-mapping>

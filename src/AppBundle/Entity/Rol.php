@@ -31,7 +31,7 @@ class Rol
     /**
      * @return string
      */
-    public function getDescription(): string
+    public function getDescription()
     {
         return $this->description;
     }
@@ -39,7 +39,7 @@ class Rol
     /**
      * @param string $description
      */
-    public function setDescription(string $description)
+    public function setDescription($description)
     {
         $this->description = $description;
     }
@@ -47,7 +47,7 @@ class Rol
     /**
      * @return int
      */
-    public function getRolid(): int
+    public function getRolid()
     {
         return $this->rolid;
     }
@@ -55,12 +55,10 @@ class Rol
     /**
      * @param int $rolid
      */
-    public function setRolid(int $rolid)
+    public function setRolid($rolid)
     {
         $this->rolid = $rolid;
     }
-
-
 
 
 }
