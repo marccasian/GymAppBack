@@ -72,7 +72,6 @@ class CursController extends Controller
                 'errors' => "Start date must be before end date",
             ));
         }
-//        $endDate = DateTime::createFromFormat('Y-m-d', $endDate)->format('Y-m-d');
 
         try {
             $manager = $this->getDoctrine()->getManager();
@@ -86,29 +85,24 @@ class CursController extends Controller
             $manager->persist($curs);
             $manager->flush();
         } catch (Exception $e) {
+            error_log($e->getMessage());
             return $utils->createResponse(403, array(
-                'errors' => $e->getMessage(),
-            ));
-        } catch (UniqueConstraintViolationException  $e) {
-            return $utils->createResponse(403, array(
-                'errors' => $e->getMessage(),
+                'errors' => "Something went wrong ...",
             ));
         } catch (PDOException  $e) {
+            error_log($e->getMessage());
             return $utils->createResponse(403, array(
-                'errors' => $e->getMessage(),
+                'errors' => "Something went wrong ...",
             ));
         }
 
         return $utils->createResponse(200, array(
-            'success' => true,
-            'data' => [
-                'cursId' => $curs->getCursid(),
-                'level' => $level,
-                'place' => $places,
-                'type' => $type,
-                'startDate' => $startDate->format('Y-m-d'),
-                'endDate' => $endDate->format('Y-m-d')
-            ]
+            'cursId' => $curs->getCursid(),
+            'level' => $level,
+            'place' => $places,
+            'type' => $type,
+            'startDate' => $startDate->format('Y-m-d'),
+            'endDate' => $endDate->format('Y-m-d')
         ));
 
     }
@@ -127,22 +121,22 @@ class CursController extends Controller
         $errors = '';
 
         if (is_null($startDate)) {
-            $errors .= 'Start date nu poate fi null;';
+            $errors .= 'Missing start date;';
         }
 
         if (is_null($level)) {
-            $errors .= 'Levelul nu poate fi null;';
+            $errors .= 'Missing level;';
         }
 
         if (is_null($type)) {
-            $errors .= 'Tipul nu poate fi null;';
+            $errors .= 'Missing type;';
         }
 
         if (is_null($endDate)) {
-            $errors .= 'End date nu poate fi null;';
+            $errors .= 'Missing end date;';
         }
         if (is_null($places)) {
-            $errors .= 'Places nu poate fi null;';
+            $errors .= 'Missing places;';
         }
 
         return $errors;
@@ -160,27 +154,21 @@ class CursController extends Controller
         $repoCurs = $this->getDoctrine()->getManager()->getRepository(Curs::class);
         $cursuri = $repoCurs->findAll();
         $result = [];
-        if (count($cursuri)) {
-            /** @var  $item Curs */
-            foreach ($cursuri as $item) {
-                $result[] = [
-                    'cursId' => $item->getCursid(),
-                    'place' => $item->getPlaces(),
-                    'level' => $item->getLevel(),
-                    'type' => $item->getType(),
-                    'startDate' => $item->getStartdate()->format('Y-m-d'),
-                    'endDate' => $item->getEnddate()->format('Y-m-d')
-                ];
+        /** @var  $item Curs */
+        foreach ($cursuri as $item) {
+            $result[] = [
+                'cursId' => $item->getCursid(),
+                'place' => $item->getPlaces(),
+                'level' => $item->getLevel(),
+                'type' => $item->getType(),
+                'startDate' => $item->getStartdate()->format('Y-m-d'),
+                'endDate' => $item->getEnddate()->format('Y-m-d')
+            ];
 
-            }
-            return $utils->createResponse(200, array(
-                'cursuri' => $result,
-            ));
-        } else {
-            return $utils->createResponse(404, array(
-                'errors' => "Nu exista cursuri",
-            ));
         }
+        return $utils->createResponse(200, array(
+            'cursuri' => $result,
+        ));
     }
 
     /**
@@ -196,47 +184,53 @@ class CursController extends Controller
 
         if (is_null($cursId)) {
             return $utils->createResponse(403, array(
-                'errors' => "Curs Id este null",
+                'errors' => "Missing course id;",
             ));
         }
         if (!filter_var($cursId, FILTER_VALIDATE_INT)) {
             return $utils->createResponse(403, array(
-                'errors' => "Id-ul cursului trebuie sa fie integer",
+                'errors' => "Course id must be integer;",
             ));
         }
         $repository = $this->getDoctrine()->getRepository(Curs::class);
-
+        /** @var  $curs Curs*/
         $curs = $repository->findOneBy(array(
             'cursid' => $cursId,
         ));
 
 
         if ($curs) {
-
+            $cursId = $curs->getCursid();
+            $level = $curs->getLevel();
+            $places = $curs->getPlaces();
+            $type = $curs->getType();
+            $startDate = $curs->getStartdate()->format('Y-m-d');
+            $endDate = $curs->getEnddate()->format('Y-m-d');
             try {
                 $em = $this->getDoctrine()->getManager();
                 $em->remove($curs);
                 $em->flush();
             } catch (Exception $e) {
+                error_log($e->getMessage());
                 return $utils->createResponse(409, array(
-                    'errors' => $e->getMessage(),
-                ));
-            } catch (UniqueConstraintViolationException  $e) {
-                return $utils->createResponse(409, array(
-                    'errors' => $e->getMessage(),
+                    'errors' => "Something went wrong ...",
                 ));
             } catch (PDOException  $e) {
+                error_log($e->getMessage());
                 return $utils->createResponse(409, array(
-                    'errors' => $e->getMessage(),
+                    'errors' => "Something went wrong ...",
                 ));
             }
             return $utils->createResponse(200, array(
-                'succes' => true,
-                'message' => "Cursul a fost sters",
+                'cursId' => $cursId,
+                'level' => $level,
+                'place' => $places,
+                'type' => $type,
+                'startDate' => $startDate,
+                'endDate' => $endDate
             ));
 
         } else {
-            //nu exista cursul in bd
             return $utils->createResponse(404, array(
                 'errors' => "Course doesn't exist!",
             ));
@@ -246,7 +240,8 @@ class CursController extends Controller
     /**
      * @Route("/course/get_course/{cursId}", name = "get_course")
      * @Method({"GET"})
-     *
+     * @param $cursId
+     * @return Response
      */
     public function getCurs($cursId)
     {
@@ -254,12 +249,12 @@ class CursController extends Controller
 
         if (is_null($cursId)) {
             return $utils->createResponse(403, array(
-                'errors' => "Curs Id can't be null",
+                'errors' => "Missing course id;",
             ));
         }
         if (!filter_var($cursId, FILTER_VALIDATE_INT)) {
             return $utils->createResponse(403, array(
-                'errors' => "Course id must be integer",
+                'errors' => "Course id must be integer;",
             ));
         }
         $repository = $this->getDoctrine()->getManager()->getRepository(Curs::class);
@@ -376,17 +371,13 @@ class CursController extends Controller
             $manager->persist($curs);
             $manager->flush();
 
-            //succes
             return $utils->createResponse(200, array(
-                'succes' => true,
-                'data' => [
-                    'courseId' => $curs->getCursid(),
-                    'level' => $level,
-                    'places' => $places,
-                    'type' => $type,
-                    'startDate' => $startDate->format('Y-m-d'),
-                    'endDate' => $endDate->format('Y-m-d')
-                ]
+                'courseId' => $curs->getCursid(),
+                'level' => $level,
+                'places' => $places,
+                'type' => $type,
+                'startDate' => $startDate->format('Y-m-d'),
+                'endDate' => $endDate->format('Y-m-d')
             ));
 
         } else {
@@ -394,12 +385,6 @@ class CursController extends Controller
                 'errors' => "There isn't any course with given id;",
             ));
         }
-
-
-        return $utils->createRespone(403, array(
-            'errors' => "An unexpected error occurred!;",
-        ));
-
     }
 
 }
