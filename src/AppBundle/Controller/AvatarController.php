@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Entity\User;
 use AppBundle\Entity\Avatar;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Validator\Constraints\Image;
 
 class AvatarController extends Controller
@@ -174,9 +175,19 @@ class AvatarController extends Controller
             if ($avatar) {
 
                 $filePath = $this->getParameter('images_location').$avatar->getFile();
-                return $utils->createRespone(200, array(
-                   'avatar_path' => $filePath,
-                ));
+
+
+                $response = new Response();
+                $disposition = $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $avatar->getFile());
+                $response->headers->set('Content-Disposition', $disposition);
+                $response->headers->set('Content-Type', 'image/png');
+                $response->headers->set('Content-Type', 'image/jpg');
+                $response->headers->set('Content-Type', 'image/jpeg');
+                $response->setStatusCode(200);
+                $response->setContent(file_get_contents($filePath));
+
+                return $response;
+
             }
             else{
                 return $utils->createRespone(404, array(
