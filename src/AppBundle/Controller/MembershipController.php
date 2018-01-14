@@ -24,7 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Entity\User;
 use AppBundle\Utils\Functions;
 use Symfony\Component\Validator\Constraints\DateTime;
-
+//TODO : trebuie rescris !
 
 class MembershipController extends Controller
 {

@@ -27,6 +27,13 @@ class Profile
     private $varsta;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="Fullname", type="string", length=255, nullable=true)
+     */
+    private $fullname;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="ProfileId", type="integer")
@@ -34,23 +41,6 @@ class Profile
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $profileid;
-
-    /**
-     * @var \AppBundle\Entity\User
-     *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="Username", referencedColumnName="Username")
-     * })
-     */
-    private $username;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="Fullname", type="string", length=255, nullable=true)
-     */
-    private $fullname;
 
     /**
      * @return string
@@ -82,6 +72,22 @@ class Profile
     public function setVarsta(int $varsta)
     {
         $this->varsta = $varsta;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFullname(): string
+    {
+        return $this->fullname;
+    }
+
+    /**
+     * @param string $fullname
+     */
+    public function setFullname(string $fullname)
+    {
+        $this->fullname = $fullname;
     }
 
     /**
@@ -117,20 +123,14 @@ class Profile
     }
 
     /**
-     * @return string
+     * @var \AppBundle\Entity\User
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="Username", referencedColumnName="Username")
+     * })
      */
-    public function getFullname(): string
-    {
-        return $this->fullname;
-    }
-
-    /**
-     * @param string $fullname
-     */
-    public function setFullname(string $fullname)
-    {
-        $this->fullname = $fullname;
-    }
+    private $username;
 
 
 }

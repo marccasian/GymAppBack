@@ -7,6 +7,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Profile;
 use AppBundle\Entity\Rol;
 use AppBundle\Utils\Functions;
 use Doctrine\DBAL\Driver\PDOException;
@@ -98,8 +99,7 @@ class HomeController extends Controller
         $email = $request->request->get('email');
         $confirmPassword = $request->request->get('confirmPassword');
 
-
-
+        $errors = "";
 
         if(!$username or !$password or !$email or !$confirmPassword)
             $flag = false;
@@ -111,12 +111,12 @@ class HomeController extends Controller
         if($flag) {
 
             if($password === $confirmPassword) {
-                $em = $this->getDoctrine()->getManager();
 
                 $user = new User();
                 $user->setUsername($username);
                 $user->setPassword($password);
                 $user->setEmail($email);
+
 
 
                 $repoRol = $this->getDoctrine()->getRepository(Rol::class);
@@ -126,25 +126,34 @@ class HomeController extends Controller
                 $user->setRolid($normalUser);
 
 
-                $em->persist($user);
                 try {
+
+                    $em = $this->getDoctrine()->getManager();
+                    $em->persist($user);
                     $em->flush();
 
+                    //update profile table
+                    $profile = new Profile();
+                    $profile->setFullname('-');
+                    $profile->setSex('-');
+                    $profile->setUsername($user);
+                    $profile->setVarsta(18);
 
+                    $em = $this->getDoctrine()->getManager();
+                    $em->persist($profile);
+                    $em->flush();
                     #return new Response(Response::HTTP_OK); # status code 200
 
                     $request = Request::create('home_login', "POST", array(
                         'username' => $username,
                         'password' => $password
                     ));
-
                     $request->headers->set('Content-Type', 'application/json');
-
                     return $this->logInAction($request);
 
 
                 } catch (\Exception $e) {
-
+                    error_log($e->getMessage());
                     #return new Response(Response::HTTP_IM_USED); #status code 226
                     $errors = "";
                     $repo = $this->getDoctrine()->getRepository(User::class);
@@ -190,6 +199,11 @@ class HomeController extends Controller
                 if (strlen($errors) > 0)
                     $errors .= ';';
                 $errors .= 'Please use a longer password. Minimum of 6 characters';
+            }
+            if(!$confirmPassword) {
+                if (strlen($errors) > 0)
+                    $errors .= ';';
+                $errors .= 'Please confirm password';
             }
             if(!$email) {
                 if (strlen($errors) > 0)

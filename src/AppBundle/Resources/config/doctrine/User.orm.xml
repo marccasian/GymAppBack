@@ -9,7 +9,6 @@
       <unique-constraint name="UNIQ_8D93D64926535370" columns="Email"/>
     </unique-constraints>
     <id name="username" type="string" column="Username" length="255">
-
     </id>
     <field name="password" type="string" column="Password" length="255" nullable="false">
       <options>
@@ -21,7 +20,6 @@
         <option name="fixed"/>
       </options>
     </field>
-
     <many-to-one field="rolid" target-entity="Rol" fetch="LAZY">
       <join-columns>
         <join-column name="RolId" referenced-column-name="RolId"/>

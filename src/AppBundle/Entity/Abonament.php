@@ -7,107 +7,11 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Abonament
  *
- * @ORM\Table(name="abonament", indexes={@ORM\Index(name="abonament_user_idx", columns={"Username"}), @ORM\Index(name="abonament_abonamentType_idx", columns={"AbonamentTypeId"})})
+ * @ORM\Table(name="abonament")
  * @ORM\Entity
  */
 class Abonament
 {
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="StartDate", type="datetime", nullable=true)
-     */
-    private $startdate;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="EndDate", type="datetime", nullable=true)
-     */
-    private $enddate;
-
-    /**
-     * @var float
-     *
-     * @ORM\Column(name="Price", type="float", precision=10, scale=0, nullable=true)
-     */
-    private $price;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="Level", type="integer", nullable=true)
-     */
-    private $level;
-
-    /**
-     * @ORM\Column(name="Active", type="integer")
-     */
-    private $active;
-
-
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="AbonamentId", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     */
-    private $abonamentid;
-
-    /**
-     * @var \AppBundle\Entity\Abonamenttype
-     *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Abonamenttype")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="AbonamentTypeId", referencedColumnName="AbonamentTypeId")
-     * })
-     */
-    private $abonamenttypeid;
-
-    /**
-     * @var \AppBundle\Entity\User
-     *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="Username", referencedColumnName="Username")
-     * })
-     */
-    private $username;
-
-    /**
-     * @return \DateTime
-     */
-    public function getStartdate(): \DateTime
-    {
-        return $this->startdate;
-    }
-
-    /**
-     * @param \DateTime $startdate
-     */
-    public function setStartdate(\DateTime $startdate)
-    {
-        $this->startdate = $startdate;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getEnddate(): \DateTime
-    {
-        return $this->enddate;
-    }
-
-    /**
-     * @param \DateTime $enddate
-     */
-    public function setEnddate(\DateTime $enddate)
-    {
-        $this->enddate = $enddate;
-    }
-
     /**
      * @return float
      */
@@ -141,6 +45,38 @@ class Abonament
     }
 
     /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     */
+    public function setType(string $type)
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     */
+    public function setDescription(string $description)
+    {
+        $this->description = $description;
+    }
+
+    /**
      * @return int
      */
     public function getAbonamentid(): int
@@ -157,56 +93,79 @@ class Abonament
     }
 
     /**
-     * @return Abonamenttype
+     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getAbonamenttypeid(): Abonamenttype
+    public function getIdcurs(): \Doctrine\Common\Collections\Collection
     {
-        return $this->abonamenttypeid;
+        return $this->idcurs;
     }
 
     /**
-     * @param Abonamenttype $abonamenttypeid
+     * @param \Doctrine\Common\Collections\Collection $idcurs
      */
-    public function setAbonamenttypeid(Abonamenttype $abonamenttypeid)
+    public function setIdcurs(\Doctrine\Common\Collections\Collection $idcurs)
     {
-        $this->abonamenttypeid = $abonamenttypeid;
+        $this->idcurs = $idcurs;
     }
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="Price", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $price;
 
     /**
-     * @return User
+     * @var integer
+     *
+     * @ORM\Column(name="Level", type="integer", nullable=true)
      */
-    public function getUsername(): User
-    {
-        return $this->username;
-    }
+    private $level;
 
     /**
-     * @param User $username
+     * @var string
+     *
+     * @ORM\Column(name="Type", type="string", length=200, nullable=true)
      */
-    public function setUsername(User $username)
-    {
-        $this->username = $username;
-    }
+    private $type;
 
     /**
-     * @return int
+     * @var string
+     *
+     * @ORM\Column(name="Description", type="string", length=2000, nullable=true)
      */
-    public function getActive(): int
-    {
-        return $this->active;
-    }
+    private $description;
 
     /**
-     * @param int $active
+     * @var integer
+     *
+     * @ORM\Column(name="AbonamentId", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    public function setActive(int $active)
+    private $abonamentid;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Curs", inversedBy="idabonament")
+     * @ORM\JoinTable(name="curs_abonament",
+     *   joinColumns={
+     *     @ORM\JoinColumn(name="IdAbonament", referencedColumnName="AbonamentId")
+     *   },
+     *   inverseJoinColumns={
+     *     @ORM\JoinColumn(name="IdCurs", referencedColumnName="CursId")
+     *   }
+     * )
+     */
+    private $idcurs;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
     {
-        $this->active = $active;
+        $this->idcurs = new \Doctrine\Common\Collections\ArrayCollection();
     }
-
-
-
-
 
 }
 

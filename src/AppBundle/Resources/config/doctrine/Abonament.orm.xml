@@ -1,35 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
   <entity name="AppBundle\Entity\Abonament" table="abonament">
-
-    <indexes>
-      <index name="abonament_user_idx" columns="Username"/>
-      <index name="abonament_abonamentType_idx" columns="AbonamentTypeId"/>
-    </indexes>
     <id name="abonamentid" type="integer" column="AbonamentId">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="startdate" type="datetime" column="StartDate" nullable="true"/>
-    <field name="enddate" type="datetime" column="EndDate" nullable="true"/>
     <field name="price" type="float" column="Price" precision="10" scale="0" nullable="true"/>
     <field name="level" type="integer" column="Level" nullable="true">
-
-
       <options>
         <option name="unsigned"/>
       </options>
     </field>
-    <field name = "active" type="integer" column="Active" ></field>
-
-    <many-to-one field="abonamenttypeid" target-entity="Abonamenttype" fetch="LAZY">
-      <join-columns>
-        <join-column name="AbonamentTypeId" referenced-column-name="AbonamentTypeId"/>
-      </join-columns>
-    </many-to-one>
-    <many-to-one field="username" target-entity="User" fetch="LAZY">
-      <join-columns>
-        <join-column name="Username" referenced-column-name="Username"/>
-      </join-columns>
-    </many-to-one>
+    <field name="type" type="string" column="Type" length="200" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="description" type="string" column="Description" length="2000" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <many-to-many field="idcurs" target-entity="Curs" inversed-by="idabonament" fetch="LAZY">
+      <join-table name="curs_abonament">
+        <join-columns>
+          <join-column name="IdAbonament" referenced-column-name="AbonamentId"/>
+        </join-columns>
+        <inverse-join-columns>
+          <join-column name="IdCurs" referenced-column-name="CursId"/>
+        </inverse-join-columns>
+      </join-table>
+    </many-to-many>
   </entity>
 </doctrine-mapping>

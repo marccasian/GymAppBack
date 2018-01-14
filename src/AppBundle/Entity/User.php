@@ -12,15 +12,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class User
 {
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="Username", type="string", length=255)
-     * @ORM\Id
-     *
-     */
-    private $username;
     /**
      * @var string
      *
@@ -35,9 +26,13 @@ class User
      */
     private $email;
 
-
-
-
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="Username", type="string", length=255)
+     * @ORM\Id
+     */
+    private $username;
 
     /**
      * @var \AppBundle\Entity\Rol
@@ -52,7 +47,7 @@ class User
     /**
      * @return string
      */
-    public function getPassword(): string
+    public function getPassword()
     {
         return $this->password;
     }
@@ -60,7 +55,7 @@ class User
     /**
      * @param string $password
      */
-    public function setPassword(string $password)
+    public function setPassword($password)
     {
         $this->password = $password;
     }
@@ -68,7 +63,7 @@ class User
     /**
      * @return string
      */
-    public function getEmail(): string
+    public function getEmail()
     {
         return $this->email;
     }
@@ -76,16 +71,15 @@ class User
     /**
      * @param string $email
      */
-    public function setEmail(string $email)
+    public function setEmail($email)
     {
         $this->email = $email;
     }
 
-
     /**
      * @return string
      */
-    public function getUsername(): string
+    public function getUsername()
     {
         return $this->username;
     }
@@ -93,7 +87,7 @@ class User
     /**
      * @param string $username
      */
-    public function setUsername(string $username)
+    public function setUsername($username)
     {
         $this->username = $username;
     }
@@ -101,7 +95,7 @@ class User
     /**
      * @return Rol
      */
-    public function getRolid(): Rol
+    public function getRolid()
     {
         return $this->rolid;
     }
@@ -109,9 +103,14 @@ class User
     /**
      * @param Rol $rolid
      */
-    public function setRolid(Rol $rolid)
+    public function setRolid($rolid)
     {
         $this->rolid = $rolid;
+    }
+
+    public function __toString()
+    {
+        return "User: ".$this->username." Password: ".$this->password. " Email: ".$this->email." RolId: ".$this->rolid->getRolid();
     }
 
 
