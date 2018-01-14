@@ -59,7 +59,7 @@ class TrainerController extends Controller
 
                     //403 forbidden, user-ul este deja antrenor
 
-                    return $utils->createRespone(403, array('errors' => "This user is already a trainer"));
+                    return $utils->createResponse(403, array('errors' => "This user is already a trainer"));
 
                 }
                 else {
@@ -80,22 +80,22 @@ class TrainerController extends Controller
                         $em->flush();
                     }
                     catch (Exception $e){
-                        return $utils->createRespone(409, array(
+                        return $utils->createResponse(409, array(
                            'errors' => $e->getMessage(),
                         ));
                     }
                     catch (UniqueConstraintViolationException  $e) {
-                        return $utils->createRespone(409, array(
+                        return $utils->createResponse(409, array(
                             'errors' => $e->getMessage(),
                         ));
                     }
                     catch (PDOException  $e) {
-                        return $utils->createRespone(409, array(
+                        return $utils->createResponse(409, array(
                             'errors' => $e->getMessage(),
                         ));
                     }
 
-                    return $utils->createRespone(200, array(
+                    return $utils->createResponse(200, array(
                         'username' => $username,
                         'message' => "Successfully added new trainer",
                     ));
@@ -104,14 +104,14 @@ class TrainerController extends Controller
             } else {
                 //nu exista user-ul in baza de date
 
-                return $utils->createRespone(404, array(
+                return $utils->createResponse(404, array(
                    'errors' => "Username not found",
                 ));
             }
         }
         else{
             //nu s-a trimis nimic prin POST
-            return $utils->createRespone(206, array(
+            return $utils->createResponse(206, array(
                 'errors' => "Partial data.",
             ));
         }
@@ -161,23 +161,23 @@ class TrainerController extends Controller
                         $em->flush();
                     }
                     catch (Exception $e){
-                        return $utils->createRespone(409, array(
+                        return $utils->createResponse(409, array(
                            'errors' => $e->getMessage(),
                         ));
                     }
                     catch (UniqueConstraintViolationException  $e) {
-                        return $utils->createRespone(409, array(
+                        return $utils->createResponse(409, array(
                             'errors' => $e->getMessage(),
                         ));
                     }
                     catch (PDOException  $e) {
-                        return $utils->createRespone(409, array(
+                        return $utils->createResponse(409, array(
                             'errors' => $e->getMessage(),
                         ));
                     }
 
 
-                    return $utils->createRespone(200, array(
+                    return $utils->createResponse(200, array(
                         'username' => $username,
                         'message'  => $username . " is no longer a trainer",
                     ));
@@ -187,7 +187,7 @@ class TrainerController extends Controller
 
                     //altfel, username-ul nu este antrenor, deci nu are de ce sa fie modificat
 
-                    return $utils->createRespone(403, array(
+                    return $utils->createResponse(403, array(
                         'errors' => $username . " is not a trainer",
                     ));
                 }
@@ -195,14 +195,14 @@ class TrainerController extends Controller
             } else {
 
                 //nu exista username-ul in bd
-                return $utils->createRespone(404, array(
+                return $utils->createResponse(404, array(
                     'errors' => "Username not found",
                 ));
             }
         }
         else{
             //nu s-a primit nimic prin post
-            return $utils->createRespone(206, array(
+            return $utils->createResponse(206, array(
                 'errors' => "Partial data",
             ));
         }
@@ -240,12 +240,12 @@ class TrainerController extends Controller
 
                 );
             }
-            return $utils->createRespone(200, array(
+            return $utils->createResponse(200, array(
                 'trainers' => $result,
             ));
         }
         else{
-            return $utils->createRespone(404, array(
+            return $utils->createResponse(404, array(
                 'errors' => "There are no trainers.",
             ));
         }
@@ -284,12 +284,12 @@ class TrainerController extends Controller
 
                 );
             }
-            return $utils->createRespone(200, array(
+            return $utils->createResponse(200, array(
                 'users' => $result,
             ));
         }
         else{
-            return $utils->createRespone(404, array(
+            return $utils->createResponse(404, array(
                 'errors' => "There are no normal users.",
             ));
         }
@@ -328,12 +328,12 @@ class TrainerController extends Controller
 
         ];
 
-            return $utils->createRespone(200, array(
+            return $utils->createResponse(200, array(
                 'trainer' => $result,
             ));
         }
         else{
-            return $utils->createRespone(404, array(
+            return $utils->createResponse(404, array(
                 'errors' => "There are no trainers.",
             ));
         }

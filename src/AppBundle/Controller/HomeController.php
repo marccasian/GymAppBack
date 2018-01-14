@@ -54,7 +54,7 @@ class HomeController extends Controller
 
                 #return new Response(Response::HTTP_OK); #status code 200
 
-                return $utils->createRespone(200, array(
+                return $utils->createResponse(200, array(
                     'username' => $username,
                     'role' => $user->getRolid()->getRolid(),
                 ));
@@ -62,7 +62,7 @@ class HomeController extends Controller
             } else {
 
                 #return new Response(Response::HTTP_NOT_FOUND); #status code 404
-                return $utils->createRespone(404, array(
+                return $utils->createResponse(404, array(
                     'errors' => 'Incorrect username or password.'
                 ));
             }
@@ -76,7 +76,7 @@ class HomeController extends Controller
                 $errors .= ";";
                 $errors .= "Please enter the password";
             }
-            return $utils->createRespone(206, array(
+            return $utils->createResponse(206, array(
                 'errors' => $errors
             ));
         }
@@ -167,7 +167,7 @@ class HomeController extends Controller
                         $errors .= ';';
                         $errors .= 'Email is already used';
                     }
-                    return $utils->createRespone(226, array(
+                    return $utils->createResponse(226, array(
                        'errors' => $errors,
                     ));
 
@@ -175,7 +175,7 @@ class HomeController extends Controller
             }
             else{
 
-                return $utils->createRespone(409, array(
+                return $utils->createResponse(409, array(
                     'errors' => "The password fields don't match.",
                 ));
 
@@ -214,7 +214,7 @@ class HomeController extends Controller
                 $errors .= 'Invalid email format. Please enter a valid email';
             }
 
-            return $utils->createRespone(206, array(
+            return $utils->createResponse(206, array(
                 'errors' => $errors,
             ));
         }

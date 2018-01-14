@@ -45,30 +45,30 @@ class CursController extends Controller
         $type = $request->request->get('type');
         $errors = $this->checkIfNull($startDate, $endDate, $places, $level, $type);
         if ($errors){
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => $errors,
             ));
         }
         if (!filter_var($level, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Level must be integer",
             ));
         }
         if (!filter_var($places, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Places must be integer",
             ));
         }
 
         if ($places < 0){
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Places must be positive number",
             ));
         }
         $startDate = new \DateTime(DateTime::createFromFormat('Y-m-d', $startDate)->format('Y-m-d'));
         $endDate = new \DateTime(DateTime::createFromFormat('Y-m-d', $endDate)->format('Y-m-d'));
         if ($startDate > $endDate){
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Start date must be before end date",
             ));
         }
@@ -86,20 +86,20 @@ class CursController extends Controller
             $manager->persist($curs);
             $manager->flush();
         } catch (Exception $e) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => $e->getMessage(),
             ));
         } catch (UniqueConstraintViolationException  $e) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => $e->getMessage(),
             ));
         } catch (PDOException  $e) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => $e->getMessage(),
             ));
         }
 
-        return $utils->createRespone(200, array(
+        return $utils->createResponse(200, array(
             'success' => true,
             'data' => [
                 'cursId' => $curs->getCursid(),
@@ -173,11 +173,11 @@ class CursController extends Controller
                 ];
 
             }
-            return $utils->createRespone(200, array(
+            return $utils->createResponse(200, array(
                 'cursuri' => $result,
             ));
         } else {
-            return $utils->createRespone(404, array(
+            return $utils->createResponse(404, array(
                 'errors' => "Nu exista cursuri",
             ));
         }
@@ -195,12 +195,12 @@ class CursController extends Controller
         $utils = new Functions();
 
         if (is_null($cursId)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Curs Id este null",
             ));
         }
         if (!filter_var($cursId, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Id-ul cursului trebuie sa fie integer",
             ));
         }
@@ -218,26 +218,26 @@ class CursController extends Controller
                 $em->remove($curs);
                 $em->flush();
             } catch (Exception $e) {
-                return $utils->createRespone(409, array(
+                return $utils->createResponse(409, array(
                     'errors' => $e->getMessage(),
                 ));
             } catch (UniqueConstraintViolationException  $e) {
-                return $utils->createRespone(409, array(
+                return $utils->createResponse(409, array(
                     'errors' => $e->getMessage(),
                 ));
             } catch (PDOException  $e) {
-                return $utils->createRespone(409, array(
+                return $utils->createResponse(409, array(
                     'errors' => $e->getMessage(),
                 ));
             }
-            return $utils->createRespone(200, array(
+            return $utils->createResponse(200, array(
                 'succes' => true,
                 'message' => "Cursul a fost sters",
             ));
 
         } else {
             //nu exista cursul in bd
-            return $utils->createRespone(404, array(
+            return $utils->createResponse(404, array(
                 'errors' => "Course doesn't exist!",
             ));
         }
@@ -253,12 +253,12 @@ class CursController extends Controller
         $utils = new Functions();
 
         if (is_null($cursId)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Curs Id can't be null",
             ));
         }
         if (!filter_var($cursId, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Course id must be integer",
             ));
         }
@@ -270,7 +270,7 @@ class CursController extends Controller
 
         /** @var $curs Curs */
         if ($curs) {
-            return $utils->createRespone(200, array(
+            return $utils->createResponse(200, array(
                 'cursId' => $curs->getCursid(),
                 'places' => $curs->getPlaces(),
                 'type' => $curs->getType(),
@@ -279,7 +279,7 @@ class CursController extends Controller
                 'level' => $curs->getLevel(),
             ));
         } else {
-            return $utils->createRespone(404, array(
+            return $utils->createResponse(404, array(
                 'errors' => "Given id doesn't exists",
             ));
         }
@@ -299,29 +299,29 @@ class CursController extends Controller
         $bodyCursId = $request->request->get('courseId');
 
         if ($bodyCursId != $cursId) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Mismatch between url id and body id",
             ));
         }
 
         if (is_null($bodyCursId)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Missing course id from body!;",
             ));
         }
         if (!filter_var($bodyCursId, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Course id from body must be integer;",
             ));
         }
 
         if (is_null($cursId)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Missing course id;",
             ));
         }
         if (!filter_var($cursId, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Course id must be integer;",
             ));
         }
@@ -343,26 +343,26 @@ class CursController extends Controller
             $errors = $this->checkIfNull($startDate, $endDate, $places, $level, $type);
 
             if ($errors) {
-                return $utils->createRespone(404, array(
+                return $utils->createResponse(404, array(
                     'errors' => $errors,
                 ));
             }
 
             if (!filter_var($level, FILTER_VALIDATE_INT)) {
-                return $utils->createRespone(403, array(
+                return $utils->createResponse(403, array(
                     'errors' => "Level must be integer;",
                 ));
             }
 
             if (!filter_var($places, FILTER_VALIDATE_INT)) {
-                return $utils->createRespone(403, array(
+                return $utils->createResponse(403, array(
                     'errors' => "Price must be integer;",
                 ));
             }
             $startDate = new \DateTime(DateTime::createFromFormat('Y-m-d', $startDate)->format('Y-m-d'));
             $endDate = new \DateTime(DateTime::createFromFormat('Y-m-d', $endDate)->format('Y-m-d'));
             if ($startDate > $endDate){
-                return $utils->createRespone(403, array(
+                return $utils->createResponse(403, array(
                     'errors' => "Start date must be before end date;",
                 ));
             }
@@ -377,7 +377,7 @@ class CursController extends Controller
             $manager->flush();
 
             //succes
-            return $utils->createRespone(200, array(
+            return $utils->createResponse(200, array(
                 'succes' => true,
                 'data' => [
                     'courseId' => $curs->getCursid(),
@@ -390,7 +390,7 @@ class CursController extends Controller
             ));
 
         } else {
-            return $utils->createRespone(404, array(
+            return $utils->createResponse(404, array(
                 'errors' => "There isn't any course with given id;",
             ));
         }

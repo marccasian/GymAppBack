@@ -41,18 +41,18 @@ class FeedbackController extends Controller
         $rating = $request->request->get('rating');
         $errors = $this->checkIfNull($evaluatorId, $evaluatId, $text, $rating);
         if ($errors){
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => $errors,
             ));
         }
         if (!filter_var($rating, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Rating must be integer",
             ));
         }
 
         if ($rating < 0){
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Rating must be a positive number",
             ));
         }
@@ -78,20 +78,20 @@ class FeedbackController extends Controller
             $manager->persist($feedback);
             $manager->flush();
         } catch (Exception $e) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => $e->getMessage(),
             ));
         } catch (UniqueConstraintViolationException  $e) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => $e->getMessage(),
             ));
         } catch (PDOException  $e) {
-            return $utils->createRespone(500, array(
+            return $utils->createResponse(500, array(
                 'errors' => $e->getMessage(),
             ));
         }
 
-        return $utils->createRespone(200, array(
+        return $utils->createResponse(200, array(
             'success' => true,
             'data' => [
                 'evaluatedId' => $feedback->getEvaluatid()->getUsername()->getUsername(),
@@ -156,7 +156,7 @@ class FeedbackController extends Controller
             ];
 
         }
-        return $utils->createRespone(200, $result);
+        return $utils->createResponse(200, $result);
     }
 
     /**
@@ -185,7 +185,7 @@ class FeedbackController extends Controller
         $stmt->execute();
 
         $result = $stmt->fetchAll();
-        return $utils->createRespone(200, $result);
+        return $utils->createResponse(200, $result);
     }
 
     /**
@@ -200,12 +200,12 @@ class FeedbackController extends Controller
         $utils = new Functions();
 
         if (is_null($feedbackId)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Missing feedback id",
             ));
         }
         if (!filter_var($feedbackId, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Feedback if must be integer",
             ));
         }
@@ -223,25 +223,25 @@ class FeedbackController extends Controller
                 $em->remove($feedback);
                 $em->flush();
             } catch (Exception $e) {
-                return $utils->createRespone(409, array(
+                return $utils->createResponse(409, array(
                     'errors' => $e->getMessage(),
                 ));
             } catch (UniqueConstraintViolationException  $e) {
-                return $utils->createRespone(409, array(
+                return $utils->createResponse(409, array(
                     'errors' => $e->getMessage(),
                 ));
             } catch (PDOException  $e) {
-                return $utils->createRespone(409, array(
+                return $utils->createResponse(409, array(
                     'errors' => $e->getMessage(),
                 ));
             }
-            return $utils->createRespone(200, array(
+            return $utils->createResponse(200, array(
                 'succes' => true,
                 'message' => "Feedback successfully deleted!",
             ));
 
         } else {
-            return $utils->createRespone(404, array(
+            return $utils->createResponse(404, array(
                 'errors' => "Feedback doesn't exist!",
             ));
         }
@@ -258,7 +258,7 @@ class FeedbackController extends Controller
         $utils = new Functions();
 
         if (is_null($evaluator)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Missing feedback id",
             ));
         }
@@ -279,7 +279,7 @@ class FeedbackController extends Controller
                     'rating' => $feedback->getRating()
                 ];
         }
-        return $utils->createRespone(200, $response_array);
+        return $utils->createResponse(200, $response_array);
     }
 
     /**
@@ -293,7 +293,7 @@ class FeedbackController extends Controller
         $utils = new Functions();
 
         if (is_null($evaluated)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Missing feedback id",
             ));
         }
@@ -314,7 +314,7 @@ class FeedbackController extends Controller
                 'rating' => $feedback->getRating()
             ];
         }
-        return $utils->createRespone(200, $response_array);
+        return $utils->createResponse(200, $response_array);
     }
 
     /**
@@ -328,12 +328,12 @@ class FeedbackController extends Controller
         $utils = new Functions();
 
         if (is_null($feedbackId)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Missing feedback id",
             ));
         }
         if (!filter_var($feedbackId, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Feedback id must be integer",
             ));
         }
@@ -345,7 +345,7 @@ class FeedbackController extends Controller
 
         /** @var $feedback ObservatiiCurs */
         if ($feedback) {
-            return $utils->createRespone(200, array(
+            return $utils->createResponse(200, array(
                 'id' => $feedback->getId(),
                 'evaluatId' => $feedback->getEvaluatid()->getUsername()->getUsername(),
                 'evaluatorId' => $feedback->getEvaluatorid()->getUsername()->getUsername(),
@@ -353,7 +353,7 @@ class FeedbackController extends Controller
                 'rating' => $feedback->getRating()
             ));
         } else {
-            return $utils->createRespone(404, array(
+            return $utils->createResponse(404, array(
                 'errors' => "Given id doesn't exists",
             ));
         }
@@ -374,29 +374,29 @@ class FeedbackController extends Controller
         $bodyFeedbackId = $request->request->get('feedbackId');
 
         if ($bodyFeedbackId != $feedbackId) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Mismatch between url id and body id",
             ));
         }
 
         if (is_null($bodyFeedbackId)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Missing course id from body!;",
             ));
         }
         if (!filter_var($bodyFeedbackId, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Feedback id from body must be integer;",
             ));
         }
 
         if (is_null($feedbackId)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Missing feedback id;",
             ));
         }
         if (!filter_var($feedbackId, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Feedback id must be integer;",
             ));
         }
@@ -417,13 +417,13 @@ class FeedbackController extends Controller
             $errors = $this->checkIfNull($evaluatorId, $evaluatId, $text, $rating);
 
             if ($errors) {
-                return $utils->createRespone(404, array(
+                return $utils->createResponse(404, array(
                     'errors' => $errors,
                 ));
             }
 
             if (!filter_var($rating, FILTER_VALIDATE_INT)) {
-                return $utils->createRespone(403, array(
+                return $utils->createResponse(403, array(
                     'errors' => "Rating must be integer;",
                 ));
             }
@@ -451,20 +451,20 @@ class FeedbackController extends Controller
                 $manager->flush();
 
             } catch (Exception $e) {
-                return $utils->createRespone(403, array(
+                return $utils->createResponse(403, array(
                     'errors' => $e->getMessage(),
                 ));
             } catch (UniqueConstraintViolationException  $e) {
-                return $utils->createRespone(403, array(
+                return $utils->createResponse(403, array(
                     'errors' => $e->getMessage(),
                 ));
             } catch (PDOException  $e) {
-                return $utils->createRespone(403, array(
+                return $utils->createResponse(403, array(
                     'errors' => $e->getMessage(),
                 ));
             }
 
-            return $utils->createRespone(200, array(
+            return $utils->createResponse(200, array(
                 'succes' => true,
                 'data' => [
                     'feedbackId' => $feedback->getId(),
@@ -476,7 +476,7 @@ class FeedbackController extends Controller
             ));
 
         } else {
-            return $utils->createRespone(404, array(
+            return $utils->createResponse(404, array(
                 'errors' => "There isn't any feedback with given id;",
             ));
         }

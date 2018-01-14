@@ -52,12 +52,12 @@ class ScheduleController extends Controller
         $errors = $this->checkIfNull($courseId, $trainerId, $weekDay, $startTime, $endTime, $periodStartDate, $periodEndDate);
 
         if ($errors) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => $errors,
             ));
         }
         if (!filter_var($weekDay, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Weekday must be integer",
             ));
         }
@@ -72,7 +72,7 @@ class ScheduleController extends Controller
         $endTime = new \DateTime(DateTime::createFromFormat('H:i:s', $endTime)->format('H:i:s'));
 
         if ($periodStartDate > $periodEndDate) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Start date must be before end date",
             ));
         }
@@ -85,7 +85,7 @@ class ScheduleController extends Controller
             ));
 
             if (!$curs) {
-                return $utils->createRespone(403, array(
+                return $utils->createResponse(403, array(
                     'errors' => "CourseId invalid",
                 ));
             }
@@ -94,7 +94,7 @@ class ScheduleController extends Controller
                 'profileid' => $trainerId,
             ));
             if (!$profile) {
-                return $utils->createRespone(403, array(
+                return $utils->createResponse(403, array(
                     'errors' => "TrainerId invalid",
                 ));
             }
@@ -113,20 +113,20 @@ class ScheduleController extends Controller
             $manager->flush();
 
         } catch (Exception $e) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => $e->getMessage(),
             ));
         } catch (UniqueConstraintViolationException  $e) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => $e->getMessage(),
             ));
         } catch (PDOException  $e) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => $e->getMessage(),
             ));
         }
 
-        return $utils->createRespone(200, array(
+        return $utils->createResponse(200, array(
             'succes' => true,
             'data' => [
                 'courseId' => $schedule->getIdcurs(),
@@ -210,11 +210,11 @@ class ScheduleController extends Controller
                 ];
 
             }
-            return $utils->createRespone(200, array(
+            return $utils->createResponse(200, array(
                 'abonamente' => $result,
             ));
         } else {
-            return $utils->createRespone(404, array(
+            return $utils->createResponse(404, array(
                 'errors' => "No schedules in db.",
             ));
         }
@@ -231,12 +231,12 @@ class ScheduleController extends Controller
         $utils = new Functions();
 
         if (is_null($id)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Id cannot be null",
             ));
         }
         if (!filter_var($id, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Id has to be integer",
             ));
         }
@@ -248,7 +248,7 @@ class ScheduleController extends Controller
 
         /** @var $schedule Schedule */
         if ($schedule) {
-            return $utils->createRespone(200, array(
+            return $utils->createResponse(200, array(
                 'id' => $schedule->getId(),
                 'courseId' => $schedule->getIdcurs(),
                 'weekDay' => $schedule->getWeekday(),
@@ -259,7 +259,7 @@ class ScheduleController extends Controller
                 'trainerId' => $schedule->getIdtrainer(),
             ));
         } else {
-            return $utils->createRespone(404, array(
+            return $utils->createResponse(404, array(
                 'errors' => "No schedules with given id",
             ));
         }
@@ -278,12 +278,12 @@ class ScheduleController extends Controller
         $utils = new Functions();
 
         if (is_null($id)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Id cannot be null",
             ));
         }
         if (!filter_var($id, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Id has to be integer",
             ));
         }
@@ -301,26 +301,26 @@ class ScheduleController extends Controller
                 $em->remove($schedule);
                 $em->flush();
             } catch (Exception $e) {
-                return $utils->createRespone(409, array(
+                return $utils->createResponse(409, array(
                     'errors' => $e->getMessage(),
                 ));
             } catch (UniqueConstraintViolationException  $e) {
-                return $utils->createRespone(409, array(
+                return $utils->createResponse(409, array(
                     'errors' => $e->getMessage(),
                 ));
             } catch (PDOException  $e) {
-                return $utils->createRespone(409, array(
+                return $utils->createResponse(409, array(
                     'errors' => $e->getMessage(),
                 ));
             }
-            return $utils->createRespone(200, array(
+            return $utils->createResponse(200, array(
                 'succes' => true,
                 'message' => "Schedule deleted",
             ));
 
         } else {
 
-            return $utils->createRespone(404, array(
+            return $utils->createResponse(404, array(
                 'errors' => "No schedule with given id.",
             ));
         }
@@ -348,29 +348,29 @@ class ScheduleController extends Controller
         $bodyScheduleId = $request->request->get('id');
 
         if ($bodyScheduleId != $id) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Ids are not equal",
             ));
         }
 
         if (is_null($bodyScheduleId)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Id is null",
             ));
         }
         if (!filter_var($bodyScheduleId, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Id has to be integer",
             ));
         }
 
         if (is_null($id)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Id is null",
             ));
         }
         if (!filter_var($id, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => "Id has to be integer",
             ));
         }
@@ -386,13 +386,13 @@ class ScheduleController extends Controller
 
             $errors = $this->checkIfNull($courseId, $trainerId, $weekDay, $startTime, $endTime, $periodStartDate, $periodEndDate);
             if ($errors) {
-                return $utils->createRespone(404, array(
+                return $utils->createResponse(404, array(
                     'errors' => $errors,
                 ));
             }
 
             if (!filter_var($weekDay, FILTER_VALIDATE_INT)) {
-                return $utils->createRespone(403, array(
+                return $utils->createResponse(403, array(
                     'errors' => "Weekday must be integer",
                 ));
             }
@@ -405,7 +405,7 @@ class ScheduleController extends Controller
             $startTime = new \DateTime(DateTime::createFromFormat('H:i:s', $startTime)->format('H:i:s'));
             $endTime = new \DateTime(DateTime::createFromFormat('H:i:s', $endTime)->format('H:i:s'));
             if ($periodStartDate > $periodEndDate) {
-                return $utils->createRespone(403, array(
+                return $utils->createResponse(403, array(
                     'errors' => "Start date must be before end date",
                 ));
             }
@@ -417,7 +417,7 @@ class ScheduleController extends Controller
                 ));
                 /** @var $curs Curs */
                 if (!$curs) {
-                    return $utils->createRespone(403, array(
+                    return $utils->createResponse(403, array(
                         'errors' => "CourseId invalid",
                     ));
                 }
@@ -427,7 +427,7 @@ class ScheduleController extends Controller
                 ));
                 /** @var $profile Profile */
                 if (!$profile) {
-                    return $utils->createRespone(403, array(
+                    return $utils->createResponse(403, array(
                         'errors' => "TrainerId invalid",
                     ));
                 }
@@ -445,20 +445,20 @@ class ScheduleController extends Controller
                 $manager->flush();
 
             } catch (Exception $e) {
-                return $utils->createRespone(403, array(
+                return $utils->createResponse(403, array(
                     'errors' => $e->getMessage(),
                 ));
             } catch (UniqueConstraintViolationException  $e) {
-                return $utils->createRespone(403, array(
+                return $utils->createResponse(403, array(
                     'errors' => $e->getMessage(),
                 ));
             } catch (PDOException  $e) {
-                return $utils->createRespone(403, array(
+                return $utils->createResponse(403, array(
                     'errors' => $e->getMessage(),
                 ));
             }
             //succes
-            return $utils->createRespone(200, array(
+            return $utils->createResponse(200, array(
                 'succes' => true,
                 'data' => [
                     'id'                 =>$schedule->getId(),
@@ -473,7 +473,7 @@ class ScheduleController extends Controller
             ));
 
         } else {
-            return $utils->createRespone(404, array(
+            return $utils->createResponse(404, array(
                 'errors' => "No schedule with given id",
             ));
         }
