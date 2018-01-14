@@ -35,7 +35,6 @@ class CursController extends Controller
      * @param Request $request
      * @return Response
      */
-
     public function createCourse(Request $request){
         $utils = new Functions();
 
@@ -100,7 +99,7 @@ class CursController extends Controller
         return $utils->createResponse(200, array(
             'cursId' => $curs->getCursid(),
             'level' => $level,
-            'place' => $places,
+            'places' => $places,
             'type' => $type,
             'startDate' => $startDate->format('Y-m-d'),
             'endDate' => $endDate->format('Y-m-d')
@@ -159,7 +158,7 @@ class CursController extends Controller
         foreach ($cursuri as $item) {
             $result[] = [
                 'cursId' => $item->getCursid(),
-                'place' => $item->getPlaces(),
+                'places' => $item->getPlaces(),
                 'level' => $item->getLevel(),
                 'type' => $item->getType(),
                 'startDate' => $item->getStartdate()->format('Y-m-d'),
@@ -225,7 +224,7 @@ class CursController extends Controller
             return $utils->createResponse(200, array(
                 'cursId' => $cursId,
                 'level' => $level,
-                'place' => $places,
+                'places' => $places,
                 'type' => $type,
                 'startDate' => $startDate,
                 'endDate' => $endDate
