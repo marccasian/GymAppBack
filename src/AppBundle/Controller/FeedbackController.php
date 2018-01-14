@@ -90,7 +90,7 @@ class FeedbackController extends Controller
         }
 
         return $utils->createResponse(200, array(
-            'evaluatedId' => $feedback->getEvaluatid()->getUsername()->getUsername(),
+            'evaluatId' => $feedback->getEvaluatid()->getUsername()->getUsername(),
             'evaluatorId' => $feedback->getEvaluatorid()->getUsername()->getUsername(),
             'rating' => $feedback->getRating(),
             'text' => $feedback->getText()
@@ -144,7 +144,7 @@ class FeedbackController extends Controller
         /** @var  $item Feedback */
         foreach ($feedback_entries as $item) {
             $result[] = [
-                'evaluatedId' => $item->getEvaluatid()->getUsername()->getUsername(),
+                'evaluatId' => $item->getEvaluatid()->getUsername()->getUsername(),
                 'evaluatorId' => $item->getEvaluatorid()->getUsername()->getUsername(),
                 'rating' => $item->getRating(),
                 'text' => $item->getText()
@@ -211,7 +211,7 @@ class FeedbackController extends Controller
 
 
         if ($feedback) {
-            $evaluatedId = $feedback->getEvaluatid()->getUsername()->getUsername();
+            $evaluatId = $feedback->getEvaluatid()->getUsername()->getUsername();
             $evaluatorId = $feedback->getEvaluatorid()->getUsername()->getUsername();
             $rating = $feedback->getRating();
             $text = $feedback->getText();
@@ -231,7 +231,7 @@ class FeedbackController extends Controller
                 ));
             }
             return $utils->createResponse(200, array(
-                'evaluatedId' => $evaluatedId,
+                'evaluatId' => $evaluatId,
                 'evaluatorId' => $evaluatorId,
                 'rating' => $rating,
                 'text' => $text
@@ -280,16 +280,16 @@ class FeedbackController extends Controller
     }
 
     /**
-     * @Route("/feedback/get_feedback_evaluated/{evaluated}", name = "get_feedback_evaluated")
+     * @Route("/feedback/get_feedback_evaluated/{evaluat}", name = "get_feedback_evaluated")
      * @Method({"GET"})
-     * @param $evaluated
+     * @param $evaluat
      * @return Response
      */
-    public function getFeedbackByEvaluated($evaluated)
+    public function getFeedbackByEvaluat($evaluat)
     {
         $utils = new Functions();
 
-        if (is_null($evaluated)) {
+        if (is_null($evaluat)) {
             return $utils->createResponse(403, array(
                 'errors' => "Missing feedback id",
             ));
@@ -297,7 +297,7 @@ class FeedbackController extends Controller
         $repository = $this->getDoctrine()->getManager()->getRepository(Feedback::class);
 
         $feedback_entries = $repository->findBy(array(
-            'evaluatid' => $evaluated,
+            'evaluatid' => $evaluat,
         ));
 
         /** @var $feedback Feedback */
@@ -409,7 +409,7 @@ class FeedbackController extends Controller
             $text = $request->request->get('text');
             $rating = $request->request->get('rating');
             $evaluatorId = $request->request->get('evaluatorId');
-            $evaluatId = $request->request->get('evaluatedId');
+            $evaluatId = $request->request->get('evaluatId');
 
             $errors = $this->checkIfNull($evaluatorId, $evaluatId, $text, $rating);
 
@@ -462,7 +462,7 @@ class FeedbackController extends Controller
             return $utils->createResponse(200, array(
                 'feedbackId' => $feedback->getId(),
                 'evaluatorId' => $evaluatorId,
-                'evaluatedId' => $evaluatId,
+                'evaluatId' => $evaluatId,
                 'text' => $text,
                 'rating' => $rating
             ));
