@@ -1,6 +1,7 @@
 <?php
 /**
- * @author Casian Marc <marccasiannicolae@gmail.com>
+ * @author Casian Marc      <marccasiannicolae@gmail.com>
+ * @authro Lucaciu Mircea   <lucaciumircea5@gmail.com>
  * Class CursController
  * @package AppBundle\Controller
  */
@@ -385,6 +386,69 @@ class CursController extends Controller
                 'errors' => "There isn't any course with given id;",
             ));
         }
+    }
+
+
+    /**
+     * @Route("/course/assign_course/", name = "assign_course")
+     * @Method({"POST"})
+     * @param Request $request
+     * @return Response
+     */
+    public function assignCourse(Request $request)
+    {
+        $utils = new Functions();
+        $cursId =       $request->request->get('courseId');
+        $abonamentId =  $request->request->get('abonamentId');
+
+        if(is_null($cursId)){
+            return $utils->createResponse(404, array(
+                'errors' => "Course ID cannot be null;",
+            ));
+        }
+        if(is_null($abonamentId)){
+            return $utils->createResponse(404, array(
+                'errors' => "Subscription ID cannot be null;",
+            ));
+        }
+
+        $repository = $this->getDoctrine()->getManager()->getRepository(Curs::class);
+        /** @var $curs Curs */
+        $curs = $repository->findOneBy(array(
+            'cursid' => $cursId,
+        ));
+
+        if($curs){
+            $repositoryAbonament = $this->getDoctrine()->getManager()->getRepository(Abonament::class);
+            /** @var $abonament Abonament */
+            $abonament = $repositoryAbonament->findOneBy(array(
+                'abonamentid' => $abonamentId,
+            ));
+
+            if($abonament){
+                $manager = $this->getDoctrine()->getManager();
+                $curs->getIdabonament()->add($abonamentId);
+                $abonament->getIdcurs()->add($cursId);
+                $manager->persist($curs);
+                $manager->persist($abonament);
+                $manager->flush();
+
+                return $utils->createResponse(200, [
+                    'courseId'      => $cursId,
+                    'abonamentId'   => $abonamentId
+                ]);
+
+            }else{
+                return $utils->createResponse(404, [
+                    'errors' => "No subscription existing with given ID;",
+                ]);
+            }
+        }else{
+            return $utils->createResponse(404, [
+                'errors' => "No course existing with given ID;",
+            ]);
+        }
+
     }
 
 }
