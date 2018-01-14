@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="feedback", indexes={@ORM\Index(name="feedback_evaluator_fk_idx", columns={"EvaluatorId"}), @ORM\Index(name="feedback_evaluat_fk_idx", columns={"EvaluatId"})})
  * @ORM\Entity
  */
-class ObservatiiCurs
+class Feedback
 {
     /**
      * @var string
