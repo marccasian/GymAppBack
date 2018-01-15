@@ -298,7 +298,7 @@ class HomeController extends Controller
                     $rCode = new ActivationCode();
                     $rCode->setEmail($email);
                     $rCode->setCode($code);
-                    $resetCode->setUsed(0);
+                    $rCode->setUsed(0);
                     try{
                         $em->persist($rCode);
                         $em->flush();
