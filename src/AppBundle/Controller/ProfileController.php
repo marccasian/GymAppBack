@@ -44,7 +44,7 @@ class ProfileController extends Controller
 
             if ($profile) {
 
-                return $utils->createRespone(200, array(
+                return $utils->createResponse(200, array(
                     'profileid'      => $profile->getProfileid(),
                     'username'       => $user->getUsername(),
                     'fullname'       => $profile->getFullname(),
@@ -54,11 +54,11 @@ class ProfileController extends Controller
             }
 
         } else {
-            return $utils->createRespone(404, array(
+            return $utils->createResponse(404, array(
                 'errors' => "No user with this username in the db.",
             ));
         }
-        return $utils->createRespone(404, array(
+        return $utils->createResponse(404, array(
             'errors' => "Something went wrong.",
         ));
     }
@@ -79,13 +79,13 @@ class ProfileController extends Controller
         $varsta = $request->request->get('age');
 
         if (!filter_var($varsta, FILTER_VALIDATE_INT)) {
-            return $utils->createRespone(404, array(
+            return $utils->createResponse(404, array(
                 'errors' => "Age must be an integer.",
             ));
         }
 
         if (count($fullname) > 255) {
-            return $utils->createRespone(404, array(
+            return $utils->createResponse(404, array(
                 'errors' => "Full name too long.",
             ));
         }
@@ -111,7 +111,7 @@ class ProfileController extends Controller
             try {
                 $em->persist($newProfile);
                 $em->flush();
-                return $utils->createRespone(200, array(
+                return $utils->createResponse(200, array(
                     'profileid'      => $newProfile->getProfileid(),
                     'username'        => $newProfile->getUsername()->getUserName(),
                     'fullname'        => $newProfile->getFullname(),
@@ -120,23 +120,23 @@ class ProfileController extends Controller
                 ));
             } catch (Exception $e) {
                 error_log($e->getMessage());
-                return $utils->createRespone(409, array(
+                return $utils->createResponse(409, array(
                     'errors' => 'Something went wrong',
                 ));
             } catch (UniqueConstraintViolationException  $e) {
                 error_log($e->getMessage());
-                return $utils->createRespone(409, array(
+                return $utils->createResponse(409, array(
                     'errors' => 'Something went wrong',
                 ));
             } catch (PDOException  $e) {
                 error_log($e->getMessage());
-                return $utils->createRespone(409, array(
+                return $utils->createResponse(409, array(
                     'errors' => 'Something went wrong',
                 ));
             }
 
         } else {
-            return $utils->createRespone(404, array(
+            return $utils->createResponse(404, array(
                 'errors' => "Invalid username",
             ));
 

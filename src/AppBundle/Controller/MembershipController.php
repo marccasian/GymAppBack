@@ -49,7 +49,7 @@ class MembershipController extends Controller
         if(!filter_var($level, FILTER_VALIDATE_INT))
         {
             if(!($level >= 1 and $level <=3)) {
-                return $utils->createRespone(404, array(
+                return $utils->createResponse(404, array(
                     'errors' => 'Level must be an integer between 1 and 3',
                 ));
             }
@@ -57,7 +57,7 @@ class MembershipController extends Controller
 
         if(!filter_var($price, FILTER_VALIDATE_FLOAT))
         {
-            return $utils->createRespone(404, array(
+            return $utils->createResponse(404, array(
                'errors' => "Price must be a float.",
             ));
         }
@@ -132,22 +132,22 @@ class MembershipController extends Controller
                             $em->flush();
                             $em->persist($newMemberhip);
                             $em->flush();
-                            return $utils->createRespone(202, array(
+                            return $utils->createResponse(202, array(
                                 'message' => "The membership has been extended with one month.",
                             ));
 
                         } catch (UniqueConstraintViolationException  $e) {
-                            return $utils->createRespone(409, array(
+                            return $utils->createResponse(409, array(
                                 'errors' => $e->getMessage(),
                             ));
                         }
                         catch (PDOException  $e) {
-                            return $utils->createRespone(409, array(
+                            return $utils->createResponse(409, array(
                                 'errors' => $e->getMessage(),
                             ));
                         }
                         catch (\Exception  $e) {
-                            return $utils->createRespone(409, array(
+                            return $utils->createResponse(409, array(
                                 'errors' => $e->getMessage(),
                             ));
                         }
@@ -178,21 +178,21 @@ class MembershipController extends Controller
                             $em = $this->getDoctrine()->getManager();
                             $em->persist($newMemberhip);
                             $em->flush();
-                            return $utils->createRespone(200, array(
+                            return $utils->createResponse(200, array(
                                 'message' => "The membership has been created.",
                             ));
                         } catch (UniqueConstraintViolationException  $e) {
-                            return $utils->createRespone(409, array(
+                            return $utils->createResponse(409, array(
                                 'errors' => "This user already has a membership.",
                             ));
                         } catch (PDOException  $e) {
-                            return $utils->createRespone(409, array(
+                            return $utils->createResponse(409, array(
                                 'errors' => $e->getMessage(),
                             ));
                         }
                     }
                     else{
-                        return $utils->createRespone(226, array(
+                        return $utils->createResponse(226, array(
                             'errors' => "This user already has a membership.",
                         ));
                     }
@@ -203,24 +203,24 @@ class MembershipController extends Controller
                 //nu exista user-ul in baza de date
 
                 if (!$user and !$nivel) {
-                    return $utils->createRespone(404, array(
+                    return $utils->createResponse(404, array(
                         'errors' => "Username and membership doesn't exist.",
                     ));
 
                 } elseif (!$nivel) {
-                    return $utils->createRespone(404, array(
+                    return $utils->createResponse(404, array(
                         'errors' => "The memberhip with level " . $level . " doesn't exist.",
                     ));
 
                 } else {
-                    return $utils->createRespone(404, array(
+                    return $utils->createResponse(404, array(
                         'errors' => "Username not found",
                     ));
                 }
             }
         } else {
             //nu s-a trimis nimic prin POST
-            return $utils->createRespone(206, array(
+            return $utils->createResponse(206, array(
                 'errors' => "Partial data.",
             ));
         }
@@ -290,7 +290,7 @@ class MembershipController extends Controller
                                 $em->persist($abonament);
                                 $em->flush();
                             } catch (Exception $e) {
-                                return $utils->createRespone(409, array(
+                                return $utils->createResponse(409, array(
                                     'errors' => $e->getMessage(),
                                 ));
                             }
@@ -298,14 +298,14 @@ class MembershipController extends Controller
                     }
 
                     if (count($result) > 0) {
-                        return $utils->createRespone(200, array(
+                        return $utils->createResponse(200, array(
                             'memberships' => $result,
                         ));
                     }
                 }
 
 
-                return $utils->createRespone(403, array(
+                return $utils->createResponse(403, array(
                     'errors' => "No membership.",
                 ));
 
@@ -313,7 +313,7 @@ class MembershipController extends Controller
                 //nu exista user-ul in baza de date
 
                 if (!$user) {
-                    return $utils->createRespone(404, array(
+                    return $utils->createResponse(404, array(
                         'errors' => "Username not found",
                     ));
                 }
@@ -323,7 +323,7 @@ class MembershipController extends Controller
         else
             {
                 //nu s-a trimis nimic prin POST
-                return $utils->createRespone(206, array(
+                return $utils->createResponse(206, array(
                     'errors' => "Partial data.",
                 ));
             }
