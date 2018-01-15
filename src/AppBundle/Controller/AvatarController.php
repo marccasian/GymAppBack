@@ -27,7 +27,7 @@ class AvatarController extends Controller
     /**
      * @Route("/avatar/uploadAvatar", name = "upload_avatar")
      * @Method({"POST"})
-     * @param $username
+     * @param $request
      * @return Response
      */
 
