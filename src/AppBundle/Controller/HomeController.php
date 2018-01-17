@@ -123,6 +123,7 @@ class HomeController extends Controller
                     $profile = new Profile();
                     $profile->setFullname('');
                     $profile->setSex('');
+                    $profile->setVarsta(0);
                     $profile->setUsername($user);
 
                     $em = $this->getDoctrine()->getManager();
