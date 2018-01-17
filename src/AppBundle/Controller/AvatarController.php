@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Lucaciu Mircea <lucaciumircea5@gmail.com>
+ * @author Grozescu Rares
  */
 
 namespace AppBundle\Controller;
@@ -27,7 +27,7 @@ class AvatarController extends Controller
     /**
      * @Route("/avatar/uploadAvatar", name = "upload_avatar")
      * @Method({"POST"})
-     * @param $username
+     * @param $request
      * @return Response
      */
 
