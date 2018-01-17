@@ -32,6 +32,7 @@ class ProfileController extends Controller
     {
         $utils = new Functions();
         $repoUser = $this->getDoctrine()->getManager()->getRepository(User::class);
+        /** @var  $user User*/
         $user = $repoUser->findOneBy(array(
             'username' => $username,
         ));
@@ -47,6 +48,7 @@ class ProfileController extends Controller
                 return $utils->createResponse(200, array(
                     'profileid'      => $profile->getProfileid(),
                     'username'       => $user->getUsername(),
+                    'email'          => $user->getEmail(),
                     'fullname'       => $profile->getFullname(),
                     'sex'            => $profile->getSex(),
                     'age'            => $profile->getVarsta(),

@@ -22,6 +22,54 @@ class Evidentainscrieri
     private $idevidentainscrieri;
 
     /**
+     * @return int
+     */
+    public function getIdevidentainscrieri(): int
+    {
+        return $this->idevidentainscrieri;
+    }
+
+    /**
+     * @param int $idevidentainscrieri
+     */
+    public function setIdevidentainscrieri(int $idevidentainscrieri)
+    {
+        $this->idevidentainscrieri = $idevidentainscrieri;
+    }
+
+    /**
+     * @return Profile
+     */
+    public function getProfileid(): Profile
+    {
+        return $this->profileid;
+    }
+
+    /**
+     * @param Profile $profileid
+     */
+    public function setProfileid(Profile $profileid)
+    {
+        $this->profileid = $profileid;
+    }
+
+    /**
+     * @return Schedule
+     */
+    public function getScheduleid(): Schedule
+    {
+        return $this->scheduleid;
+    }
+
+    /**
+     * @param Schedule $scheduleid
+     */
+    public function setScheduleid(Schedule $scheduleid)
+    {
+        $this->scheduleid = $scheduleid;
+    }
+
+    /**
      * @var \AppBundle\Entity\Profile
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Profile")

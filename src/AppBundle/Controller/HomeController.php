@@ -121,10 +121,9 @@ class HomeController extends Controller
 
                     //update profile table
                     $profile = new Profile();
-                    $profile->setFullname('-');
-                    $profile->setSex('-');
+                    $profile->setFullname('');
+                    $profile->setSex('');
                     $profile->setUsername($user);
-                    $profile->setVarsta(18);
 
                     $em = $this->getDoctrine()->getManager();
                     $em->persist($profile);
