@@ -319,13 +319,24 @@ class AbonamentController extends Controller
 
             if (!filter_var($level, FILTER_VALIDATE_INT)) {
                 return $utils->createResponse(403, array(
-                    'errors' => "Level must be integer",
+                    'errors' => "Level must be integer;",
                 ));
             }
 
             if (!filter_var($price, FILTER_VALIDATE_FLOAT)) {
                 return $utils->createResponse(403, array(
-                    'errors' => "Price must be float",
+                    'errors' => "Price must be float;",
+                ));
+            }
+
+            if ($price < 0){
+                return $utils->createResponse(403, array(
+                    'errors' => "Price must be grater than 0;",
+                ));
+            }
+            if ($level < 0){
+                return $utils->createResponse(403, array(
+                    'errors' => "Level must be grater than 0;",
                 ));
             }
 
