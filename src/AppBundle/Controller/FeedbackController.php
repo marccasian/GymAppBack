@@ -10,6 +10,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Feedback;
 use AppBundle\Entity\Profile;
+use AppBundle\Entity\User;
 use AppBundle\Utils\Functions;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -261,9 +262,13 @@ class FeedbackController extends Controller
             ));
         }
         $repository = $this->getDoctrine()->getManager()->getRepository(Feedback::class);
-
+        $repositoryProfile = $this->getDoctrine()->getManager()->getRepository(Profile::class);
+        /** @var  $profile profile*/
+        $profile = $repositoryProfile->findOneBy(array(
+            'username' => $evaluator
+        ));
         $feedback_entries = $repository->findBy(array(
-            'evaluatorid' => $evaluator,
+            'evaluatorid' => $profile->getProfileid()   ,
         ));
 
         /** @var $feedback Feedback */
@@ -296,9 +301,13 @@ class FeedbackController extends Controller
             ));
         }
         $repository = $this->getDoctrine()->getManager()->getRepository(Feedback::class);
-
+        $repositoryProfile = $this->getDoctrine()->getManager()->getRepository(Profile::class);
+        /** @var  $profile profile*/
+        $profile = $repositoryProfile->findOneBy(array(
+            'username' => $evaluat
+        ));
         $feedback_entries = $repository->findBy(array(
-            'evaluatid' => $evaluat,
+            'evaluatid' => $profile->getProfileid(),
         ));
 
         /** @var $feedback Feedback */
