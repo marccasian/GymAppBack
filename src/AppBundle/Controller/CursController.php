@@ -43,7 +43,8 @@ class CursController extends Controller
         $places= $request->request->get('places');
         $level = $request->request->get('level');
         $type = $request->request->get('type');
-        $errors = $this->checkIfNull($startDate, $endDate, $places, $level, $type);
+        $description = $request->request->get('description');
+        $errors = $this->checkIfNull($startDate, $endDate, $places, $level, $type, $description);
         if ($errors){
             return $utils->createResponse(403, array(
                 'errors' => $errors,
@@ -81,6 +82,7 @@ class CursController extends Controller
             $curs->setType($type);
             $curs->setStartdate($startDate);
             $curs->setEnddate($endDate);
+            $curs->setDescription($description);
 
             $manager->persist($curs);
             $manager->flush();
@@ -101,6 +103,7 @@ class CursController extends Controller
             'level' => $level,
             'places' => $places,
             'type' => $type,
+            'description' => $description,
             'startDate' => $startDate->format('Y-m-d'),
             'endDate' => $endDate->format('Y-m-d')
         ));
@@ -116,7 +119,7 @@ class CursController extends Controller
      * @param $type
      * @return string
      */
-    private function checkIfNull($startDate, $endDate, $places, $level, $type)
+    private function checkIfNull($startDate, $endDate, $places, $level, $type, $description)
     {
         $errors = '';
 
@@ -130,6 +133,10 @@ class CursController extends Controller
 
         if (is_null($type)) {
             $errors .= 'Missing type;';
+        }
+
+        if (is_null($description)) {
+            $errors .= 'Missing description;';
         }
 
         if (is_null($endDate)) {
@@ -161,6 +168,7 @@ class CursController extends Controller
                 'places' => $item->getPlaces(),
                 'level' => $item->getLevel(),
                 'type' => $item->getType(),
+                'description' => $item->getDescription(),
                 'startDate' => $item->getStartdate()->format('Y-m-d'),
                 'endDate' => $item->getEnddate()->format('Y-m-d')
             ];
@@ -269,6 +277,7 @@ class CursController extends Controller
                 'cursId' => $curs->getCursid(),
                 'places' => $curs->getPlaces(),
                 'type' => $curs->getType(),
+                'description' => $curs->getDescription(),
                 'startDate' => $curs->getStartdate()->format('Y-m-d'),
                 'endDate' => $curs->getEnddate()->format('Y-m-d'),
                 'level' => $curs->getLevel(),
@@ -332,10 +341,11 @@ class CursController extends Controller
             $places = $request->request->get('places');
             $level = $request->request->get('level');
             $type = $request->request->get('type');
+            $description = $request->request->get('description');
             $startDate = $request->request->get('startDate');
             $endDate = $request->request->get('endDate');
 
-            $errors = $this->checkIfNull($startDate, $endDate, $places, $level, $type);
+            $errors = $this->checkIfNull($startDate, $endDate, $places, $level, $type, $description);
 
             if ($errors) {
                 return $utils->createResponse(404, array(
@@ -364,6 +374,7 @@ class CursController extends Controller
             $curs->setLevel($level);
             $curs->setPlaces($places);
             $curs->setType($type);
+            $curs->setDescription($description);
             $curs->setStartdate($startDate);
             $curs->setEnddate($endDate);
 
@@ -375,6 +386,7 @@ class CursController extends Controller
                 'courseId' => $curs->getCursid(),
                 'level' => $level,
                 'places' => $places,
+                'description' => $description,
                 'type' => $type,
                 'startDate' => $startDate->format('Y-m-d'),
                 'endDate' => $endDate->format('Y-m-d')
@@ -592,12 +604,13 @@ class CursController extends Controller
                     'cursid' => $idCurs,
                 ));
                 $cursuri[] = [
-                    'cursId'    => $idCurs,
-                    'startDate' => $curs->getStartdate(),
-                    'endDate'   => $curs->getEnddate(),
+                    'cursId'    => $curs->getCursid(),  
+                    'startDate' => $curs->getStartdate()->format('Y-m-d'),
+                    'endDate'   => $curs->getEnddate()->format('Y-m-d'),
                     'places'    => $curs->getPlaces(),
                     'level'     => $curs->getLevel(),
-                    'type'      => $curs->getType()
+                    'type'      => $curs->getType(),
+                    'description'      => $curs->getDescription()
                 ];
             }
             return $utils->createResponse(200, $cursuri);

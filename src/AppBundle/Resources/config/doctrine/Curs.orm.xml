@@ -21,6 +21,11 @@
         <option name="fixed"/>
       </options>
     </field>
+    <field name="description" type="string" column="Description" length="1000" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
     <many-to-many field="idabonament" target-entity="Abonament" mapped-by="idcurs" fetch="LAZY"/>
   </entity>
 </doctrine-mapping>
