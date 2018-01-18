@@ -592,9 +592,9 @@ class CursController extends Controller
                     'cursid' => $idCurs,
                 ));
                 $cursuri[] = [
-                    'cursId'    => $idCurs,
-                    'startDate' => $curs->getStartdate(),
-                    'endDate'   => $curs->getEnddate(),
+                    'cursId'    => $curs->getCursid(),  
+                    'startDate' => $curs->getStartdate()->format('Y-m-d'),
+                    'endDate'   => $curs->getEnddate()->format('Y-m-d'),
                     'places'    => $curs->getPlaces(),
                     'level'     => $curs->getLevel(),
                     'type'      => $curs->getType()
