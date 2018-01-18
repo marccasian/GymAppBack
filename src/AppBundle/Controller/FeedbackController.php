@@ -35,45 +35,25 @@ class FeedbackController extends Controller
 
     public function createFeedback(Request $request){
         $utils = new Functions();
-
-        $evaluatorId = $request->request->get('evaluatorId');
-        $evaluatId = $request->request->get('evaluatId');
+        $common = new CommonController();
+        $evaluator = $request->request->get('evaluator');
+        $evaluat = $request->request->get('evaluat');
         $text= $request->request->get('text');
         $rating = $request->request->get('rating');
-        $errors = $this->checkIfNull($evaluatorId, $evaluatId, $text, $rating);
+        $errors = $this->checkPostData($evaluator, $evaluat, $text, $rating);
         if ($errors){
             return $utils->createResponse(403, array(
                 'errors' => $errors,
             ));
         }
-        if (!filter_var($rating, FILTER_VALIDATE_INT)) {
-            return $utils->createResponse(403, array(
-                'errors' => "Rating must be integer",
-            ));
-        }
 
-        if ($rating < 0){
-            return $utils->createResponse(403, array(
-                'errors' => "Rating must be a positive number",
-            ));
-        }
+        $evaluator_obj = $common->getProfileFromUsername($evaluator);
+        $evaluat_obj = $common->getProfileFromUsername($evaluat);
         try {
-            $repoProfile = $this->getDoctrine()->getManager()->getRepository(Profile::class);
-
-            /** @var  $evaluat Profile*/
-            $evaluat = $repoProfile->findOneBy(array(
-                'profileid' => $evaluatId,
-            ));
-
-            /** @var  $evaluator Profile*/
-            $evaluator = $repoProfile->findOneBy(array(
-                'profileid' => $evaluatorId,
-            ));
-
             $manager = $this->getDoctrine()->getManager();
             $feedback = new Feedback();
-            $feedback->setEvaluatid($evaluat);
-            $feedback->setEvaluatorid($evaluator);
+            $feedback->setEvaluatid($evaluat_obj);
+            $feedback->setEvaluatorid($evaluator_obj);
             $feedback->setText($text);
             $feedback->setRating($rating);
             $manager->persist($feedback);
@@ -91,8 +71,8 @@ class FeedbackController extends Controller
         }
 
         return $utils->createResponse(200, array(
-            'evaluatId' => $feedback->getEvaluatid()->getUsername()->getUsername(),
-            'evaluatorId' => $feedback->getEvaluatorid()->getUsername()->getUsername(),
+            'evaluat' => $feedback->getEvaluatid()->getUsername()->getUsername(),
+            'evaluator' => $feedback->getEvaluatorid()->getUsername()->getUsername(),
             'rating' => $feedback->getRating(),
             'text' => $feedback->getText()
         ));
@@ -107,7 +87,7 @@ class FeedbackController extends Controller
      * @param $rating
      * @return string
      */
-    private function checkIfNull($evaluatorId, $evaluatId, $text, $rating)
+    private function checkPostData($evaluatorId, $evaluatId, $text, $rating)
     {
         $errors = '';
 
@@ -125,6 +105,12 @@ class FeedbackController extends Controller
 
         if (is_null($rating)) {
             $errors .= 'Missing rating;';
+        }
+        if (!filter_var($rating, FILTER_VALIDATE_INT)) {
+            $errors .= 'Rating must be int;';
+        }
+        if ($rating < 0){
+            $errors .= "Rating must be a positive number;";
         }
 
         return $errors;
@@ -145,8 +131,8 @@ class FeedbackController extends Controller
         /** @var  $item Feedback */
         foreach ($feedback_entries as $item) {
             $result[] = [
-                'evaluatId' => $item->getEvaluatid()->getUsername()->getUsername(),
-                'evaluatorId' => $item->getEvaluatorid()->getUsername()->getUsername(),
+                'evaluat' => $item->getEvaluatid()->getUsername()->getUsername(),
+                'evaluator' => $item->getEvaluatorid()->getUsername()->getUsername(),
                 'rating' => $item->getRating(),
                 'text' => $item->getText()
             ];
@@ -213,8 +199,8 @@ class FeedbackController extends Controller
 
 
         if ($feedback) {
-            $evaluatId = $feedback->getEvaluatid()->getUsername()->getUsername();
-            $evaluatorId = $feedback->getEvaluatorid()->getUsername()->getUsername();
+            $evaluat = $feedback->getEvaluatid()->getUsername()->getUsername();
+            $evaluator = $feedback->getEvaluatorid()->getUsername()->getUsername();
             $rating = $feedback->getRating();
             $text = $feedback->getText();
             try {
@@ -233,8 +219,8 @@ class FeedbackController extends Controller
                 ));
             }
             return $utils->createResponse(200, array(
-                'evaluatId' => $evaluatId,
-                'evaluatorId' => $evaluatorId,
+                'evaluat' => $evaluat,
+                'evaluator' => $evaluator,
                 'rating' => $rating,
                 'text' => $text
             ));
@@ -255,20 +241,17 @@ class FeedbackController extends Controller
     public function getFeedbackByEvaluator($evaluator)
     {
         $utils = new Functions();
-
+        $common = new CommonController();
         if (is_null($evaluator)) {
             return $utils->createResponse(403, array(
-                'errors' => "Missing feedback id",
+                'errors' => "Missing evaluator;",
             ));
         }
         $repository = $this->getDoctrine()->getManager()->getRepository(Feedback::class);
-        $repositoryProfile = $this->getDoctrine()->getManager()->getRepository(Profile::class);
-        /** @var  $profile profile*/
-        $profile = $repositoryProfile->findOneBy(array(
-            'username' => $evaluator
-        ));
+        $evaluatorId = $common->getProfileIdFromUsername($evaluator);
+
         $feedback_entries = $repository->findBy(array(
-            'evaluatorid' => $profile->getProfileid()   ,
+            'evaluatorid' => @$evaluatorId,
         ));
 
         /** @var $feedback Feedback */
@@ -276,8 +259,8 @@ class FeedbackController extends Controller
         foreach ($feedback_entries as $feedback){
             $response_array[] = [
                     'id' => $feedback->getId(),
-                    'evaluatId' => $feedback->getEvaluatid()->getUsername()->getUsername(),
-                    'evaluatorId' => $feedback->getEvaluatorid()->getUsername()->getUsername(),
+                    'evaluat' => $feedback->getEvaluatid()->getUsername()->getUsername(),
+                    'evaluator' => $feedback->getEvaluatorid()->getUsername()->getUsername(),
                     'text' => $feedback->getText(),
                     'rating' => $feedback->getRating()
                 ];
@@ -294,20 +277,16 @@ class FeedbackController extends Controller
     public function getFeedbackByEvaluat($evaluat)
     {
         $utils = new Functions();
-
+        $common = new CommonController();
         if (is_null($evaluat)) {
             return $utils->createResponse(403, array(
-                'errors' => "Missing feedback id",
+                'errors' => "Missing evaluated!",
             ));
         }
         $repository = $this->getDoctrine()->getManager()->getRepository(Feedback::class);
-        $repositoryProfile = $this->getDoctrine()->getManager()->getRepository(Profile::class);
-        /** @var  $profile profile*/
-        $profile = $repositoryProfile->findOneBy(array(
-            'username' => $evaluat
-        ));
+        $profileId = $common->getProfileIdFromUsername($evaluat);
         $feedback_entries = $repository->findBy(array(
-            'evaluatid' => $profile->getProfileid(),
+            'evaluatid' => $profileId,
         ));
 
         /** @var $feedback Feedback */
@@ -315,8 +294,8 @@ class FeedbackController extends Controller
         foreach ($feedback_entries as $feedback){
             $response_array[] = [
                 'id' => $feedback->getId(),
-                'evaluatId' => $feedback->getEvaluatid()->getUsername()->getUsername(),
-                'evaluatorId' => $feedback->getEvaluatorid()->getUsername()->getUsername(),
+                'evaluat' => $feedback->getEvaluatid()->getUsername()->getUsername(),
+                'evaluator' => $feedback->getEvaluatorid()->getUsername()->getUsername(),
                 'text' => $feedback->getText(),
                 'rating' => $feedback->getRating()
             ];
@@ -354,8 +333,8 @@ class FeedbackController extends Controller
         if ($feedback) {
             return $utils->createResponse(200, array(
                 'id' => $feedback->getId(),
-                'evaluatId' => $feedback->getEvaluatid()->getUsername()->getUsername(),
-                'evaluatorId' => $feedback->getEvaluatorid()->getUsername()->getUsername(),
+                'evaluat' => $feedback->getEvaluatid()->getUsername()->getUsername(),
+                'evaluator' => $feedback->getEvaluatorid()->getUsername()->getUsername(),
                 'text' => $feedback->getText(),
                 'rating' => $feedback->getRating()
             ));
@@ -377,7 +356,7 @@ class FeedbackController extends Controller
     public function updateFeedback($feedbackId, Request $request)
     {
         $utils = new Functions();
-
+        $common = new CommonController();
         $bodyFeedbackId = $request->request->get('feedbackId');
 
         if ($bodyFeedbackId != $feedbackId) {
@@ -418,38 +397,22 @@ class FeedbackController extends Controller
         if ($feedback) {
             $text = $request->request->get('text');
             $rating = $request->request->get('rating');
-            $evaluatorId = $request->request->get('evaluatorId');
-            $evaluatId = $request->request->get('evaluatId');
+            $evaluator = $request->request->get('evaluator');
+            $evaluat = $request->request->get('evaluat');
 
-            $errors = $this->checkIfNull($evaluatorId, $evaluatId, $text, $rating);
+            $errors = $this->checkPostData($evaluator, $evaluat, $text, $rating);
 
             if ($errors) {
                 return $utils->createResponse(404, array(
                     'errors' => $errors,
                 ));
             }
+            $evaluator_obj = $common->getProfileFromUsername($evaluator);
+            $evaluat_obj = $common->getProfileFromUsername($evaluat);
 
-            if (!filter_var($rating, FILTER_VALIDATE_INT)) {
-                return $utils->createResponse(403, array(
-                    'errors' => "Rating must be integer;",
-                ));
-            }
-
-
-            $repoProfile = $this->getDoctrine()->getManager()->getRepository(Profile::class);
             try{
-                /** @var  $evaluat Profile*/
-                $evaluat = $repoProfile->findOneBy(array(
-                    'profileid' => $evaluatId,
-                ));
-
-                /** @var  $evaluator Profile*/
-                $evaluator = $repoProfile->findOneBy(array(
-                    'profileid' => $evaluatorId,
-                ));
-
-                $feedback->setEvaluatorid($evaluator);
-                $feedback->setEvaluatid($evaluat);
+                $feedback->setEvaluatorid($evaluator_obj);
+                $feedback->setEvaluatid($evaluat_obj);
                 $feedback->setText($text);
                 $feedback->setRating($rating);
 
@@ -471,8 +434,8 @@ class FeedbackController extends Controller
 
             return $utils->createResponse(200, array(
                 'feedbackId' => $feedback->getId(),
-                'evaluatorId' => $evaluatorId,
-                'evaluatId' => $evaluatId,
+                'evaluator' => $evaluator_obj,
+                'evaluat' => $evaluat_obj,
                 'text' => $text,
                 'rating' => $rating
             ));
