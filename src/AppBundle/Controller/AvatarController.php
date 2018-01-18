@@ -42,7 +42,7 @@ class AvatarController extends Controller
 
 
         if(!$username or !$file){
-            return $utils->createRespone(206, array(
+            return $utils->createResponse(206, array(
                'errors' => 'Partial data.'
             ));
         }
@@ -51,7 +51,7 @@ class AvatarController extends Controller
 
         }
         else{
-            return $utils->createRespone(403, array(
+            return $utils->createResponse(403, array(
                 'errors' => 'The file that is uploaded must have png, jpg or jpeg format.',
             ));
         }
@@ -83,23 +83,23 @@ class AvatarController extends Controller
                     $file->move(
                         $this->getParameter('images_location'), $username.'Avatar.'.$file->guessExtension()
                     );
-                    return $utils->createRespone(202, array(
+                    return $utils->createResponse(202, array(
                        'message' => 'Avatar updated.',
                     ));
 
                 } catch (Exception $e) {
                     error_log($e->getMessage());
-                    return $utils->createRespone(409, array(
+                    return $utils->createResponse(409, array(
                         'errors' => 'Something went wrong',
                     ));
                 } catch (UniqueConstraintViolationException  $e) {
                     error_log($e->getMessage());
-                    return $utils->createRespone(409, array(
+                    return $utils->createResponse(409, array(
                         'errors' => 'Something went wrong',
                     ));
                 } catch (PDOException  $e) {
                     error_log($e->getMessage());
-                    return $utils->createRespone(409, array(
+                    return $utils->createResponse(409, array(
                         'errors' => 'Something went wrong',
                     ));
                 }
@@ -117,29 +117,29 @@ class AvatarController extends Controller
                 $file->move(
                     $this->getParameter('images_location'), $username.'Avatar.'.$file->guessExtension()
                 );
-                return $utils->createRespone(200, array(
+                return $utils->createResponse(200, array(
                    'message' => 'Avatar uploaded.'
                 ));
             } catch (Exception $e) {
                 error_log($e->getMessage());
-                return $utils->createRespone(409, array(
+                return $utils->createResponse(409, array(
                     'errors' => 'Something went wrong',
                 ));
             } catch (UniqueConstraintViolationException  $e) {
                 error_log($e->getMessage());
-                return $utils->createRespone(409, array(
+                return $utils->createResponse(409, array(
                     'errors' => 'Something went wrong',
                 ));
             } catch (PDOException  $e) {
                 error_log($e->getMessage());
-                return $utils->createRespone(409, array(
+                return $utils->createResponse(409, array(
                     'errors' => 'Something went wrong',
                 ));
             }
 
         }
         else{
-            return $utils->createRespone(404, array(
+            return $utils->createResponse(404, array(
                'errors' => "There is no user with this username in the db.",
             ));
         }
@@ -190,7 +190,7 @@ class AvatarController extends Controller
 
             }
             else{
-                return $utils->createRespone(404, array(
+                return $utils->createResponse(404, array(
                    'errors' => 'This user has no avatar yet.',
                 ));
             }
@@ -198,7 +198,7 @@ class AvatarController extends Controller
 
         }
         else{
-            return $utils->createRespone(404, array(
+            return $utils->createResponse(404, array(
                'errors' => 'There is no user with this username in the db.',
             ));
         }
