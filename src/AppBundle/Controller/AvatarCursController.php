@@ -23,7 +23,7 @@ use AppBundle\Entity\Avatar;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Validator\Constraints\Image;
 
-class AvatarcursController extends Controller
+class AvatarCursController extends Controller
 {
 
     /**
@@ -163,7 +163,7 @@ class AvatarcursController extends Controller
     }
 
     /**
-     * @Route("/avatarcurs/getAvatarCurs/{idCurs}", name = "get_avatar")
+     * @Route("/avatarcurs/getAvatarCurs/{idCurs}", name = "get_avatar_curs")
      * @Method({"GET"})
      * @param $idCurs
      * @return Response
