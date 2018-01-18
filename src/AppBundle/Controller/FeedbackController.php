@@ -40,7 +40,7 @@ class FeedbackController extends Controller
         $evaluatId = $request->request->get('evaluatId');
         $text= $request->request->get('text');
         $rating = $request->request->get('rating');
-        $errors = $this->checkIfNull($evaluatorId, $evaluatId, $text, $rating);
+        $errors = $this->checkPostData($evaluatorId, $evaluatId, $text, $rating);
         if ($errors){
             return $utils->createResponse(403, array(
                 'errors' => $errors,
@@ -107,7 +107,7 @@ class FeedbackController extends Controller
      * @param $rating
      * @return string
      */
-    private function checkIfNull($evaluatorId, $evaluatId, $text, $rating)
+    private function checkPostData($evaluatorId, $evaluatId, $text, $rating)
     {
         $errors = '';
 
@@ -126,7 +126,15 @@ class FeedbackController extends Controller
         if (is_null($rating)) {
             $errors .= 'Missing rating;';
         }
-
+        if (!filter_var($evaluatorId, FILTER_VALIDATE_INT)) {
+            $errors .= 'Evaluator id must be int;';
+        }
+        if (!filter_var($evaluatId, FILTER_VALIDATE_INT)) {
+            $errors .= 'Evaluated id must be int;';
+        }
+        if (!filter_var($rating, FILTER_VALIDATE_INT)) {
+            $errors .= 'Rating must be int;';
+        }
         return $errors;
     }
 
@@ -421,7 +429,7 @@ class FeedbackController extends Controller
             $evaluatorId = $request->request->get('evaluatorId');
             $evaluatId = $request->request->get('evaluatId');
 
-            $errors = $this->checkIfNull($evaluatorId, $evaluatId, $text, $rating);
+            $errors = $this->checkPostData($evaluatorId, $evaluatId, $text, $rating);
 
             if ($errors) {
                 return $utils->createResponse(404, array(
