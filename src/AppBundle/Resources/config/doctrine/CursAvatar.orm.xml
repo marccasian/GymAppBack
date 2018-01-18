@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="AppBundle\Entity\CursAvatar" table="curs_avatar">
+    <indexes>
+      <index name="id_curs_avatar_idx" columns="idCurs"/>
+    </indexes>
+    <id name="idcursAvatar" type="integer" column="idcurs_avatar">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="file" type="string" column="file" length="255" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <many-to-one field="idcurs" target-entity="Curs" fetch="LAZY">
+      <join-columns>
+        <join-column name="idCurs" referenced-column-name="CursId"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>
