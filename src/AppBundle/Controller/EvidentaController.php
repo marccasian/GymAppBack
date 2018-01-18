@@ -170,9 +170,5 @@ class EvidentaController extends Controller
                 'errors' => "Something went wrong ...",
             ]);
         }
-
-
-
-
     }
 }
