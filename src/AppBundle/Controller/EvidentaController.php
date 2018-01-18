@@ -12,6 +12,7 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Evidentainscrieri;
 use AppBundle\Entity\Profile;
 use AppBundle\Entity\Schedule;
+use AppBundle\Utils\AllMyConstants;
 use AppBundle\Utils\Functions;
 use PDOException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -34,7 +35,7 @@ class EvidentaController extends Controller
 
         $profileId = $request->request->get('profileId');
         $scheduleId = $request->request->get('scheduleId');
-        
+
         if (!filter_var($profileId, FILTER_VALIDATE_INT)) {
             return $utils->createResponse(403, [
                 'errors' => "Profile ID must be integer",
@@ -170,4 +171,71 @@ class EvidentaController extends Controller
             ]);
         }
     }
+
+    /**
+     * @Route("/course/get_schedules/{profileId}", name = "get_course")
+     * @Method({"GET"})
+     * @param profileId
+     * @return Response
+     */
+    public function getSchedules($profileId)
+    {
+        $utils = new Functions();
+
+        if (!$profileId) {
+            return $utils->createResponse(403, array(
+                'errors' => "Profile id incorrect;",
+            ));
+        }
+        if (!filter_var($profileId, FILTER_VALIDATE_INT)) {
+            return $utils->createResponse(403, array(
+                'errors' => "Profile id must be integer;",
+            ));
+        }
+        $repository = $this->getDoctrine()->getManager()->getRepository(Profile::class);
+
+        $profile = $repository->findOneBy(array(
+            'profileid' => $profileId,
+        ));
+
+        /** @var $profileId Profile */
+        if ($profile) {
+            $repository = $this->getDoctrine()->getManager()->getRepository(Evidentainscrieri::class);
+            $schedulesIds = $repository->findBy(array(
+                'profileid' => $profileId,
+            ));
+            $res = [];
+            foreach ($schedulesIds as $evidenta){
+                /** @var $evidenta Evidentainscrieri */
+                $res[] = [
+                    'startTime' => $evidenta->getScheduleid()->getStarttime(),
+                    'endTime' => $evidenta->getScheduleid()->getEndtime(),
+                    'weekDay' => $evidenta->getScheduleid()->getWeekday(),
+                    'periodStartDate' => $evidenta->getScheduleid()->getPeriodstartdate(),
+                    'periodEndDate' => $evidenta->getScheduleid()->getPeriodenddate(),
+                    'idCourse' => $evidenta->getScheduleid()->getIdcurs()->getCursid()
+                ];
+            }
+
+            return $utils->createResponse(200, array(
+                'schedules' => $res,
+            ));
+        } else {
+            return $utils->createResponse(404, array(
+                'errors' => "Given id doesn't exists",
+            ));
+        }
+    }
+
+
+    private function getSchedulesId($profileId)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+        $q = $qb->select(Evidentainscrieri::class, 'e')
+            ->where('u.profileid= '.$profileId)
+            ->getQuery();
+        $q->execute();
+    }
+
 }
