@@ -11,6 +11,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Abonament;
 use AppBundle\Entity\Curs;
+use AppBundle\Entity\Profile;
 use AppBundle\Utils\Functions;
 use DateTime;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
@@ -597,12 +598,18 @@ class CursController extends Controller
             $repositoryCurs= $this->getDoctrine()->getManager()->getRepository(Curs::class);
 
             $cursuri = [];
+            /**
+             * @var  $item Curs
+             * @var  $idCurs int
+             */
             foreach ($cursIds as $item => $idCurs)
             {
+
                 /** @var $curs Curs*/
                 $curs = $repositoryCurs->findOneBy(array(
                     'cursid' => $idCurs,
                 ));
+                $trainers = $this->getTrainersForCourse($curs->getCursid());
                 $cursuri[] = [
                     'cursId'    => $curs->getCursid(),  
                     'startDate' => $curs->getStartdate()->format('Y-m-d'),
@@ -610,6 +617,7 @@ class CursController extends Controller
                     'places'    => $curs->getPlaces(),
                     'level'     => $curs->getLevel(),
                     'type'      => $curs->getType(),
+                    'trainers'  => $trainers,
                     'description'      => $curs->getDescription()
                 ];
             }
@@ -690,6 +698,33 @@ class CursController extends Controller
         }
 
 
+    }
+
+    private function getTrainersForCourse($idCurs)
+    {
+        $sql = " SELECT DISTINCT IdTrainer FROM schedule WHERE IdCurs = $idCurs";
+
+        $conn = $this->getDoctrine()->getConnection();
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+
+        $trainerIds = $stmt->fetchAll();
+        $trainers = [];
+        foreach ($trainerIds as $item){
+            $trainers[]= $this->getUsernameByProfileId($item["IdTrainer"]);
+//            die(var_dump($item["IdTrainer"]));
+        }
+        return $trainers;
+    }
+
+    private function getUsernameByProfileId($idProfile)
+    {
+        $repository = $this->getDoctrine()->getRepository(Profile::class);
+        /** @var  $profile Profile*/
+        $profile = $repository->findOneBy(array(
+            'profileid' => $idProfile
+        ));
+        return $profile->getUsername()->getUsername();
     }
 
 }
