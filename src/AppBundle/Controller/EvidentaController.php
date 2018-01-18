@@ -34,8 +34,7 @@ class EvidentaController extends Controller
 
         $profileId = $request->request->get('profileId');
         $scheduleId = $request->request->get('scheduleId');
-
-
+        
         if (!filter_var($profileId, FILTER_VALIDATE_INT)) {
             return $utils->createResponse(403, [
                 'errors' => "Profile ID must be integer",
