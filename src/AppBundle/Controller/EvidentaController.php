@@ -15,6 +15,7 @@ use AppBundle\Entity\Schedule;
 use AppBundle\Utils\AllMyConstants;
 use AppBundle\Utils\Functions;
 use PDOException;
+use SensioLabs\Security\SecurityChecker;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
@@ -173,7 +174,7 @@ class EvidentaController extends Controller
     }
 
     /**
-     * @Route("/course/get_schedules/{profileId}", name = "get_course")
+     * @Route("/course/get_schedules/{profileId}", name = "get_schedules")
      * @Method({"GET"})
      * @param profileId
      * @return Response
@@ -227,15 +228,58 @@ class EvidentaController extends Controller
         }
     }
 
-
-    private function getSchedulesId($profileId)
+    /**
+     * @Route("/course/get_profiles/{scheduleId}", name = "get_schedlus")
+     * @Method({"GET"})
+     * @param profileId
+     * @return Response
+     */
+    public function getProfiles($scheduleId)
     {
-        $em = $this->getDoctrine()->getManager();
-        $qb = $em->createQueryBuilder();
-        $q = $qb->select(Evidentainscrieri::class, 'e')
-            ->where('u.profileid= '.$profileId)
-            ->getQuery();
-        $q->execute();
+        $utils = new Functions();
+
+        if (!$scheduleId) {
+            return $utils->createResponse(403, array(
+                'errors' => "SChedule id incorrect;",
+            ));
+        }
+        if (!filter_var($scheduleId, FILTER_VALIDATE_INT)) {
+            return $utils->createResponse(403, array(
+                'errors' => "Schedule id must be integer;",
+            ));
+        }
+        $repository = $this->getDoctrine()->getManager()->getRepository(Schedule::class);
+
+        $schedule = $repository->findOneBy(array(
+            'id' => $scheduleId,
+        ));
+
+        /** @var $scheduleId Schedule */
+        if ($schedule) {
+            $repository = $this->getDoctrine()->getManager()->getRepository(Evidentainscrieri::class);
+            $schedulesIds = $repository->findBy(array(
+                'scheduleid' => $scheduleId,
+            ));
+            $res = [];
+            foreach ($schedulesIds as $evidenta){
+                /** @var $evidenta Evidentainscrieri */
+                $res[] = [
+                    'profileid' => $evidenta->getProfileid()->getProfileid(),
+                    'sex' => $evidenta->getProfileid()->getSex(),
+                    'fullname' => $evidenta->getProfileid()->getFullname(),
+                    'varsta' => $evidenta->getProfileid()->getVarsta(),
+                    'username' => $evidenta->getProfileid()->getUsername()->getUsername()
+                ];
+            }
+
+            return $utils->createResponse(200, array(
+                'profiles' => $res,
+            ));
+        } else {
+            return $utils->createResponse(404, array(
+                'errors' => "Given id doesn't exists",
+            ));
+        }
     }
 
 }
