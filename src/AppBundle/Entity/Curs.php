@@ -48,6 +48,29 @@ class Curs
     private $type;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="Description", type="string", length=1000, nullable=true)
+     */
+    private $description;
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="CursId", type="integer")
