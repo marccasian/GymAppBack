@@ -25,6 +25,20 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class FeedbackController extends Controller
 {
+    public function getProfileIdFromUsername($get)
+    {
+        return $this->getProfileFromUsername($get)->getProfileid();
+    }
+
+    public function getProfileFromUsername($get)
+    {
+        $repository = $this->getDoctrine()->getRepository(Profile::class);
+        /** @var  $profile Profile*/
+        $profile = $repository->findOneBy(array(
+            'username' => $get
+        ));
+        return $profile;
+    }
 
     /**
      * @Route("/feedback/create_feedback", name = "create_feedback")
@@ -35,7 +49,6 @@ class FeedbackController extends Controller
 
     public function createFeedback(Request $request){
         $utils = new Functions();
-        $common = new CommonController();
         $evaluator = $request->request->get('evaluator');
         $evaluat = $request->request->get('evaluat');
         $text= $request->request->get('text');
@@ -47,8 +60,8 @@ class FeedbackController extends Controller
             ));
         }
 
-        $evaluator_obj = $common->getProfileFromUsername($evaluator);
-        $evaluat_obj = $common->getProfileFromUsername($evaluat);
+        $evaluator_obj = $this->getProfileFromUsername($evaluator);
+        $evaluat_obj = $this->getProfileFromUsername($evaluat);
         try {
             $manager = $this->getDoctrine()->getManager();
             $feedback = new Feedback();
@@ -241,14 +254,13 @@ class FeedbackController extends Controller
     public function getFeedbackByEvaluator($evaluator)
     {
         $utils = new Functions();
-        $common = new CommonController();
         if (is_null($evaluator)) {
             return $utils->createResponse(403, array(
                 'errors' => "Missing evaluator;",
             ));
         }
         $repository = $this->getDoctrine()->getManager()->getRepository(Feedback::class);
-        $evaluatorId = $common->getProfileIdFromUsername($evaluator);
+        $evaluatorId = $this->getProfileIdFromUsername($evaluator);
 
         $feedback_entries = $repository->findBy(array(
             'evaluatorid' => @$evaluatorId,
@@ -277,14 +289,13 @@ class FeedbackController extends Controller
     public function getFeedbackByEvaluat($evaluat)
     {
         $utils = new Functions();
-        $common = new CommonController();
         if (is_null($evaluat)) {
             return $utils->createResponse(403, array(
                 'errors' => "Missing evaluated!",
             ));
         }
         $repository = $this->getDoctrine()->getManager()->getRepository(Feedback::class);
-        $profileId = $common->getProfileIdFromUsername($evaluat);
+        $profileId = $this->getProfileIdFromUsername($evaluat);
         $feedback_entries = $repository->findBy(array(
             'evaluatid' => $profileId,
         ));
@@ -356,7 +367,6 @@ class FeedbackController extends Controller
     public function updateFeedback($feedbackId, Request $request)
     {
         $utils = new Functions();
-        $common = new CommonController();
         $bodyFeedbackId = $request->request->get('feedbackId');
 
         if ($bodyFeedbackId != $feedbackId) {
@@ -407,8 +417,8 @@ class FeedbackController extends Controller
                     'errors' => $errors,
                 ));
             }
-            $evaluator_obj = $common->getProfileFromUsername($evaluator);
-            $evaluat_obj = $common->getProfileFromUsername($evaluat);
+            $evaluator_obj = $this->getProfileFromUsername($evaluator);
+            $evaluat_obj = $this->getProfileFromUsername($evaluat);
 
             try{
                 $feedback->setEvaluatorid($evaluator_obj);
