@@ -12,6 +12,7 @@
 namespace AppBundle\Controller;
 
 
+use AppBundle\Entity\Profile;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use AppBundle\Entity\Rol;
@@ -270,6 +271,45 @@ class TrainerController extends Controller
             ));
         }
 
+
+    }
+
+    /**
+     * @Route("/trainer/checkTrainer/{id}", name = "check_trainer")
+     * @Method({"GET"})
+     * @param $id
+     * @return Response
+     */
+
+    public function checkTrainer($id){
+        $utils = new Functions();
+
+        if (!filter_var($id, FILTER_VALIDATE_INT)) {
+            return $utils->createResponse(403, array(
+                'errors' => "Id must be integer",
+            ));
+        }
+
+        if($id < 0){
+            return $utils->createResponse(403, array(
+                'errors' => "Id must be positive",
+            ));
+        }
+
+        $profile = $this->getDoctrine()->getRepository(Profile::class)->findOneBy(array(
+           'profileid' => $id
+        ));
+
+        if($profile){
+            return $utils->createResponse(200, array(
+               'username' => $profile->getUsername()->getUsername()
+            ));
+        }
+        else{
+            return $utils->createResponse(404, array(
+               'errors' => 'There is no user with this profile id.'
+            ));
+        }
 
     }
 }
