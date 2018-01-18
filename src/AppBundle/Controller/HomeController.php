@@ -254,7 +254,7 @@ class HomeController extends Controller
 
             if(!$user){
                 return $utils->createResponse(404, array(
-                   'message' => 'There is no user with this email.',
+                   'errors' => 'There is no user with this email.',
                 ));
             }
 
@@ -318,9 +318,7 @@ class HomeController extends Controller
 
 
 
-                return $utils->createResponse(200, array(
-                   'message' => 'A reset code was sent to your email address.',
-                ));
+                return $utils->createResponse(200, array());
             }
             else{
                 return $utils->createResponse(404, array(
@@ -397,9 +395,7 @@ class HomeController extends Controller
                             $em->persist($reset);
                             $em->flush();
 
-                            return $utils->createResponse(200, array(
-                               'message' => 'An email was sent to the address with the new password.',
-                            ));
+                            return $utils->createResponse(200, array());
 
                         } catch (Exception $e) {
                             error_log($e->getMessage());
@@ -429,7 +425,7 @@ class HomeController extends Controller
             }
             else{
                 return $utils->createResponse(404, array(
-                   'message' => 'There is no user with this email.',
+                   'errors' => 'There is no user with this email.',
                 ));
             }
 
