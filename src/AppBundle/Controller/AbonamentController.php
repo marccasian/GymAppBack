@@ -9,6 +9,7 @@ namespace AppBundle\Controller;
 
 
 use AppBundle\Entity\Abonament;
+use AppBundle\Entity\Profile;
 use AppBundle\Utils\Functions;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Config\Definition\Exception\Exception;
@@ -148,6 +149,64 @@ class AbonamentController extends Controller
         }
         return $utils->createResponse(200, $results);
     }
+
+    public function getProfileIdFromUsername($get)
+    {
+        try{
+            return $this->getProfileFromUsername($get)->getProfileid();
+        }
+        catch (Exception $e){
+            return -1;
+        }
+    }
+
+    public function getProfileFromUsername($get)
+    {
+        $repository = $this->getDoctrine()->getRepository(Profile::class);
+        /** @var  $profile Profile*/
+        $profile = $repository->findOneBy(array(
+            'username' => $get
+        ));
+        return $profile;
+    }
+
+    /**
+     * @Route("/abonament/get_all_by_user/{username}", name = "get_all_abonamente_by_username")
+     * @Method({"GET"})
+     * @param $username
+     * @return Response
+     */
+    public function getAllByUsername($username)
+    {
+        $utils = new Functions();
+        $profileId = null;
+        try {
+            $profileId = $this->getProfileIdFromUsername($username);
+        } catch (Exception $e){
+            return $utils->createResponse(404, array(
+                "errors" => "Can't find user profile;"
+            ));
+        }
+
+        $repoAbonamente = $this->getDoctrine()->getManager()->getRepository(Abonament::class);
+        $abonamente = $repoAbonamente->findAll();
+        $results = [];
+        /** @var  $item Abonament */
+        foreach ($abonamente as $item) {
+            $active = $this->checkIfAbonamentIsActiveByProfileId($profileId, $item->getAbonamentid());
+            $results[] = [
+                'abonamentId' => $item->getAbonamentid(),
+                'price' => $item->getPrice(),
+                'level' => $item->getLevel(),
+                'type' => $item->getType(),
+                'active' => $active,
+                'description' => $item->getDescription()
+            ];
+
+        }
+        return $utils->createResponse(200, $results);
+    }
+
 
     /**
      * @Route("/abonament/delete_abonament/{abonamentId}", name = "delete_abonament")
@@ -365,5 +424,20 @@ class AbonamentController extends Controller
                 'errors' => "Unable to update subscription because there isn't any subscription with given id!",
             ));
         }
+    }
+
+    private function checkIfAbonamentIsActiveByProfileId($profileId, $abonamentId)
+    {
+        $sql = "SELECT COUNT(*) as Active 
+                FROM user_abonament 
+                WHERE user_abonament.Activ = 1 
+                AND user_abonament.IdUser = $profileId 
+                AND user_abonament.IdAbonament = $abonamentId;";
+        $conn = $this->getDoctrine()->getConnection();
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $active = $stmt->fetchAll();
+        error_log($profileId."abonament ".$abonamentId." avtiv ".$active[0]["Active"]);
+        return $active[0]["Active"];
     }
 }
