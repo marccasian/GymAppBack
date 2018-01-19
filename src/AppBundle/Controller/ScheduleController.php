@@ -276,6 +276,12 @@ class ScheduleController extends Controller
             ));
         }
         $schedules = $this->getMyScheduleByProfileId($userAbonament);
+        foreach ($schedules as &$item) {
+            $dayOftheWeek = jddayofweek(intval($item["WeekDay"]), 2);
+            $starttime = date_create_from_format('Y-m-d H:i:s', $item["StartTime"])->format('H:i');
+            $endtime = date_create_from_format('Y-m-d H:i:s', $item["EndTime"])->format('H:i');
+            $item["interval"] = $dayOftheWeek." ".$starttime."-".$endtime;
+        }
         return $utils->createResponse(200, $schedules);
     }
 
@@ -583,12 +589,13 @@ class ScheduleController extends Controller
     private function getMyScheduleByProfileId($profileId)
     {
 
-        $sql = " SELECT schedule.IdCurs, WeekDay, p.username as Trainer, StartTime, EndTime, PeriodStartDate, PeriodEndDate 
+        $sql = " SELECT curs.Type, WeekDay, p.username as Trainer, StartTime, EndTime, PeriodStartDate, PeriodEndDate 
                 FROM schedule 
                 JOIN evidentainscrieri on evidentainscrieri.ScheduleId = schedule.Id 
+                JOIN curs on curs.CursId = schedule.IdCurs
                 JOIN profile ON profile.ProfileId = evidentainscrieri.ProfileId
                 JOIN profile p ON p.ProfileId = schedule.IdTrainer 
-                WHERE profile.ProfileId = $profileId 
+                WHERE profile.ProfileId = $profileId
                 order by schedule.WeekDay,schedule.starttime;";
         $conn = $this->getDoctrine()->getConnection();
         $stmt = $conn->prepare($sql);
