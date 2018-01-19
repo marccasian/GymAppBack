@@ -67,9 +67,48 @@ class CursController extends Controller
                 'errors' => "Places must be positive number",
             ));
         }
-        $startDate = new \DateTime(DateTime::createFromFormat('Y-m-d', $startDate)->format('Y-m-d'));
-        $endDate = new \DateTime(DateTime::createFromFormat('Y-m-d', $endDate)->format('Y-m-d'));
-        if ($startDate > $endDate){
+
+        if ($startDate == '')
+        {
+            return $utils->createResponse(403, array(
+                'errors' => "Start Date must be not empty",
+            ));
+        }
+
+        if ($endDate == '')
+        {
+            return $utils->createResponse(403, array(
+                'errors' => "End Date must be not empty",
+            ));
+        }
+
+        try {
+            $formattedStartDate = DateTime::createFromFormat('Y-m-d', $startDate);
+            if (is_bool($formattedStartDate))
+            {
+                throw new Exception();
+            }
+            $startDate = new DateTime($formattedStartDate->format('Y-m-d'));
+        } catch (Exception $e) {
+            return $utils->createResponse(403, array(
+                'errors' => "Invalid format of Start Date, the format must be Y-m-d.",
+            ));
+        }
+
+        try {
+            $formattedEndDate = DateTime::createFromFormat('Y-m-d', $endDate);
+            if (is_bool($formattedEndDate))
+            {
+                throw new Exception();
+            }
+            $endDate = new DateTime($formattedEndDate->format('Y-m-d'));
+        } catch (Exception $e) {
+            return $utils->createResponse(403, array(
+                'errors' => "Invalid format of End Date, the format must be Y-m-d.",
+            ));
+        }
+
+        if ($startDate >= $endDate){
             return $utils->createResponse(403, array(
                 'errors' => "Start date must be before end date",
             ));
