@@ -145,4 +145,53 @@ class UserAbonamentController extends Controller
             ->getQuery();
         $q->execute();
     }
+
+    /**
+     * @Route("/subscription/setPay", name = "subscription_set_pay")
+     * @Method({"POST"})
+     * @param Request $request
+     * @return Response
+     */
+    public function setPayForSubscription(Request $request)
+    {
+        $utils = new Functions();
+        $username =    $request->request->get('username');
+        $abonamentId =  $request->request->get('abonamentId');
+
+        if(is_null($username)){
+            return $utils->createResponse(400, array(
+                'errors' => "Missing username;",
+            ));
+        }
+        if(is_null($abonamentId)){
+            return $utils->createResponse(400, array(
+                'errors' => "Missing subscription id;",
+            ));
+        }
+        if(!filter_var($abonamentId, FILTER_VALIDATE_INT))
+        {
+
+            return $utils->createResponse(404, array(
+                'errors' => 'Abonament id must be integer!',
+            ));
+        }
+
+        $profileId = $this->getProfileIdFromUsername($username);
+        if (!$profileId){
+            return $utils->createResponse(400, array(
+                'errors' => "Profile not found for given user;",
+            ));
+        }
+
+        $sql = "UPDATE user_abonament SET Platit = 1 WHERE idabonament = $abonamentId AND Platit = 0 AND iduser = $profileId AND activ = 1;";
+        $conn = $this->getDoctrine()->getConnection();
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        if ($stmt->rowCount() == 0){
+            return $utils->createResponse(400, array(
+                'errors' => "Fail to mark subscription as paid! Possible causes: Subscriptions doesn't exist, subscription is already paid or inactive;",
+            ));
+        }
+        return $utils->createResponse(200, array());
+    }
 }
