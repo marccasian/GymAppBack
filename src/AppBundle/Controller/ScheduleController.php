@@ -260,6 +260,8 @@ class ScheduleController extends Controller
         foreach ($schedules as &$item) {
             error_log("sch");
             error_log($item["id"]);
+            error_log($item["WeekDay"]);
+            error_log(intval($item["WeekDay"]));
             $dayOftheWeek = jddayofweek(intval($item["WeekDay"]), 2);
             error_log($dayOftheWeek);
             $starttime = date_create_from_format('Y-m-d H:i:s', $item["StartTime"])->format('H:i');
