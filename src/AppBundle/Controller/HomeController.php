@@ -95,9 +95,11 @@ class HomeController extends Controller
 
         if(!$username or !$password or !$email or !$confirmPassword)
             $flag = false;
-        if (strlen($password) < 6)
+        if (strlen($password) < 6 or strlen($password) > 254)
             $flag = false;
         if (!$this->isValidEmail($email))
+            $flag = false;
+        if (strlen($username) < 3)
             $flag = false;
 
         if($flag) {
@@ -184,15 +186,19 @@ class HomeController extends Controller
             if(!$username) {
                 $errors .= 'Please enter the username';
             }
+            elseif(strlen($username) < 3)
+            {
+                $errors .= 'Please use a longer username. Minimum of 4 characters';
+            }
             if(!$password) {
                 if (strlen($errors) > 0)
                     $errors .= ';';
                 $errors .= 'Please enter the password';
             }
-            elseif (strlen($password) < 6) {
+            elseif (strlen($password) < 6 or strlen($password) > 254) {
                 if (strlen($errors) > 0)
                     $errors .= ';';
-                $errors .= 'Please use a longer password. Minimum of 6 characters';
+                $errors .= 'Please use a longer password. Minimum of 6 characters and Maximum of 254 characters';
             }
             if(!$confirmPassword) {
                 if (strlen($errors) > 0)
