@@ -472,11 +472,20 @@ class HomeController extends Controller
             ));
         }
 
-        if($newPassword == $confirmPassword){
+        if($newPassword === $confirmPassword){
 
         }else{
             return $utils->createResponse(409, array(
                'errors' => 'Fields are different'
+            ));
+        }
+
+        if($newPassword !== $oldPassword){
+
+        }
+        else{
+            return $utils->createResponse(409, array(
+               'errors' => 'The new password must be different then the old one.'
             ));
         }
 
@@ -488,22 +497,29 @@ class HomeController extends Controller
         if($user){
 
 
-            $user->setPassword($newPassword);
-            $em = $this->getDoctrine()->getManager();
-            try{
-                $em->persist($user);
-                $em->flush();
-                return $utils->createResponse(200, array());
+            if($user->getPassword() == $oldPassword) {
+                $user->setPassword($newPassword);
+                $em = $this->getDoctrine()->getManager();
+                try {
+                    $em->persist($user);
+                    $em->flush();
+                    return $utils->createResponse(200, array());
 
-            }catch (Exception $e) {
-                error_log($e->getMessage());
+                } catch (Exception $e) {
+                    error_log($e->getMessage());
+                    return $utils->createResponse(409, array(
+                        'errors' => "Something went wrong ...",
+                    ));
+                } catch (PDOException  $e) {
+                    error_log($e->getMessage());
+                    return $utils->createResponse(409, array(
+                        'errors' => "Something went wrong ...",
+                    ));
+                }
+            }
+            else{
                 return $utils->createResponse(409, array(
-                    'errors' => "Something went wrong ...",
-                ));
-            } catch (PDOException  $e) {
-                error_log($e->getMessage());
-                return $utils->createResponse(409, array(
-                    'errors' => "Something went wrong ...",
+                   'errors' => "Wrong password"
                 ));
             }
 
