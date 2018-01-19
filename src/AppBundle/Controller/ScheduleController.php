@@ -217,7 +217,11 @@ class ScheduleController extends Controller
 
     public function getProfileIdFromUsername($get)
     {
-        return $this->getProfileFromUsername($get)->getProfileid();
+        $profile = $this->getProfileFromUsername($get);
+        if ($profile){
+            return $profile->getProfileid();
+        }
+        return null;
     }
 
     public function getProfileFromUsername($get)
@@ -230,6 +234,7 @@ class ScheduleController extends Controller
         return $profile;
     }
 
+
     /**
      * @Route("/schedule/getAllScheduleOfGymByAbonamentUser/{username}", name = "get_all_schedule_of_gym_by_abonament_user")
      * @Method({"GET"})
@@ -241,8 +246,8 @@ class ScheduleController extends Controller
         $utils = new Functions();
         $userAbonament = $this->getUserAbonament($username);
         if ($userAbonament == -1){
-            return $utils->createResponse(200, array(
-                'errors' => "Given user doesn't have a subscription;"
+            return $utils->createResponse(404, array(
+                'errors' => "Given user doesn't have a subscription or user doesn't exists;"
             ));
         }
         $schedules = $this->getGymScheduleByAbonamentId($userAbonament);
@@ -259,6 +264,11 @@ class ScheduleController extends Controller
     {
         $utils = new Functions();
         $userAbonament = $this->getProfileIdFromUsername($username);
+        if (!$userAbonament){
+            return $utils->createResponse(404,array(
+                "errors" => "Didn't find a profile for user with given username"
+            ));
+        }
         $schedules = $this->getMyScheduleByProfileId($userAbonament);
         return $utils->createResponse(200, $schedules);
     }
@@ -533,6 +543,9 @@ class ScheduleController extends Controller
     {
         /** @var $profile Profile */
         $profileId = $this->getProfileIdFromUsername($username);
+        if ($profileId){
+            return -1;
+        }
         $sql = " SELECT IdAbonament FROM elephpants_new.user_abonament where Activ = 1 and IdUser = $profileId;";
         $conn = $this->getDoctrine()->getConnection();
         $stmt = $conn->prepare($sql);

@@ -33,7 +33,11 @@ class UserAbonamentController extends Controller
 {
     public function getProfileIdFromUsername($get)
     {
-        return $this->getProfileFromUsername($get)->getProfileid();
+        $profile = $this->getProfileFromUsername($get);
+        if ($profile){
+            return $profile->getProfileid();
+        }
+        return null;
     }
 
     public function getProfileFromUsername($get)
@@ -45,6 +49,7 @@ class UserAbonamentController extends Controller
         ));
         return $profile;
     }
+
 
     /**
      * @Route("/subscription/buy_subscription", name = "buy_subscription")
