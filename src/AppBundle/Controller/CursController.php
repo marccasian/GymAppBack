@@ -45,72 +45,10 @@ class CursController extends Controller
         $level = $request->request->get('level');
         $type = $request->request->get('type');
         $description = $request->request->get('description');
-        $errors = $this->checkIfNull($startDate, $endDate, $places, $level, $type, $description);
+        $errors = $this->checkRequestData($startDate, $endDate, $places, $level, $type, $description);
         if ($errors){
             return $utils->createResponse(403, array(
                 'errors' => $errors,
-            ));
-        }
-        if (!filter_var($level, FILTER_VALIDATE_INT)) {
-            return $utils->createResponse(403, array(
-                'errors' => "Level must be integer",
-            ));
-        }
-        if (!filter_var($places, FILTER_VALIDATE_INT)) {
-            return $utils->createResponse(403, array(
-                'errors' => "Places must be integer",
-            ));
-        }
-
-        if ($places < 0){
-            return $utils->createResponse(403, array(
-                'errors' => "Places must be positive number",
-            ));
-        }
-
-        if ($startDate == '')
-        {
-            return $utils->createResponse(403, array(
-                'errors' => "Start Date must be not empty",
-            ));
-        }
-
-        if ($endDate == '')
-        {
-            return $utils->createResponse(403, array(
-                'errors' => "End Date must be not empty",
-            ));
-        }
-
-        try {
-            $formattedStartDate = DateTime::createFromFormat('Y-m-d', $startDate);
-            if (is_bool($formattedStartDate))
-            {
-                throw new Exception();
-            }
-            $startDate = new DateTime($formattedStartDate->format('Y-m-d'));
-        } catch (Exception $e) {
-            return $utils->createResponse(403, array(
-                'errors' => "Invalid format of Start Date, the format must be Y-m-d.",
-            ));
-        }
-
-        try {
-            $formattedEndDate = DateTime::createFromFormat('Y-m-d', $endDate);
-            if (is_bool($formattedEndDate))
-            {
-                throw new Exception();
-            }
-            $endDate = new DateTime($formattedEndDate->format('Y-m-d'));
-        } catch (Exception $e) {
-            return $utils->createResponse(403, array(
-                'errors' => "Invalid format of End Date, the format must be Y-m-d.",
-            ));
-        }
-
-        if ($startDate >= $endDate){
-            return $utils->createResponse(403, array(
-                'errors' => "Start date must be before end date",
             ));
         }
 
@@ -159,16 +97,57 @@ class CursController extends Controller
      * @param $type
      * @return string
      */
-    private function checkIfNull($startDate, $endDate, $places, $level, $type, $description)
+    private function checkRequestData($startDate, $endDate, $places, $level, $type, $description)
     {
         $errors = '';
 
         if (is_null($startDate)) {
             $errors .= 'Missing start date;';
         }
+        elseif ($startDate == '')
+        {
+            $errors .= 'Start Date must be not empty;';
+        }
+        else
+        {
+            try {
+                $formattedStartDate = DateTime::createFromFormat('Y-m-d', $startDate);
+                if (is_bool($formattedStartDate))
+                {
+                    throw new Exception();
+                }
+                $startDate = new DateTime($formattedStartDate->format('Y-m-d'));
+            } catch (Exception $e) {
+                $errors .= "Invalid format of Start Date, the format must be Y-m-d.;";
+            }
+        }
+
+        if (is_null($endDate)) {
+            $errors .= 'Missing end date;';
+        }
+        elseif ($endDate == '')
+        {
+            $errors .= 'End Date must be not empty;';
+        }
+        else
+        {
+            try {
+                $formattedEndDate = DateTime::createFromFormat('Y-m-d', $endDate);
+                if (is_bool($formattedEndDate))
+                {
+                    throw new Exception();
+                }
+                $endDate = new DateTime($formattedEndDate->format('Y-m-d'));
+            } catch (Exception $e) {
+                $errors .= "Invalid format of End Date, the format must be Y-m-d.;";
+            }
+        }
 
         if (is_null($level)) {
             $errors .= 'Missing level;';
+        }
+        elseif (!filter_var($level, FILTER_VALIDATE_INT)) {
+            $errors .= 'Level must be integer;';
         }
 
         if (is_null($type)) {
@@ -179,11 +158,18 @@ class CursController extends Controller
             $errors .= 'Missing description;';
         }
 
-        if (is_null($endDate)) {
-            $errors .= 'Missing end date;';
-        }
         if (is_null($places)) {
             $errors .= 'Missing places;';
+        }
+        elseif (!filter_var($places, FILTER_VALIDATE_INT)) {
+            $errors .= 'Places must be integer;';
+        }
+        elseif ($places < 0) {
+            $errors .= 'Places must be positive number;';
+        }
+
+        if (!is_null($startDate) && !is_null($endDate) && $startDate >= $endDate){
+            $errors .= 'Start date must be before end date;';
         }
 
         return $errors;
@@ -385,7 +371,7 @@ class CursController extends Controller
             $startDate = $request->request->get('startDate');
             $endDate = $request->request->get('endDate');
 
-            $errors = $this->checkIfNull($startDate, $endDate, $places, $level, $type, $description);
+            $errors = $this->checkRequestData($startDate, $endDate, $places, $level, $type, $description);
 
             if ($errors) {
                 return $utils->createResponse(404, array(
@@ -393,63 +379,6 @@ class CursController extends Controller
                 ));
             }
 
-            if (!filter_var($level, FILTER_VALIDATE_INT)) {
-                return $utils->createResponse(403, array(
-                    'errors' => "Level must be integer;",
-                ));
-            }
-
-            if (!filter_var($places, FILTER_VALIDATE_INT)) {
-                return $utils->createResponse(403, array(
-                    'errors' => "Price must be integer;",
-                ));
-            }
-
-            if ($startDate == '')
-            {
-                return $utils->createResponse(403, array(
-                    'errors' => "Start Date must be not empty",
-                ));
-            }
-
-            if ($endDate == '')
-            {
-                return $utils->createResponse(403, array(
-                    'errors' => "End Date must be not empty",
-                ));
-            }
-
-            try {
-                $formattedStartDate = DateTime::createFromFormat('Y-m-d', $startDate);
-                if (is_bool($formattedStartDate))
-                {
-                    throw new Exception();
-                }
-                $startDate = new DateTime($formattedStartDate->format('Y-m-d'));
-            } catch (Exception $e) {
-                return $utils->createResponse(403, array(
-                    'errors' => "Invalid format of Start Date, the format must be Y-m-d.",
-                ));
-            }
-
-            try {
-                $formattedEndDate = DateTime::createFromFormat('Y-m-d', $endDate);
-                if (is_bool($formattedEndDate))
-                {
-                    throw new Exception();
-                }
-                $endDate = new DateTime($formattedEndDate->format('Y-m-d'));
-            } catch (Exception $e) {
-                return $utils->createResponse(403, array(
-                    'errors' => "Invalid format of End Date, the format must be Y-m-d.",
-                ));
-            }
-
-            if ($startDate >= $endDate){
-                return $utils->createResponse(403, array(
-                    'errors' => "Start date must be before end date;",
-                ));
-            }
             $curs->setLevel($level);
             $curs->setPlaces($places);
             $curs->setType($type);
