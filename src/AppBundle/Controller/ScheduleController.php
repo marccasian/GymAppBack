@@ -12,6 +12,7 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Curs;
 use AppBundle\Entity\Profile;
 use AppBundle\Entity\Schedule;
+use AppBundle\Utils\AllMyConstants;
 use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use AppBundle\Utils\Functions;
@@ -213,6 +214,41 @@ class ScheduleController extends Controller
             ));
         }
     }
+
+    public function getProfileIdFromUsername($get)
+    {
+        return $this->getProfileFromUsername($get)->getProfileid();
+    }
+
+    public function getProfileFromUsername($get)
+    {
+        $repository = $this->getDoctrine()->getRepository(Profile::class);
+        /** @var  $profile Profile*/
+        $profile = $repository->findOneBy(array(
+            'username' => $get
+        ));
+        return $profile;
+    }
+
+    /**
+     * @Route("/schedule/getAllScheduleOfGymByAbonamentUser/{username}", name = "get_all_schedule_of_gym_by_abonament_user")
+     * @Method({"GET"})
+     * @param $username
+     * @return Response
+     */
+    public function getAllScheduleOfGymByAbonamentUser($username)
+    {
+        $utils = new Functions();
+        $userAbonament = $this->getUserAbonament($username);
+        if ($userAbonament == -1){
+            return $utils->createResponse(200, array(
+                'errors' => "Given user doesn't have a subscription;"
+            ));
+        }
+        $schedules = $this->getGymScheduleByAbonamentId($userAbonament);
+        return $utils->createResponse(200, $schedules);
+    }
+
 
     /**
      * @Route("/schedule/get_schedule/{id}", name = "get_schedule")
@@ -477,5 +513,35 @@ class ScheduleController extends Controller
         }
 
 
+    }
+
+    private function getUserAbonament($username)
+    {
+        /** @var $profile Profile */
+        $profileId = $this->getProfileIdFromUsername($username);
+        $sql = " SELECT IdAbonament FROM elephpants_new.user_abonament where Activ = 1 and IdUser = $profileId;";
+        $conn = $this->getDoctrine()->getConnection();
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $abonamentId = $stmt->fetchAll();
+        if (count($abonamentId) == 0){
+            return -1;
+        }
+        return $abonamentId[0]["IdAbonament"];
+    }
+
+    private function getGymScheduleByAbonamentId($userAbonament)
+    {
+
+        $sql = " SELECT schedule.IdCurs, profile.username, WeekDay, StartTime, EndTime, PeriodStartDate, PeriodEndDate 
+ FROM curs_abonament 
+ JOIN schedule on curs_abonament.IdCurs = schedule.IdCurs 
+ JOIN profile ON profile.ProfileId = schedule.IdTrainer
+ WHERE IdAbonament = $userAbonament  order by schedule.WeekDay,schedule.starttime;";
+        $conn = $this->getDoctrine()->getConnection();
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $scheduleEntries = $stmt->fetchAll();
+        return $scheduleEntries;
     }
 }
