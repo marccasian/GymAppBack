@@ -251,6 +251,12 @@ class ScheduleController extends Controller
             ));
         }
         $schedules = $this->getGymScheduleByAbonamentId($userAbonament);
+        foreach ($schedules as &$item) {
+            $dayOftheWeek = jddayofweek(intval($item["WeekDay"]), 2);
+            $starttime = date_create_from_format('Y-m-d H:i:s', $item["StartTime"])->format('H:i');
+            $endtime = date_create_from_format('Y-m-d H:i:s', $item["EndTime"])->format('H:i');
+            $item["interval"] = $dayOftheWeek." ".$starttime."-".$endtime;
+        }
         return $utils->createResponse(200, $schedules);
     }
 
@@ -270,6 +276,12 @@ class ScheduleController extends Controller
             ));
         }
         $schedules = $this->getMyScheduleByProfileId($userAbonament);
+        foreach ($schedules as &$item) {
+            $dayOftheWeek = jddayofweek(intval($item["WeekDay"]), 2);
+            $starttime = date_create_from_format('Y-m-d H:i:s', $item["StartTime"])->format('H:i');
+            $endtime = date_create_from_format('Y-m-d H:i:s', $item["EndTime"])->format('H:i');
+            $item["interval"] = $dayOftheWeek." ".$starttime."-".$endtime;
+        }
         return $utils->createResponse(200, $schedules);
     }
 
@@ -543,7 +555,7 @@ class ScheduleController extends Controller
     {
         /** @var $profile Profile */
         $profileId = $this->getProfileIdFromUsername($username);
-        if ($profileId){
+        if (!$profileId){
             return -1;
         }
         $sql = " SELECT IdAbonament FROM elephpants_new.user_abonament where Activ = 1 and IdUser = $profileId;";
@@ -560,9 +572,10 @@ class ScheduleController extends Controller
     private function getGymScheduleByAbonamentId($userAbonament)
     {
 
-        $sql = " SELECT schedule.IdCurs, profile.username, WeekDay, StartTime, EndTime, PeriodStartDate, PeriodEndDate 
+        $sql = " SELECT schedule.id, curs.Type, profile.username as trainer, WeekDay, StartTime, EndTime, PeriodStartDate, PeriodEndDate 
                  FROM curs_abonament 
                  JOIN schedule on curs_abonament.IdCurs = schedule.IdCurs 
+                 JOIN curs on curs_abonament.IdCurs = curs.CursId 
                  JOIN profile ON profile.ProfileId = schedule.IdTrainer
                  WHERE IdAbonament = $userAbonament  order by schedule.WeekDay,schedule.starttime;";
         $conn = $this->getDoctrine()->getConnection();
@@ -576,12 +589,13 @@ class ScheduleController extends Controller
     private function getMyScheduleByProfileId($profileId)
     {
 
-        $sql = " SELECT schedule.IdCurs, WeekDay, p.username as Trainer, StartTime, EndTime, PeriodStartDate, PeriodEndDate 
+        $sql = " SELECT curs.Type, WeekDay, p.username as Trainer, StartTime, EndTime, PeriodStartDate, PeriodEndDate 
                 FROM schedule 
                 JOIN evidentainscrieri on evidentainscrieri.ScheduleId = schedule.Id 
+                JOIN curs on curs.CursId = schedule.IdCurs
                 JOIN profile ON profile.ProfileId = evidentainscrieri.ProfileId
                 JOIN profile p ON p.ProfileId = schedule.IdTrainer 
-                WHERE profile.ProfileId = $profileId 
+                WHERE profile.ProfileId = $profileId
                 order by schedule.WeekDay,schedule.starttime;";
         $conn = $this->getDoctrine()->getConnection();
         $stmt = $conn->prepare($sql);
