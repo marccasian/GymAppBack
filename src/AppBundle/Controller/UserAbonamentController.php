@@ -195,4 +195,31 @@ class UserAbonamentController extends Controller
         }
         return $utils->createResponse(200, array());
     }
+
+    /**
+     * @Route("/subscription/get_paid_users", name = "get_paid_users")
+     * @Method({"GET"})
+     * @return Response
+     * @internal param Request $request
+     */
+    public function getPaidUsers()
+    {
+        $utils = new Functions();
+
+        $repo = $this->getDoctrine()->getManager()->getRepository(UserAbonament::class);
+        $all = $repo->findAll();
+
+        $res = [];
+        foreach ($all as $item){
+            /** @var $item UserAbonament */
+            if($item->getPlatit() == 1){
+                $res[]=[
+                    'profileid' => $item->getIduser()->getProfileid(),
+                    'type' => $item->getIdabonament()->getType()
+                ];
+            }
+        }
+
+        return $utils->createResponse(200, $res);
+    }
 }
