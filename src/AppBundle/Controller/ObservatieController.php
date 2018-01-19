@@ -7,6 +7,7 @@ header("Access-Control-Allow-Origin: *");
  */
 
 namespace AppBundle\Controller;
+header("Access-Control-Allow-Origin: *");
 
 
 use AppBundle\Entity\Curs;

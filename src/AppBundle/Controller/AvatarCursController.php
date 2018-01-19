@@ -1,11 +1,11 @@
 <?php
-header("Access-Control-Allow-Origin: *");
+
 /**
  * @author Grozescu Rares
  */
 
 namespace AppBundle\Controller;
-
+header("Access-Control-Allow-Origin: *");
 
 use AppBundle\Entity\Curs;
 use AppBundle\Entity\CursAvatar;

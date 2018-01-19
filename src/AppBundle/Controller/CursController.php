@@ -1,5 +1,5 @@
 <?php
-header("Access-Control-Allow-Origin: *");
+
 /**
  * @author Casian Marc      <marccasiannicolae@gmail.com>
  * @authro Lucaciu Mircea   <lucaciumircea5@gmail.com>
@@ -8,7 +8,7 @@ header("Access-Control-Allow-Origin: *");
  */
 
 namespace AppBundle\Controller;
-
+header("Access-Control-Allow-Origin: *");
 
 use AppBundle\Entity\Abonament;
 use AppBundle\Entity\Curs;

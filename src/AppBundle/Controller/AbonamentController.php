@@ -1,13 +1,13 @@
 <?php
-header("Access-Control-Allow-Origin: *");
 /**
  * @author Lucaciu Mircea <lucaciumircea5@gmail.com>
  * Class AbonamentController
  * @package AppBundle\Controller
  */
 
-namespace AppBundle\Controller;
 
+namespace AppBundle\Controller;
+header("Access-Control-Allow-Origin: *");
 
 use AppBundle\Entity\Abonament;
 use AppBundle\Entity\Profile;

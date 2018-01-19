@@ -1,5 +1,5 @@
 <?php
-header("Access-Control-Allow-Origin: *");
+
 /**
  * Created by PhpStorm.
  * User: User
@@ -11,7 +11,7 @@ header("Access-Control-Allow-Origin: *");
  */
 
 namespace AppBundle\Controller;
-
+header("Access-Control-Allow-Origin: *");
 
 use AppBundle\Entity\Profile;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;

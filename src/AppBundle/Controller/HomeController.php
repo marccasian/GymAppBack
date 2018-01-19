@@ -1,5 +1,5 @@
 <?php
-header("Access-Control-Allow-Origin: *");
+
 
 /**
  * @author Grozescu Rares <grozescurares@yahoo.com>
@@ -7,7 +7,7 @@ header("Access-Control-Allow-Origin: *");
  */
 
 namespace AppBundle\Controller;
-
+header("Access-Control-Allow-Origin: *");
 use AppBundle\Entity\ActivationCode;
 use AppBundle\Entity\Profile;
 use AppBundle\Entity\Rol;
