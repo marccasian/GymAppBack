@@ -239,33 +239,14 @@ class ScheduleController extends Controller
     public function getAllScheduleOfGymByAbonamentUser($username)
     {
         $utils = new Functions();
-        $repo = $this->getDoctrine()->getManager()->getRepository(Schedule::class);
-        error_log("wtfff...");
-        error_log($username);
         $userAbonament = $this->getUserAbonament($username);
-        $schedules = $this->getGymScheduleByAbonamentId($userAbonament);
-        $result = [];
-        if (count($schedules)) {
-//            /** @var  $item Schedule */
-//            foreach ($schedules as $item) {
-//                $result[] = [
-//                    'id' => $item->getId(),
-//                    'courseId' => $item->getIdcurs()->getCursid(),
-//                    'weekDay' => $item->getWeekday(),
-//                    'startTime' => $item->getStarttime(),
-//                    'endTime' => $item->getEndtime(),
-//                    'periodEndDate' => $item->getPeriodenddate(),
-//                    'periodStartDate' => $item->getPeriodstartdate(),
-//                    'trainerId' => $item->getIdtrainer()->getUsername()->getUsername(),
-//                ];
-//
-//            }
-            return $utils->createResponse(200, $schedules);
-        } else {
-            return $utils->createResponse(404, array(
-                'errors' => "No schedules in db.",
+        if ($userAbonament == -1){
+            return $utils->createResponse(200, array(
+                'errors' => "Given user doesn't have a subscription;"
             ));
         }
+        $schedules = $this->getGymScheduleByAbonamentId($userAbonament);
+        return $utils->createResponse(200, $schedules);
     }
 
 
@@ -543,6 +524,9 @@ class ScheduleController extends Controller
         $stmt = $conn->prepare($sql);
         $stmt->execute();
         $abonamentId = $stmt->fetchAll();
+        if (count($abonamentId) == 0){
+            return -1;
+        }
         return $abonamentId[0]["IdAbonament"];
     }
 
