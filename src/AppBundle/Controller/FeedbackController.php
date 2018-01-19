@@ -27,7 +27,11 @@ class FeedbackController extends Controller
 {
     public function getProfileIdFromUsername($get)
     {
-        return $this->getProfileFromUsername($get)->getProfileid();
+        $profile = $this->getProfileFromUsername($get);
+        if ($profile){
+            return $profile->getProfileid();
+        }
+        return null;
     }
 
     public function getProfileFromUsername($get)
@@ -261,6 +265,11 @@ class FeedbackController extends Controller
         }
         $repository = $this->getDoctrine()->getManager()->getRepository(Feedback::class);
         $evaluatorId = $this->getProfileIdFromUsername($evaluator);
+        if (!$evaluatorId){
+            return $utils->createResponse(404, array(
+                "errors" => "Can't find user profile;"
+            ));
+        }
 
         $feedback_entries = $repository->findBy(array(
             'evaluatorid' => @$evaluatorId,
@@ -296,6 +305,11 @@ class FeedbackController extends Controller
         }
         $repository = $this->getDoctrine()->getManager()->getRepository(Feedback::class);
         $profileId = $this->getProfileIdFromUsername($evaluat);
+        if (!$profileId) {
+            return $utils->createResponse(404, array(
+                "errors" => "Can't find user profile;"
+            ));
+        }
         $feedback_entries = $repository->findBy(array(
             'evaluatid' => $profileId,
         ));
