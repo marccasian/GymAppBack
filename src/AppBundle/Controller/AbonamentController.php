@@ -46,45 +46,6 @@ class AbonamentController extends Controller
                 'errors' => $errors,
             ));
         }
-        if (!filter_var($level, FILTER_VALIDATE_INT)) {
-            return $utils->createResponse(403, array(
-                'errors' => "Level must be integer",
-            ));
-        }
-
-        if (!filter_var($price, FILTER_VALIDATE_FLOAT)) {
-            return $utils->createResponse(403, array(
-                'errors' => "Price must be float",
-            ));
-        }
-
-        if ((int)$price < 1)
-        {
-            return $utils->createResponse(403, array(
-                'errors' => "Price must be strict positive",
-            ));
-        }
-
-        if ((int)$level < 1)
-        {
-            return $utils->createResponse(403, array(
-                'errors' => "Level must be strict positive",
-            ));
-        }
-
-        if ($type == '')
-        {
-            return $utils->createResponse(403, array(
-                'errors' => "Type must not be empty",
-            ));
-        }
-
-        if ($description == '')
-        {
-            return $utils->createResponse(403, array(
-                'errors' => "Description must not be empty",
-            ));
-        }
 
         try {
             $manager = $this->getDoctrine()->getManager();
@@ -134,17 +95,41 @@ class AbonamentController extends Controller
         if (is_null($price)) {
             $errors .= 'Missing price;';
         }
+        elseif (!filter_var($price, FILTER_VALIDATE_FLOAT)) {
+            $errors .= "Price must be float;";
+        }
+        elseif ((int)$price < 1)
+        {
+            $errors .= "Price must be strict positive;";
+        }
+
 
         if (is_null($level)) {
             $errors .= 'Missing level';
         }
+        elseif (!filter_var($level, FILTER_VALIDATE_INT)) {
+            $errors .= 'Level must be integer;';
+        }
+        elseif ((int)$level < 1)
+        {
+            $errors .= 'Level must be strict positive;';
+        }
+
 
         if (is_null($type)) {
             $errors .= 'Missing type;';
         }
+        elseif ($type == '')
+        {
+            $errors .= 'Type must not be empty;';
+        }
 
         if (is_null($description)) {
             $errors .= 'Missing description;';
+        }
+        elseif ($description == '')
+        {
+            $errors .= "Description must not be empty;";
         }
 
         return $errors;
@@ -400,44 +385,6 @@ class AbonamentController extends Controller
             if($errors){
                 return $utils->createResponse(404, array(
                     'errors' => $errors,
-                ));
-            }
-
-            if (!filter_var($level, FILTER_VALIDATE_INT)) {
-                return $utils->createResponse(403, array(
-                    'errors' => "Level must be integer;",
-                ));
-            }
-
-            if (!filter_var($price, FILTER_VALIDATE_FLOAT)) {
-                return $utils->createResponse(403, array(
-                    'errors' => "Price must be float;",
-                ));
-            }
-
-            if ($price <= 0){
-                return $utils->createResponse(403, array(
-                    'errors' => "Price must be grater than 0;",
-                ));
-            }
-
-            if ($level <= 0){
-                return $utils->createResponse(403, array(
-                    'errors' => "Level must be grater than 0;",
-                ));
-            }
-
-            if ($type == '')
-            {
-                return $utils->createResponse(403, array(
-                    'errors' => "Type must not be empty",
-                ));
-            }
-
-            if ($description == '')
-            {
-                return $utils->createResponse(403, array(
-                    'errors' => "Description must not be empty",
                 ));
             }
 
