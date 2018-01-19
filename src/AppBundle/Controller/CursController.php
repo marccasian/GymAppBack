@@ -52,7 +52,13 @@ class CursController extends Controller
                 'errors' => $errors,
             ));
         }
-
+        $startDate = new \DateTime(DateTime::createFromFormat('Y-m-d', $startDate)->format('Y-m-d'));
+        $endDate = new \DateTime(DateTime::createFromFormat('Y-m-d', $endDate)->format('Y-m-d'));
+        if ($startDate > $endDate){
+            return $utils->createResponse(403, array(
+                'errors' => "Start date must be before end date",
+            ));
+        }
         try {
             $manager = $this->getDoctrine()->getManager();
             $curs = new Curs();
@@ -111,14 +117,9 @@ class CursController extends Controller
         }
         else
         {
-            try {
-                $formattedStartDate = DateTime::createFromFormat('Y-m-d', $startDate);
-                if (is_bool($formattedStartDate))
-                {
-                    throw new Exception();
-                }
-                $startDate = new DateTime($formattedStartDate->format('Y-m-d'));
-            } catch (Exception $e) {
+            $formattedStartDate = DateTime::createFromFormat('Y-m-d', $startDate);
+            if (is_bool($formattedStartDate))
+            {
                 $errors .= "Invalid format of Start Date, the format must be Y-m-d.;";
             }
         }
@@ -132,14 +133,9 @@ class CursController extends Controller
         }
         else
         {
-            try {
-                $formattedEndDate = DateTime::createFromFormat('Y-m-d', $endDate);
-                if (is_bool($formattedEndDate))
-                {
-                    throw new Exception();
-                }
-                $endDate = new DateTime($formattedEndDate->format('Y-m-d'));
-            } catch (Exception $e) {
+            $formattedEndDate = DateTime::createFromFormat('Y-m-d', $endDate);
+            if (is_bool($formattedEndDate))
+            {
                 $errors .= "Invalid format of End Date, the format must be Y-m-d.;";
             }
         }
@@ -379,7 +375,13 @@ class CursController extends Controller
                     'errors' => $errors,
                 ));
             }
-
+            $startDate = new \DateTime(DateTime::createFromFormat('Y-m-d', $startDate)->format('Y-m-d'));
+            $endDate = new \DateTime(DateTime::createFromFormat('Y-m-d', $endDate)->format('Y-m-d'));
+            if ($startDate > $endDate){
+                return $utils->createResponse(403, array(
+                    'errors' => "Start date must be before end date",
+                ));
+            }
             $curs->setLevel($level);
             $curs->setPlaces($places);
             $curs->setType($type);
