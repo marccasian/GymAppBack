@@ -31,6 +31,20 @@ use AppBundle\Entity\User;
 
 class UserAbonamentController extends Controller
 {
+    public function getProfileIdFromUsername($get)
+    {
+        return $this->getProfileFromUsername($get)->getProfileid();
+    }
+
+    public function getProfileFromUsername($get)
+    {
+        $repository = $this->getDoctrine()->getRepository(Profile::class);
+        /** @var  $profile Profile*/
+        $profile = $repository->findOneBy(array(
+            'username' => $get
+        ));
+        return $profile;
+    }
 
     /**
      * @Route("/subscription/buy_subscription", name = "buy_subscription")
@@ -55,11 +69,7 @@ class UserAbonamentController extends Controller
             ));
         }
 
-        $repository = $this->getDoctrine()->getManager()->getRepository(Profile::class);
-        /** @var $profile Profile */
-        $profile = $repository->findOneBy(array(
-            'username' => $username,
-        ));
+        $profile = $this->getProfileFromUsername($username);
 
         if($profile){
             $repositoryAbonament = $this->getDoctrine()->getManager()->getRepository(Abonament::class);
@@ -85,7 +95,7 @@ class UserAbonamentController extends Controller
 //                    $userAbonament->setAbonamentstartdate($startDate);
 //                    $userAbonament->setAbonamentenddate($endDate);
 //                }
-                $this->unsetAllUserSubscriptions($username);
+                $this->unsetAllUserSubscriptions($profile->getProfileid());
                 $manager->persist($userAbonament);
                 $manager->flush();
 //                if ($platit) {
@@ -100,7 +110,7 @@ class UserAbonamentController extends Controller
 //                }
 //                else {
                 return $utils->createResponse(200, [
-                    'profilId' => $username,
+                    'username' => $username,
                     'abonamentId' => $abonamentId,
                     'platit' => $userAbonament->getPlatit(),
                     'activ' => $userAbonament->getActiv(),
