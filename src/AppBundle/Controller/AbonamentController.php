@@ -111,7 +111,7 @@ class AbonamentController extends Controller
         elseif (!filter_var($level, FILTER_VALIDATE_INT)) {
             $errors .= 'Level must be integer;';
         }
-        elseif ((int)$level < 1)
+        elseif ((int)$level <= 0)
         {
             $errors .= 'Level must be strict positive;';
         }
