@@ -1,4 +1,5 @@
 <?php
+header("Access-Control-Allow-Origin: *");
 /**
  * @author Casian Marc <marccasiannicolae@gmail.com>
  * Class ObservatieController
