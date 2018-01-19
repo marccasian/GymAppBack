@@ -214,7 +214,7 @@ class UserAbonamentController extends Controller
             /** @var $item UserAbonament */
             if($item->getPlatit() == 1){
                 $res[]=[
-                    'profileid' => $item->getIduser()->getProfileid(),
+                    'username' => $item->getIduser()->getUsername()->getUsername(),
                     'type' => $item->getIdabonament()->getType()
                 ];
             }
