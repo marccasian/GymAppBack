@@ -1,4 +1,5 @@
 <?php
+header("Access-Control-Allow-Origin: *");
 /**
  * @author Lucaciu Mircea <lucaciumircea5@gmail.com>
  * Class AbonamentController
