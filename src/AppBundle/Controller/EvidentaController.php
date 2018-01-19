@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: Mircea
@@ -7,7 +8,7 @@
  */
 
 namespace AppBundle\Controller;
-
+header("Access-Control-Allow-Origin: *");
 
 use AppBundle\Entity\Evidentainscrieri;
 use AppBundle\Entity\Profile;

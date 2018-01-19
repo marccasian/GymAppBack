@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: User
@@ -7,6 +8,7 @@
  */
 
 namespace AppBundle\Controller;
+header("Access-Control-Allow-Origin: *");
 
 
 use AppBundle\Entity\Abonament;

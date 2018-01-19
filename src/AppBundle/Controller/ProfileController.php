@@ -1,10 +1,11 @@
 <?php
+
 /**
  * @author Lucaciu Mircea <lucaciumircea5@gmail.com>
  */
 
 namespace AppBundle\Controller;
-
+header("Access-Control-Allow-Origin: *");
 
 use AppBundle\Utils\Functions;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;

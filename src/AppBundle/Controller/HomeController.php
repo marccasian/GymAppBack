@@ -1,12 +1,13 @@
 <?php
 
+
 /**
  * @author Grozescu Rares <grozescurares@yahoo.com>
  *
  */
 
 namespace AppBundle\Controller;
-
+header("Access-Control-Allow-Origin: *");
 use AppBundle\Entity\ActivationCode;
 use AppBundle\Entity\Profile;
 use AppBundle\Entity\Rol;

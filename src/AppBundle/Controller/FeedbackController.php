@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Casian Marc <marccasiannicolae@gmail.com>
  * Class FeedbackController
@@ -7,7 +8,7 @@
 
 namespace AppBundle\Controller;
 
-
+header("Access-Control-Allow-Origin: *");
 use AppBundle\Entity\Feedback;
 use AppBundle\Entity\Profile;
 use AppBundle\Entity\User;

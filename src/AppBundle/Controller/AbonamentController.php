@@ -5,8 +5,9 @@
  * @package AppBundle\Controller
  */
 
-namespace AppBundle\Controller;
 
+namespace AppBundle\Controller;
+header("Access-Control-Allow-Origin: *");
 
 use AppBundle\Entity\Abonament;
 use AppBundle\Entity\Profile;
