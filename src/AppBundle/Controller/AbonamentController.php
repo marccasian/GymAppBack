@@ -98,9 +98,9 @@ class AbonamentController extends Controller
         elseif (!filter_var($price, FILTER_VALIDATE_FLOAT)) {
             $errors .= "Price must be float;";
         }
-        elseif ((int)$price < 1)
+        elseif ((int)$price < 0)
         {
-            $errors .= "Price must be strict positive;";
+            $errors .= "Price must be positive;";
         }
 
 
