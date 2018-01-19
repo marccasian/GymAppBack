@@ -1,5 +1,5 @@
 <?php
-header("Access-Control-Allow-Origin: *");
+
 /**
  * Created by PhpStorm.
  * User: cmarc
@@ -8,7 +8,7 @@ header("Access-Control-Allow-Origin: *");
  */
 
 namespace AppBundle\Controller;
-
+header("Access-Control-Allow-Origin: *");
 use AppBundle\Entity\Abonament;
 use AppBundle\Entity\Curs;
 use AppBundle\Entity\Profile;
