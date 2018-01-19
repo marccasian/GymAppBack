@@ -41,12 +41,12 @@ class UserAbonamentController extends Controller
     public function buySubscription(Request $request)
     {
         $utils = new Functions();
-        $profileId =    $request->request->get('profileId');
+        $username =    $request->request->get('username');
         $abonamentId =  $request->request->get('abonamentId');
 
-        if(is_null($profileId)){
+        if(is_null($username)){
             return $utils->createResponse(400, array(
-                'errors' => "Missing profile id;",
+                'errors' => "Missing username;",
             ));
         }
         if(is_null($abonamentId)){
@@ -58,7 +58,7 @@ class UserAbonamentController extends Controller
         $repository = $this->getDoctrine()->getManager()->getRepository(Profile::class);
         /** @var $profile Profile */
         $profile = $repository->findOneBy(array(
-            'profileid' => $profileId,
+            'username' => $username,
         ));
 
         if($profile){
@@ -85,12 +85,12 @@ class UserAbonamentController extends Controller
 //                    $userAbonament->setAbonamentstartdate($startDate);
 //                    $userAbonament->setAbonamentenddate($endDate);
 //                }
-                $this->unsetAllUserSubscriptions($profileId);
+                $this->unsetAllUserSubscriptions($username);
                 $manager->persist($userAbonament);
                 $manager->flush();
 //                if ($platit) {
 //                    return $utils->createResponse(200, [
-//                        'profilId' => $profileId,
+//                        'profilId' => $username,
 //                        'abonamentId' => $abonamentId,
 //                        'platit' => $platit,
 //                        'activ' => $userAbonament->getActiv(),
@@ -100,7 +100,7 @@ class UserAbonamentController extends Controller
 //                }
 //                else {
                 return $utils->createResponse(200, [
-                    'profilId' => $profileId,
+                    'profilId' => $username,
                     'abonamentId' => $abonamentId,
                     'platit' => $userAbonament->getPlatit(),
                     'activ' => $userAbonament->getActiv(),
@@ -115,7 +115,7 @@ class UserAbonamentController extends Controller
             }
         }else{
             return $utils->createResponse(400, [
-                'errors' => "No profile existing with given ID;",
+                'errors' => "No profile existing with given username;",
             ]);
         }
     }
