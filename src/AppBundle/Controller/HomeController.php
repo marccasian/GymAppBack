@@ -453,8 +453,6 @@ class HomeController extends Controller
         $newPassword = $request->request->get('newPassword');
         $confirmPassword = $request->request->get('confirmPassword');
 
-        echo $username." ".$oldPassword." ".$newPassword." ".$confirmPassword;
-
 
         if($oldPassword and $newPassword and $confirmPassword and $username){
 
