@@ -58,6 +58,34 @@ class AbonamentController extends Controller
             ));
         }
 
+        if ((int)$price < 1)
+        {
+            return $utils->createResponse(403, array(
+                'errors' => "Price must be strict positive",
+            ));
+        }
+
+        if ((int)$level < 1)
+        {
+            return $utils->createResponse(403, array(
+                'errors' => "Level must be strict positive",
+            ));
+        }
+
+        if ($type == '')
+        {
+            return $utils->createResponse(403, array(
+                'errors' => "Type must not be empty",
+            ));
+        }
+
+        if ($description == '')
+        {
+            return $utils->createResponse(403, array(
+                'errors' => "Description must not be empty",
+            ));
+        }
+
         try {
             $manager = $this->getDoctrine()->getManager();
             $abonament = new Abonament();
@@ -387,14 +415,29 @@ class AbonamentController extends Controller
                 ));
             }
 
-            if ($price < 0){
+            if ($price <= 0){
                 return $utils->createResponse(403, array(
                     'errors' => "Price must be grater than 0;",
                 ));
             }
-            if ($level < 0){
+
+            if ($level <= 0){
                 return $utils->createResponse(403, array(
                     'errors' => "Level must be grater than 0;",
+                ));
+            }
+
+            if ($type == '')
+            {
+                return $utils->createResponse(403, array(
+                    'errors' => "Type must not be empty",
+                ));
+            }
+
+            if ($description == '')
+            {
+                return $utils->createResponse(403, array(
+                    'errors' => "Description must not be empty",
                 ));
             }
 
