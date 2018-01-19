@@ -134,7 +134,6 @@ class HomeController extends Controller
                     $em->flush();
 
 
-
                     $message = "Hello ".$username.",\nThank you for registering your GymApp account!\n\nYour access data:\nUsername: ".$username."\nEmail address: ".$email."\nPassword: ".$password."\n\nThank you,\nElePHPants Team";
 
                     $post = [
