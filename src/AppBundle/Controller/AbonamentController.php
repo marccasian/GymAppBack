@@ -39,7 +39,7 @@ class AbonamentController extends Controller
         $type = $request->request->get('type');
         $description = $request->request->get('description');
 
-        $errors = $this->   checkIfNull($level, $price, $type, $description);
+        $errors = $this->   checkRequestData($level, $price, $type, $description);
 
         if ($errors) {
             return $utils->createResponse(403, array(
@@ -88,7 +88,7 @@ class AbonamentController extends Controller
      * @param $description
      * @return string
      */
-    private function checkIfNull($level, $price, $type, $description)
+    private function checkRequestData($level, $price, $type, $description)
     {
         $errors = '';
 
@@ -380,7 +380,7 @@ class AbonamentController extends Controller
             $type = $request->request->get('type');
             $description = $request->request->get('description');
 
-            $errors = $this->checkIfNull($level,$price,$type,$description);
+            $errors = $this->checkRequestData($level,$price,$type,$description);
 
             if($errors){
                 return $utils->createResponse(404, array(
