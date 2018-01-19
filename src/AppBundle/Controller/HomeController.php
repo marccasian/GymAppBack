@@ -438,5 +438,84 @@ class HomeController extends Controller
 
     }
 
+    /**
+     * @Route("/home/changePassword", name = "home_change_password")
+     * @Method({"POST"})
+     * @param Request $request
+     * @return Response
+     */
+
+    public function changePassword(Request $request){
+        $utils = new Functions();
+
+        $username = $request->request->get('username');
+        $oldPassword = $request->request->get('oldPassword');
+        $newPassword = $request->request->get('newPassword');
+        $confirmPassword = $request->request->get('confirmPassword');
+
+        echo $username." ".$oldPassword." ".$newPassword." ".$confirmPassword;
+
+
+        if($oldPassword and $newPassword and $confirmPassword and $username){
+
+        }else{
+            return $utils->createResponse(206, array(
+               'errors' => 'Partial data'
+            ));
+        }
+
+
+
+        if(strlen($newPassword) < 6){
+            return $utils->createResponse(409, array(
+                'errors' => 'Password must be at least 6 characters.'
+            ));
+        }
+
+        if($newPassword == $confirmPassword){
+
+        }else{
+            return $utils->createResponse(409, array(
+               'errors' => 'Fields are different'
+            ));
+        }
+
+        $repoUser = $this->getDoctrine()->getRepository(User::class);
+        $user = $repoUser->findOneBy(array(
+           'username' => $username
+        ));
+
+        if($user){
+
+
+            $user->setPassword($newPassword);
+            $em = $this->getDoctrine()->getManager();
+            try{
+                $em->persist($user);
+                $em->flush();
+                return $utils->createResponse(200, array());
+
+            }catch (Exception $e) {
+                error_log($e->getMessage());
+                return $utils->createResponse(409, array(
+                    'errors' => "Something went wrong ...",
+                ));
+            } catch (PDOException  $e) {
+                error_log($e->getMessage());
+                return $utils->createResponse(409, array(
+                    'errors' => "Something went wrong ...",
+                ));
+            }
+
+        }else{
+            return $utils->createResponse(409, array("errors"=>"Something went wrong"));
+        }
+
+
+
+
+    }
+
+
 
 }
