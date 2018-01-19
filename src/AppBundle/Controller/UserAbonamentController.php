@@ -41,9 +41,8 @@ class UserAbonamentController extends Controller
     public function buySubscription(Request $request)
     {
         $utils = new Functions();
-        $profileId =    $request->request->get('profilId');
+        $profileId =    $request->request->get('profileId');
         $abonamentId =  $request->request->get('abonamentId');
-        $platit =       $request->request->get('platit');
 
         if(is_null($profileId)){
             return $utils->createResponse(400, array(
@@ -53,11 +52,6 @@ class UserAbonamentController extends Controller
         if(is_null($abonamentId)){
             return $utils->createResponse(400, array(
                 'errors' => "Missing subscription id;",
-            ));
-        }
-        if(is_null($platit)){
-            return $utils->createResponse(400, array(
-                'errors' => "Missing pay status;"
             ));
         }
 
@@ -80,38 +74,38 @@ class UserAbonamentController extends Controller
                 $userAbonament->setIduser($profile);
                 $userAbonament->setIdabonament($abonament);
                 $userAbonament->setActiv(AllMyConstants::ACTIV_TRUE);
-                if ($platit == 0){
-                    $userAbonament->setPlatit(AllMyConstants::PLATIT_FALSE);
-                }
-                else
-                {
-                    $userAbonament->setPlatit(AllMyConstants::PLATIT_TRUE);
-                    $startDate = new DateTime();
-                    $endDate = new DateTime("+1 month");
-                    $userAbonament->setAbonamentstartdate($startDate);
-                    $userAbonament->setAbonamentenddate($endDate);
-                }
+//                if ($platit == 0){
+                $userAbonament->setPlatit(AllMyConstants::PLATIT_FALSE);
+//                }
+//                else
+//                {
+//                    $userAbonament->setPlatit(AllMyConstants::PLATIT_TRUE);
+//                    $startDate = new DateTime();
+//                    $endDate = new DateTime("+1 month");
+//                    $userAbonament->setAbonamentstartdate($startDate);
+//                    $userAbonament->setAbonamentenddate($endDate);
+//                }
                 $this->unsetAllUserSubscriptions($profileId);
                 $manager->persist($userAbonament);
                 $manager->flush();
-                if ($platit) {
-                    return $utils->createResponse(200, [
-                        'profilId' => $profileId,
-                        'abonamentId' => $abonamentId,
-                        'platit' => $platit,
-                        'activ' => $userAbonament->getActiv(),
-                        'abonamentStartDate' => $userAbonament->getAbonamentstartdate()->format('Y-m-d'),
-                        'abonamentEndDate' => $userAbonament->getAbonamentenddate()->format('Y-m-d'),
-                    ]);
-                }
-                else {
-                    return $utils->createResponse(200, [
-                        'profilId' => $profileId,
-                        'abonamentId' => $abonamentId,
-                        'platit' => $platit,
-                        'activ' => $userAbonament->getActiv(),
-                    ]);
-                }
+//                if ($platit) {
+//                    return $utils->createResponse(200, [
+//                        'profilId' => $profileId,
+//                        'abonamentId' => $abonamentId,
+//                        'platit' => $platit,
+//                        'activ' => $userAbonament->getActiv(),
+//                        'abonamentStartDate' => $userAbonament->getAbonamentstartdate()->format('Y-m-d'),
+//                        'abonamentEndDate' => $userAbonament->getAbonamentenddate()->format('Y-m-d'),
+//                    ]);
+//                }
+//                else {
+                return $utils->createResponse(200, [
+                    'profilId' => $profileId,
+                    'abonamentId' => $abonamentId,
+                    'platit' => $userAbonament->getPlatit(),
+                    'activ' => $userAbonament->getActiv(),
+                ]);
+//                }
             }
             else
             {
