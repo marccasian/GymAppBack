@@ -249,6 +249,20 @@ class ScheduleController extends Controller
         return $utils->createResponse(200, $schedules);
     }
 
+    /**
+     * @Route("/schedule/getMySchedule/{username}", name = "get_my_schedule")
+     * @Method({"GET"})
+     * @param $username
+     * @return Response
+     */
+    public function getMySchedule($username)
+    {
+        $utils = new Functions();
+        $userAbonament = $this->getProfileIdFromUsername($username);
+        $schedules = $this->getMyScheduleByProfileId($userAbonament);
+        return $utils->createResponse(200, $schedules);
+    }
+
 
     /**
      * @Route("/schedule/get_schedule/{id}", name = "get_schedule")
@@ -534,10 +548,28 @@ class ScheduleController extends Controller
     {
 
         $sql = " SELECT schedule.IdCurs, profile.username, WeekDay, StartTime, EndTime, PeriodStartDate, PeriodEndDate 
- FROM curs_abonament 
- JOIN schedule on curs_abonament.IdCurs = schedule.IdCurs 
- JOIN profile ON profile.ProfileId = schedule.IdTrainer
- WHERE IdAbonament = $userAbonament  order by schedule.WeekDay,schedule.starttime;";
+                 FROM curs_abonament 
+                 JOIN schedule on curs_abonament.IdCurs = schedule.IdCurs 
+                 JOIN profile ON profile.ProfileId = schedule.IdTrainer
+                 WHERE IdAbonament = $userAbonament  order by schedule.WeekDay,schedule.starttime;";
+        $conn = $this->getDoctrine()->getConnection();
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $scheduleEntries = $stmt->fetchAll();
+        return $scheduleEntries;
+    }
+
+
+    private function getMyScheduleByProfileId($profileId)
+    {
+
+        $sql = " SELECT schedule.IdCurs, WeekDay, p.username as Trainer, StartTime, EndTime, PeriodStartDate, PeriodEndDate 
+                FROM schedule 
+                JOIN evidentainscrieri on evidentainscrieri.ScheduleId = schedule.Id 
+                JOIN profile ON profile.ProfileId = evidentainscrieri.ProfileId
+                JOIN profile p ON p.ProfileId = schedule.IdTrainer 
+                WHERE profile.ProfileId = $profileId 
+                order by schedule.WeekDay,schedule.starttime;";
         $conn = $this->getDoctrine()->getConnection();
         $stmt = $conn->prepare($sql);
         $stmt->execute();
