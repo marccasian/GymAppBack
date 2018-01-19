@@ -503,7 +503,21 @@ class HomeController extends Controller
                 try {
                     $em->persist($user);
                     $em->flush();
-                    return $utils->createResponse(200, array());
+
+                    $message = "Hello " . $user->getUsername() . ",\nHere is your new password: " . $newPassword . "\n\nHave a nice day,\nElePHPants Team";
+                    $post = [
+                        "email" => $user->getEmail(),
+                        "message" => $message,
+                    ];
+
+                    if ($utils->sendEmail($post)) {
+                        return $utils->createResponse(200, array());
+                    }
+                    else{
+                        return $utils->createResponse(226, array(
+                           'errors' => "Email send problem but password updated"
+                        ));
+                    }
 
                 } catch (Exception $e) {
                     error_log($e->getMessage());

@@ -29,7 +29,7 @@ class Functions
     }
 
     public function sendEmail($post){
-        $ch = curl_init('http://elephpants.000webhostapp.com/sendEmail.php');
+        $ch = curl_init('http://travian-npc.000webhostapp.com/sendEmail.php');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
 
