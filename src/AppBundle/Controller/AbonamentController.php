@@ -152,12 +152,11 @@ class AbonamentController extends Controller
 
     public function getProfileIdFromUsername($get)
     {
-        try{
-            return $this->getProfileFromUsername($get)->getProfileid();
+        $profile = $this->getProfileFromUsername($get);
+        if ($profile){
+            return $profile->getProfileid();
         }
-        catch (Exception $e){
-            return -1;
-        }
+        return null;
     }
 
     public function getProfileFromUsername($get)
@@ -180,9 +179,9 @@ class AbonamentController extends Controller
     {
         $utils = new Functions();
         $profileId = null;
-        try {
-            $profileId = $this->getProfileIdFromUsername($username);
-        } catch (Exception $e){
+
+        $profileId = $this->getProfileIdFromUsername($username);
+        if (!$profileId){
             return $utils->createResponse(404, array(
                 "errors" => "Can't find user profile;"
             ));
