@@ -222,4 +222,31 @@ class UserAbonamentController extends Controller
 
         return $utils->createResponse(200, $res);
     }
+
+    /**
+     * @Route("/subscription/get_unpaid_users", name = "get_unpaid_users")
+     * @Method({"GET"})
+     * @return Response
+     * @internal param Request $request
+     */
+    public function getUnPaidUsers()
+    {
+        $utils = new Functions();
+
+        $repo = $this->getDoctrine()->getManager()->getRepository(UserAbonament::class);
+        $all = $repo->findAll();
+
+        $res = [];
+        foreach ($all as $item){
+            /** @var $item UserAbonament */
+            if($item->getPlatit() == 0){
+                $res[]=[
+                    'username' => $item->getIduser()->getUsername()->getUsername(),
+                    'type' => $item->getIdabonament()->getType()
+                ];
+            }
+        }
+
+        return $utils->createResponse(200, $res);
+    }
 }
