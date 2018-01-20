@@ -262,7 +262,7 @@ class ScheduleController extends Controller
             error_log($item["id"]);
             error_log($item["WeekDay"]);
             error_log(intval($item["WeekDay"]));
-            $dayOftheWeek = jddayofweek(intval($item["WeekDay"]), 2);
+            $dayOftheWeek = AllMyConstants::WEEK_DAY[$item["WeekDay"]];
             error_log($dayOftheWeek);
             $starttime = date_create_from_format('Y-m-d H:i:s', $item["StartTime"])->format('H:i');
             $endtime = date_create_from_format('Y-m-d H:i:s', $item["EndTime"])->format('H:i');
@@ -290,7 +290,7 @@ class ScheduleController extends Controller
         }
         $schedules = $this->getMyScheduleByProfileId($userAbonament);
         foreach ($schedules as &$item) {
-            $dayOftheWeek = jddayofweek(intval($item["WeekDay"]), 2);
+            $dayOftheWeek = AllMyConstants::WEEK_DAY[$item["WeekDay"]];
             $starttime = date_create_from_format('Y-m-d H:i:s', $item["StartTime"])->format('H:i');
             $endtime = date_create_from_format('Y-m-d H:i:s', $item["EndTime"])->format('H:i');
             $item["interval"] = $dayOftheWeek." ".$starttime."-".$endtime;
