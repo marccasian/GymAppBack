@@ -18,4 +18,12 @@ class AllMyConstants
     const PLATIT_FALSE = 0;
     const ACTIV_TRUE = 1;
     const ACTIV_FALSE = 0;
+    const WEEK_DAY = [
+        0 => "Sun",
+        1 => "Mon",
+        2 => "Tue",
+        3 => "Wed",
+        4 => "Thu",
+        5 => "Fri",
+        6 => "Sat"];
 }
