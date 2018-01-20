@@ -245,31 +245,19 @@ class ScheduleController extends Controller
     public function getAllScheduleOfGymByAbonamentUser($username)
     {
         $utils = new Functions();
-        error_log(1);
         $userAbonament = $this->getUserAbonament($username);
-        error_log($userAbonament);
         if ($userAbonament == -1){
             return $utils->createResponse(404, array(
                 'errors' => "Given user doesn't have a subscription or user doesn't exists;"
             ));
         }
-        error_log(2);
         $schedules = $this->getGymScheduleByAbonamentId($userAbonament);
-//        error_log($schedules->len);
-        error_log(21);
         foreach ($schedules as &$item) {
-            error_log("sch");
-            error_log($item["id"]);
-            error_log($item["WeekDay"]);
-            error_log(intval($item["WeekDay"]));
             $dayOftheWeek = AllMyConstants::WEEK_DAY[$item["WeekDay"]];
-            error_log($dayOftheWeek);
             $starttime = date_create_from_format('Y-m-d H:i:s', $item["StartTime"])->format('H:i');
             $endtime = date_create_from_format('Y-m-d H:i:s', $item["EndTime"])->format('H:i');
             $item["interval"] = $dayOftheWeek." ".$starttime."-".$endtime;
-            error_log($item["interval"]);
         }
-        error_log(3);
         return $utils->createResponse(200, $schedules);
     }
 
