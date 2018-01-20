@@ -52,6 +52,31 @@ class UserController extends Controller
         return $utils->createResponse(200, $results);
     }
 
+    /**
+     * @Route("/user/getAllTrainers", name = "get_all_trainers")
+     * @Method({"GET"})
+     * @param Request $request
+     * @return Response
+     */
+    public function getAllTrainers(Request $request)
+    {
+        $utils = new Functions();
+        $repoUsers = $this->getDoctrine()->getManager()->getRepository(User::class);
+        $users = $repoUsers->findBy(array(
+            'rolid' => $this->getUserRolId(AllMyConstants::NUME_ANTRENOR),
+        ));
+        $results = [];
+        /** @var  $item User */
+        foreach ($users as $item) {
+            $results[] = [
+                'username' => $item->getUsername(),
+                'rolId' => $item->getRolid()->getRolid(),
+                'rolDescription' => $item->getRolid()->getDescription()
+            ];
+        }
+        return $utils->createResponse(200, $results);
+    }
+
     private function getUserRolId($NUME_USER)
     {
         $repo = $this->getDoctrine()->getManager()->getRepository(Rol::class);
