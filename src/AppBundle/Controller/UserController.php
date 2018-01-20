@@ -53,7 +53,7 @@ class UserController extends Controller
     }
 
     /**
-     * @Route("/user/getAllTrainers", name = "get_all_trainers")
+     * @Route("/user/getAllTrainers", name = "get_all_trainers_new")
      * @Method({"GET"})
      * @param Request $request
      * @return Response
