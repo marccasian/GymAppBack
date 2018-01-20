@@ -64,7 +64,7 @@ class UserAbonamentController extends Controller
         $username =    $request->request->get('username');
         $abonamentId =  $request->request->get('abonamentId');
 
-        if(is_null($username)){
+        if(!$username){
             return $utils->createResponse(400, array(
                 'errors' => "Missing username;",
             ));
@@ -156,15 +156,15 @@ class UserAbonamentController extends Controller
     public function setPayForSubscription(Request $request)
     {
         $utils = new Functions();
-        $username =    $request->request->get('username');
-        $abonamentId =  $request->request->get('abonamentId');
+        $username = $request->request->get('username');
+        $abonamentId = $request->request->get('abonamentId');
 
-        if(is_null($username)){
+        if(!$username){
             return $utils->createResponse(400, array(
-                'errors' => "Missing username;",
+                'errors' => "Missing usernam da pulae;",
             ));
         }
-        if(is_null($abonamentId)){
+        if(!$abonamentId){
             return $utils->createResponse(400, array(
                 'errors' => "Missing subscription id;",
             ));
@@ -183,8 +183,13 @@ class UserAbonamentController extends Controller
                 'errors' => "Profile not found for given user;",
             ));
         }
-
-        $sql = "UPDATE user_abonament SET Platit = 1 WHERE idabonament = $abonamentId AND Platit = 0 AND iduser = $profileId AND activ = 1;";
+        $startDate = new DateTime();
+        $endDate = new DateTime("+1 month");
+        $startDateStr = $startDate->format("Y-m-d H:i:s");
+        $endDateStr = $endDate->format("Y-m-d H:i:s");
+        $sql = "UPDATE user_abonament 
+                SET AbonamentStartDate='$startDateStr', AbonamentEndDate='$endDateStr', Platit=1 WHERE idabonament = $abonamentId 
+                AND Platit = 0 AND iduser = $profileId AND activ = 1;";
         $conn = $this->getDoctrine()->getConnection();
         $stmt = $conn->prepare($sql);
         $stmt->execute();
