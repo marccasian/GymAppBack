@@ -161,7 +161,7 @@ class UserAbonamentController extends Controller
 
         if(!$username){
             return $utils->createResponse(400, array(
-                'errors' => "Missing usernam da pulae;",
+                'errors' => "Missing username;",
             ));
         }
         if(!$abonamentId){
