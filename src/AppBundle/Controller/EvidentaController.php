@@ -91,6 +91,19 @@ class EvidentaController extends Controller
                 'errors' => "Schedule ID incorect ",
             ]);
         }
+
+        $repo = $this->getDoctrine()->getManager()->getRepository(Evidentainscrieri::class);
+        $evi = $repo->findOneBy([
+            'profileid' => $profileId,
+            'scheduleid' => $scheduleId
+        ]);
+        if($evi){
+            return $utils->createResponse(403, [
+                'errors' => "Already enrolled to this course;",
+            ]);
+        }
+
+
         try {
             $manager = $this->getDoctrine()->getManager();
             $em = $this->getDoctrine()->getManager();
