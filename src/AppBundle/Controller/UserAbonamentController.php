@@ -217,7 +217,34 @@ class UserAbonamentController extends Controller
         $res = [];
         foreach ($all as $item){
             /** @var $item UserAbonament */
-            if($item->getPlatit() == 1){
+            if($item->getPlatit() == AllMyConstants::PLATIT_TRUE && $item->getActiv()==AllMyConstants::ACTIV_TRUE){
+                $res[]=[
+                    'username' => $item->getIduser()->getUsername()->getUsername(),
+                    'type' => $item->getIdabonament()->getType()
+                ];
+            }
+        }
+
+        return $utils->createResponse(200, $res);
+    }
+
+    /**
+     * @Route("/subscription/get_unpaid_users", name = "get_unpaid_users")
+     * @Method({"GET"})
+     * @return Response
+     * @internal param Request $request
+     */
+    public function getUnPaidUsers()
+    {
+        $utils = new Functions();
+
+        $repo = $this->getDoctrine()->getManager()->getRepository(UserAbonament::class);
+        $all = $repo->findAll();
+
+        $res = [];
+        foreach ($all as $item){
+            /** @var $item UserAbonament */
+            if($item->getPlatit() == AllMyConstants::PLATIT_FALSE &&  $item->getActiv()==AllMyConstants::ACTIV_TRUE){
                 $res[]=[
                     'username' => $item->getIduser()->getUsername()->getUsername(),
                     'type' => $item->getIdabonament()->getType()
