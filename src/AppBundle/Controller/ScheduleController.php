@@ -602,7 +602,7 @@ class ScheduleController extends Controller
     private function getMyScheduleByProfileId($profileId)
     {
 
-        $sql = " SELECT schedule.id, curs.Type, WeekDay, p.username as Trainer, StartTime, EndTime, PeriodStartDate, PeriodEndDate 
+        $sql = " SELECT schedule.id, curs.Type, WeekDay, p.username as trainer, StartTime, EndTime, PeriodStartDate, PeriodEndDate 
                 FROM schedule 
                 JOIN evidentainscrieri on evidentainscrieri.ScheduleId = schedule.Id 
                 JOIN curs on curs.CursId = schedule.IdCurs
