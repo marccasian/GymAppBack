@@ -247,7 +247,8 @@ class UserAbonamentController extends Controller
             if($item->getPlatit() == AllMyConstants::PLATIT_FALSE &&  $item->getActiv()==AllMyConstants::ACTIV_TRUE){
                 $res[]=[
                     'username' => $item->getIduser()->getUsername()->getUsername(),
-                    'type' => $item->getIdabonament()->getType()
+                    'type' => $item->getIdabonament()->getType(),
+                    'idAbonament' => $item->getIdabonament()->getAbonamentid()
                 ];
             }
         }
