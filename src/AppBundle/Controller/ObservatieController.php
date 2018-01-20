@@ -26,6 +26,25 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 class ObservatieController extends Controller
 {
 
+    public function getProfileIdFromUsername($get)
+    {
+        $profile = $this->getProfileFromUsername($get);
+        if ($profile){
+            return $profile->getProfileid();
+        }
+        return null;
+    }
+
+    public function getProfileFromUsername($get)
+    {
+        $repository = $this->getDoctrine()->getRepository(Profile::class);
+        /** @var  $profile Profile*/
+        $profile = $repository->findOneBy(array(
+            'username' => $get
+        ));
+        return $profile;
+    }
+
     /**
      * @Route("/observation/create_observation", name = "create_observation")
      * @Method({"POST"})
@@ -36,11 +55,11 @@ class ObservatieController extends Controller
     public function createObservatie(Request $request){
         $utils = new Functions();
 
-        $evaluatorId = $request->request->get('evaluatorId');
+        $evaluator = $request->request->get('evaluator');
         $idCurs = $request->request->get('idCurs');
         $text= $request->request->get('text');
         $rating = $request->request->get('rating');
-        $errors = $this->checkIfNull($evaluatorId, $idCurs, $text, $rating);
+        $errors = $this->checkIfNull($evaluator, $idCurs, $text, $rating);
         if ($errors){
             return $utils->createResponse(403, array(
                 'errors' => $errors,
@@ -57,6 +76,13 @@ class ObservatieController extends Controller
                 'errors' => "Rating must be a positive number",
             ));
         }
+        $evaluator_obj = $this->getProfileFromUsername($evaluator);
+        if (!$evaluator_obj){
+            return $utils->createResponse(403, array(
+                'errors' => "Fail to find evaluated profile;",
+            ));
+        }
+
         try {
             $repoProfile = $this->getDoctrine()->getManager()->getRepository(Profile::class);
             $repoCurs = $this->getDoctrine()->getManager()->getRepository(Curs::class);

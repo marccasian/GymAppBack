@@ -25,6 +25,25 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 class EvidentaController extends Controller
 {
+    public function getProfileIdFromUsername($get)
+    {
+        $profile = $this->getProfileFromUsername($get);
+        if ($profile){
+            return $profile->getProfileid();
+        }
+        return null;
+    }
+
+    public function getProfileFromUsername($get)
+    {
+        $repository = $this->getDoctrine()->getRepository(Profile::class);
+        /** @var  $profile Profile*/
+        $profile = $repository->findOneBy(array(
+            'username' => $get
+        ));
+        return $profile;
+    }
+
     /**
      * @Route("/evidenta/enroll", name = "enroll")
      * @Method({"POST"})
@@ -35,12 +54,18 @@ class EvidentaController extends Controller
     {
         $utils = new Functions();
 
-        $profileId = $request->request->get('profileId');
+        $username = $request->request->get('username');
         $scheduleId = $request->request->get('scheduleId');
 
-        if (!filter_var($profileId, FILTER_VALIDATE_INT)) {
+        if (!$username) {
             return $utils->createResponse(403, [
-                'errors' => "Profile ID must be integer",
+                'errors' => "Username missing;",
+            ]);
+        }
+
+        if (!$scheduleId) {
+            return $utils->createResponse(403, [
+                'errors' => "Schedule id missing missing;",
             ]);
         }
 
@@ -50,16 +75,13 @@ class EvidentaController extends Controller
             ]);
         }
 
-        $repository = $this->getDoctrine()->getManager()->getRepository(Profile::class);
-
-        $prof = $repository->findOneBy([
-            'profileid' => $profileId,
-        ]);
-        if(!$prof){
-            return $utils->createResponse(403, [
-                'errors' => "Profile ID incorect",
-            ]);
+        $profileId = $this->getProfileIdFromUsername($username);
+        if (!$profileId){
+            return $utils->createResponse(403, array(
+                'errors' => "Fail to find evaluator profile;",
+            ));
         }
+
         $repo = $this->getDoctrine()->getManager()->getRepository(Schedule::class);
         $sch = $repo->findOneBy([
             'id' => $scheduleId,
@@ -111,13 +133,19 @@ class EvidentaController extends Controller
     {
         $utils = new Functions();
 
-        $profileId = $request->request->get('profileId');
+        $username = $request->request->get('username');
         $scheduleId = $request->request->get('scheduleId');
 
 
-        if (!filter_var($profileId, FILTER_VALIDATE_INT)) {
+        if (!$username) {
             return $utils->createResponse(403, [
-                'errors' => "Profile ID must be integer",
+                'errors' => "Username missing;",
+            ]);
+        }
+
+        if (!$scheduleId) {
+            return $utils->createResponse(403, [
+                'errors' => "Schedule id missing missing;",
             ]);
         }
 
@@ -127,16 +155,13 @@ class EvidentaController extends Controller
             ]);
         }
 
-        $repository = $this->getDoctrine()->getManager()->getRepository(Profile::class);
-
-        $prof = $repository->findOneBy([
-            'profileid' => $profileId,
-        ]);
-        if(!$prof){
-            return $utils->createResponse(403, [
-                'errors' => "Profile ID incorect",
-            ]);
+        $profile = $this->getProfileFromUsername($username);
+        if (!$profile){
+            return $utils->createResponse(403, array(
+                'errors' => "Fail to find evaluator profile;",
+            ));
         }
+
         $repo = $this->getDoctrine()->getManager()->getRepository(Schedule::class);
         $sch = $repo->findOneBy([
             'id' => $scheduleId,
@@ -148,7 +173,7 @@ class EvidentaController extends Controller
         }
         $rep = $this->getDoctrine()->getManager()->getRepository(Evidentainscrieri::class);
         $evident = $rep->findOneBy([
-            'profileid' => $prof,
+            'profileid' => $profile,
             'scheduleid' => $sch
         ]);
         try {
@@ -157,7 +182,7 @@ class EvidentaController extends Controller
             $manager->remove($evident);
             $manager->flush();
             return $utils->createResponse(200, [
-                'profileid' => $profileId,
+                'profileid' => $profile->getProfileid(),
                 'scheduleid'=> $scheduleId
             ]);
 
