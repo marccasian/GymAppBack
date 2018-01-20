@@ -66,7 +66,17 @@ class FeedbackController extends Controller
         }
 
         $evaluator_obj = $this->getProfileFromUsername($evaluator);
+        if (!$evaluator_obj){
+            return $utils->createResponse(403, array(
+                'errors' => "Fail to find evaluator profile;",
+            ));
+        }
         $evaluat_obj = $this->getProfileFromUsername($evaluat);
+        if (!$evaluat_obj){
+            return $utils->createResponse(403, array(
+                'errors' => "Fail to find evaluated profile;",
+            ));
+        }
         try {
             $manager = $this->getDoctrine()->getManager();
             $feedback = new Feedback();
