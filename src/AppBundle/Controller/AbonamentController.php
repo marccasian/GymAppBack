@@ -427,7 +427,6 @@ class AbonamentController extends Controller
         $stmt = $conn->prepare($sql);
         $stmt->execute();
         $active = $stmt->fetchAll();
-        error_log($profileId."abonament ".$abonamentId." avtiv ".$active[0]["Active"]);
         return $active[0]["Active"];
     }
 }
