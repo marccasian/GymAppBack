@@ -43,7 +43,7 @@ class ObservatieController extends Controller
             'username' => $get
         ));
         return $profile;
-    }
+}
 
     /**
      * @Route("/observation/create_observation", name = "create_observation")
@@ -90,11 +90,6 @@ class ObservatieController extends Controller
             /** @var  $curs Curs*/
             $curs = $repoCurs->findOneBy(array(
                 'cursid' => $idCurs,
-            ));
-
-            /** @var  $evaluator Profile*/
-            $evaluator = $repoProfile->findOneBy(array(
-                'profileid' => $evaluatorId,
             ));
 
             $manager = $this->getDoctrine()->getManager();
